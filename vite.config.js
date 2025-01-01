@@ -9,5 +9,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['tailwindcss']
   },
-  
+  server: {
+    historyApiFallback: true,
+  },
 })
