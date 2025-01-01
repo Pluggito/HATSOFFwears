@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import { products } from "../assets/asset";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
