@@ -1,5 +1,9 @@
 import { Routes, Route } from "react-router"
-import Home from './Pages/Home'
+import NewsLetter from "./Pages/NewsLetter"
+import NewCollections from './Pages/NewCollections'
+import Hero from './Components/Hero'
+import LimitedEditions from './Pages/LimitedEditions'
+import Policy from './Pages/Policy'
 import Collections from './Pages/Collections'
 import About from './Pages/About'
 import Contact from './Pages/Contact'
@@ -21,7 +25,13 @@ const App = () => {
       <Navbar />
       <SearchBar />
       <Routes>
-        <Route path="/" element={<Home />}/>
+        <Route path="/" element={<>
+            <Hero /> 
+          <NewCollections />
+          <LimitedEditions />
+          <Policy />
+          <NewsLetter />
+          </>}/>
         <Route path="/collections" element={<Collections />}/>
         <Route path="/about" element={<About />}/>
         <Route path="/contact" element={<Contact />}/>
