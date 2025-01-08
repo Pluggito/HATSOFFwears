@@ -15,6 +15,7 @@ import Navbar from './Components/Navbar'
 import Footer from "./Components/Footer"
 import SearchBar from "./Components/SearchBar"
 import { ToastContainer } from 'react-toastify';
+import OrderSummary from "./Pages/OrderSummary"
 // import 'react-toastify/dist/ReactToastify.css'
 
 
@@ -40,6 +41,7 @@ const App = () => {
         <Route path="/cart" element={<Cart />}/>
         <Route path="/placeorder" element={<PlaceOrder />}/>
         <Route path="/orders" element={<Orders />}/>
+        <Route path="/order-summary" element={<OrderSummary />}/>
       </Routes>
       <Footer/>
     </div>
