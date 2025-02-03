@@ -1,6 +1,8 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import CartTotal from "../Components/CartTotal"
 import Title from "../Components/Title"
+import { ShopContext } from "../Context/ShopContext"
+import { handlePayment } from "../Backend/PaymentLogic"
 
 const PlaceOrder = () => {
     const [firstName, setFirstName] = useState('')
@@ -10,14 +12,29 @@ const PlaceOrder = () => {
     const [address, setAddress] = useState('')
     const [error, setError] = useState('')
 
-    const handleSubmit = (e) => {
+    const userDetails = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        address
+    }
+
+    const { cartItems, getCartAmount, delivery_fee, navigate } = useContext(ShopContext);
+    const Amount = getCartAmount() + delivery_fee;
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!firstName || !lastName || !email || !phone || !address) {
             setError('Please fill in all fields');
             return;
         }
         // If validation passes, proceed to payment
-        window.location.href = "https://sandbox.flutterwave.com/pay/3yqcw1lfjesg";
+
+        //window.location.href = "https://sandbox.flutterwave.com/pay/3yqcw1lfjesg";
+        
+        // function to handle order placement logic 
+        handlePayment(userDetails, Amount, cartItems,navigate)
     }
 
     return (
