@@ -1,4 +1,4 @@
-import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
+import { useFlutterwave } from "flutterwave-react-v3";
 import { handlePlaceOrder } from "./OrderLogic";
 
 const paymentLogic = (userDetails, amount, cartItems, navigate) => {
@@ -32,7 +32,6 @@ const paymentLogic = (userDetails, amount, cartItems, navigate) => {
                 navigate('/order-summary');
                 console.log("Payment successful");
             }
-            closePaymentModal();
         },
         onClose: () => {},
     });
