@@ -15,6 +15,7 @@ import Navbar from './Components/Navbar'
 import Footer from "./Components/Footer"
 import SearchBar from "./Components/SearchBar"
 import { ToastContainer } from 'react-toastify';
+import ShopNow from "./Pages/ShopNow"
 // import 'react-toastify/dist/ReactToastify.css'
 
 
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/" element={<>
             <Hero /> 
           <NewCollections />
+          <ShopNow/>
           <LimitedEditions />
           <Policy />
           <NewsLetter />

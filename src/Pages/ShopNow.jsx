@@ -5,23 +5,21 @@ import { useState, useEffect } from "react";
 import ProductsItem from "../Components/ProductsItem";
 
 
+const ShopNow = () => {
 
-
-
-const NewCollections = () => {
 const { products } = useContext(ShopContext);
 const [newProduct, setNewProduct] = useState([])
 
 useEffect(()=> {
 
-    setNewProduct(products.slice(2,10));
+    setNewProduct(products.slice(0,2));
 },[])
 
 
   return (
     <div className="my-10">
          <div className="text-center py-8 text-3xl">
-                <Title text1={'SHOP EASE,'} text2={' SHOP COMFORT'}/>
+                <Title text1={'NEW'} text2={'COLLECTIONS'}/>
                 <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-700">
                     Discover our latest arrivals featuring trendy designs and premium quality. 
                     Each piece is carefully curated to keep you stylish and comfortable.
@@ -41,4 +39,4 @@ useEffect(()=> {
   )
 }
 
-export default NewCollections
+export default ShopNow
