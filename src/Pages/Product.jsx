@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { ShopContext } from "../Context/ShopContext"
 import { useParams } from "react-router-dom"
 import RelatedProducts from "../Components/RelatedProducts"
+import { toast } from "react-toastify"
 
 
 const Product = () => {
@@ -11,6 +12,7 @@ const Product = () => {
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState('');
   const [size, setSize] = useState('');
+  const buttonRef = useRef(null);
 
 
   const fetchProductData = async () =>{
@@ -23,6 +25,17 @@ const Product = () => {
       }
   })
   }
+
+
+
+   const handlecart = () =>{
+
+    addToCart(productData._id,size)  
+
+    if(buttonRef.current){
+      toast.success("Added to cart")
+    }
+   }
 
 
   useEffect(()=>{
@@ -65,7 +78,7 @@ const Product = () => {
                     </div> 
           </div>
 
-          <button className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700" onClick={()=>addToCart(productData._id,size)}>ADD TO CART</button>
+          <button ref={buttonRef} className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700" onClick={handlecart}>ADD TO CART</button>
           <hr className="mt-8 sms:w-4/5"/>
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
             <p>100% Original Product</p>

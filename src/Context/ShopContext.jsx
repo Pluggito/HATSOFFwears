@@ -62,6 +62,7 @@ import { useNavigate } from "react-router";
                     if (cartItems[items][item] > 0) {
                         totalCount += cartItems[items][item];
                     }
+                    
                 } catch (error) {
                     
                 }
