@@ -7,7 +7,7 @@ export default function Footer(){
     
     return(
         <div className="w-full justify-center items-center px-auto text-center">
-            <div className="mt-[32px] ">
+            <div className="mt-[32px] mb-5 ">
                 <p className="text-2xl font-medium mb-5 tracking-wide">GET IN TOUCH</p>
                 <ul className="flex flex-col gap-1 text-gray-600" >
                     <li>+234-907-827-8321</li>
