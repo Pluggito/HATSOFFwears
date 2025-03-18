@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
     const delivery_fee = 3000;
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    
     const [cartItems, setCartItems] = useState(() => {
         const savedCart = localStorage.getItem('cartItems');
         return savedCart ? JSON.parse(savedCart) : {};
@@ -27,8 +28,12 @@ import { useNavigate } from "react-router";
 
         if (!size) {
             toast.error("Select Product Size")
-            return;            
+            return;           
         }
+
+        else if (size){
+            toast.success("Added to cart");
+          }
         
         let cartData = structuredClone(cartItems); 
 
