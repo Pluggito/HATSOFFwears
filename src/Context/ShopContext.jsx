@@ -28,11 +28,11 @@ import { useNavigate } from "react-router";
 
         if (!size) {
             toast.error("Select Product Size")
-            return;            
+            return;           
         }
 
-        else{
-            toast.success("Added to cart")
+        else if (size){
+            toast.success("Added to cart");
           }
         
         let cartData = structuredClone(cartItems); 
