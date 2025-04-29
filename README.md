@@ -21,12 +21,3 @@ Vercel: For deploying and hosting the app with smooth, global performance.
 
 
 
-
-
-
-
-
-
-
-
-
