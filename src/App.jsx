@@ -17,6 +17,8 @@ import SearchBar from "./Components/SearchBar"
 import { ToastContainer } from 'react-toastify';
 import OrderSummary from "./Pages/OrderSummary"
 import ShopNow from "./Pages/ShopNow"
+import Admin from "./Pages/Admin"
+import ClothingDashboard from "./Pages/Dashboard"
 // import 'react-toastify/dist/ReactToastify.css'
 
 
@@ -39,6 +41,8 @@ const App = () => {
         <Route path="/about" element={<About />}/>
         <Route path="/contact" element={<Contact />}/>
         <Route path="/product/:productId" element={<Product />}/>
+        <Route path="/admin" element={<Admin/>}/>
+        <Route path="/dashboard" element={<ClothingDashboard/>}/>
 
         <Route path="/cart" element={<Cart />}/>
         <Route path="/placeorder" element={<PlaceOrder />}/>

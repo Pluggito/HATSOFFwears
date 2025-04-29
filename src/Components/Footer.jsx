@@ -1,8 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInstagram } from "@fortawesome/free-brands-svg-icons";
+import {  useLocation } from "react-router-dom";
 
 
 export default function Footer(){
+     const location = useLocation()
+            const path = ['/admin','/dashboard']
+    
+            if(path.includes(location.pathname)) return null
 
     
     return(
