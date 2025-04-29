@@ -1,20 +1,26 @@
 import {assets} from '../assets/asset'
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCartPlus, faMagnifyingGlass, faBars, faAngleLeft }from '@fortawesome/free-solid-svg-icons'
+import { faCartPlus, faMagnifyingGlass, faAngleLeft }from '@fortawesome/free-solid-svg-icons'
 import { useContext, useState } from 'react';
 import { ShopContext } from '../Context/ShopContext';
+import { Menu } from 'lucide-react'
+
 
 
 const Navbar = () => {
         const [visible,setVisible] = useState (false);
         const {setShowSearch, getCartCount} = useContext(ShopContext);
+        const location = useLocation()
+        const path = ['/admin','/dashboard']
+
+        if(path.includes(location.pathname)) return null
      
   return (
     <div className="flex items-center justify-between py-5 font-medium">
 
         <Link to='/'>
-        <img  src={assets.logo_icon1} className='w-55 h-16' alt=""/>
+        <img  src={assets.logo_icon1} className='w-30 h-16' alt=""/>
         </Link>
        
 
@@ -53,7 +59,7 @@ const Navbar = () => {
             </Link>
         
 
-         <FontAwesomeIcon icon={faBars} className="w-5 cursor-pointer sm:hidden" onClick={()=> setVisible(true)} />
+            <Menu  className='sm:hidden cursor-pointer' onClick={()=> setVisible(true)} />
                 
                 {/* Sidebar Menu for Small Screen */}
                 <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${visible ? 'w-full' : 'w-0'}`}>

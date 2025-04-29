@@ -1,19 +1,22 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
+import tailwindcss from '@tailwindcss/vite'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-// https://vite.dev/config/
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
 export default defineConfig({
-  plugins: [react()],
-  // Remove the GitHub Pages base if deploying to Vercel
+  plugins: [react(), tailwindcss()],
   base: '/',
   assetsInclude: ['**/*.PNG', '**/*.JPG', '**/*.jpg', '**/*.png'],
-  optimizeDeps: {
-    include: ['tailwindcss']
-  },
   build: {
-    outDir: "dist",
+    outDir: 'dist',
+    target: 'esnext',
   },
-  server: {
-    historyApiFallback: true,
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
 })

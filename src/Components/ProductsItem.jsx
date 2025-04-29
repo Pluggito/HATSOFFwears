@@ -8,9 +8,9 @@ export default function ProductsItem ({id,image,name,price}){
 
 
     return(
-        <Link  className="text-gray cursor-pointer" to={`/product/${id}`}>
+        <Link  className="text-gray cursor-pointer rounded-sm shadow-xs p-2" to={`/product/${id}`}>
         
-        <div className="overflow-hidden">
+        <div className="overflow-hidden ">
         <img 
             className='hover:scale-110 transition ease-in-out' 
             src={Array.isArray(image) ? image[0] : image} 

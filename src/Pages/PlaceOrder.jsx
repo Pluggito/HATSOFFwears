@@ -2,7 +2,7 @@ import { useContext, useState } from "react"
 import CartTotal from "../Components/CartTotal"
 import Title from "../Components/Title"
 import { ShopContext } from "../Context/ShopContext"
-import { handlePayment } from "../Backend/PaymentLogic"
+//import { handlePayment } from "../Backend/PaymentLogic"
 
 const PlaceOrder = () => {
     const [firstName, setFirstName] = useState('')
@@ -34,7 +34,7 @@ const PlaceOrder = () => {
         //window.location.href = "https://sandbox.flutterwave.com/pay/3yqcw1lfjesg";
         
         // function to handle order placement logic 
-        handlePayment(userDetails, Amount, cartItems,navigate)
+      //  handlePayment(userDetails, Amount, cartItems,navigate)
     }
 
     return (
