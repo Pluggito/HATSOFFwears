@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Edit, Plus, Trash, Upload } from "lucide-react";
 
 import { Button } from "@/Components/ui/button";
@@ -24,36 +24,11 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 import { Toggle } from "@/Components/ui/toggle";
+import { addProduct, deleteProduct, getProducts, updateProduct } from "../Backend/AdminLogic";
 
-const initialModels = [
-  {
-    id: "1",
-    name: "Summer Dress",
-    price: 199.99,
-    description: "A beautiful floral summer dress",
-    image: "/placeholder.svg?height=100&width=100",
-    collection: "Summer",
-  },
-  {
-    id: "2",
-    name: "Denim Jacket",
-    price: 149.99,
-    description: "Classic denim jacket for all seasons",
-    image: "/placeholder.svg?height=100&width=100",
-    collection: "Spring",
-  },
-  {
-    id: "3",
-    name: "Winter Coat",
-    price: 299.99,
-    description: "Warm winter coat with fur lining",
-    image: "/placeholder.svg?height=100&width=100",
-    collection: "Winter",
-  },
-];
 
 export default function ClothingDashboard() {
-  const [models, setModels] = useState(initialModels);
+  const [models, setModels] = useState([]);
   const [editingModel, setEditingModel] = useState(null);
   const [newModel, setNewModel] = useState({
     name: "",
@@ -66,7 +41,7 @@ export default function ClothingDashboard() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const handleAddModel = () => {
+  const handleAddModel = async () => {
     const modelToAdd = {
       ...newModel,
       id: Date.now().toString(),
@@ -81,6 +56,8 @@ export default function ClothingDashboard() {
       collection: "",
       sizes: [],
     });
+    await addProduct(modelToAdd); // Assuming addProduct is a function that adds the model to your database
+    fetchModels(); // Refresh the models after adding
     setIsAddDialogOpen(false);
   };
 
@@ -92,17 +69,17 @@ export default function ClothingDashboard() {
     setter({ ...model, sizes: newSizes });
   };
 
-  const handleEditModel = () => {
-    setModels(
-      models.map((model) =>
-        model.id === editingModel.id ? editingModel : model
-      )
-    );
+  const handleEditModel = async () => {
+    await updateProduct(editingModel); 
+    fetchModels(); // Refresh the models after editing
+    setModels(models.map((model) => (model.id === editingModel.id ? editingModel : model)));
     setIsEditDialogOpen(false);
   };
 
-  const handleDeleteModel = (id) => {
-    setModels(models.filter((model) => model.id !== id));
+  const handleDeleteModel = async (productId) => {
+    setModels(models.filter((model) => model.id !== productId));
+    await deleteProduct(productId); 
+    fetchModels(); // Refresh the models after deletion
   };
 
   const startEditing = (model) => {
@@ -110,6 +87,14 @@ export default function ClothingDashboard() {
     setIsEditDialogOpen(true);
   };
 
+  const fetchModels = async () => {
+    const modelsFromDB = await getProducts(); // Assuming getProducts is a function that fetches models from your database
+    setModels(modelsFromDB);
+  };
+
+  useEffect(() => {
+    fetchModels();
+  },[])
   return (
     <div className="container mx-auto py-10">
       <header className="flex justify-between items-center mb-8">
