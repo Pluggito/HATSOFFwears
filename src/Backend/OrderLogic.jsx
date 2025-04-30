@@ -106,7 +106,7 @@ export const placeOrder = async (cartItems, userDetails, trns_id) => {
 
    // console.log("Order placed successfully with ID:", orderId);
 
-    await sendOrderEmail(orderDetails);
+    // await sendOrderEmail(orderDetails);
    // console.log("Order confirmation email sent!");
 
     return orderId; // Returning orderId for reference
