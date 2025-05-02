@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Edit, Plus, Trash, Upload } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { Edit, Import, Plus, Trash, Upload } from "lucide-react";
 
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
@@ -24,8 +24,12 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 import { Toggle } from "@/Components/ui/toggle";
-import { addProduct, deleteProduct, getProducts, updateProduct } from "../Backend/AdminLogic";
-
+import {
+  addProduct,
+  deleteProduct,
+  getProducts,
+  updateProduct,
+} from "../Backend/AdminLogic";
 
 export default function ClothingDashboard() {
   const [models, setModels] = useState([]);
@@ -70,15 +74,19 @@ export default function ClothingDashboard() {
   };
 
   const handleEditModel = async () => {
-    await updateProduct(editingModel); 
+    await updateProduct(editingModel);
     fetchModels(); // Refresh the models after editing
-    setModels(models.map((model) => (model.id === editingModel.id ? editingModel : model)));
+    setModels(
+      models.map((model) =>
+        model.id === editingModel.id ? editingModel : model
+      )
+    );
     setIsEditDialogOpen(false);
   };
 
   const handleDeleteModel = async (productId) => {
     setModels(models.filter((model) => model.id !== productId));
-    await deleteProduct(productId); 
+    await deleteProduct(productId);
     fetchModels(); // Refresh the models after deletion
   };
 
@@ -94,7 +102,78 @@ export default function ClothingDashboard() {
 
   useEffect(() => {
     fetchModels();
-  },[])
+  }, []);
+
+  // Images uploading
+  // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
+
+  const fileInputRef = useRef();
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click(); // Trigger the hidden input
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewModel({ ...newModel, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditingModel({ ...editingModel, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  //Uploading image to uploadthing
+  // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
+  const handleImageUpload = async () => {
+    const file = fileInputRef.current?.files?.[0];
+    if (file) {
+      const response = await fetch(
+        "https://api.uploadthing.com/v6/uploadFiles",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            files: [
+              {
+                name: newModel.image.name,
+                type: newModel.image,
+                size: newModel.image.size,
+                customId: null,
+              },
+            ],
+            acl: "public-read",
+            metadata: null,
+            contentDisposition: "inline",
+          }),
+          headers: {
+            // DO NOT set "Content-Type" when using FormData
+            "Content-Type": "application/json",
+            "X-Uploadthing-Api-Key": import.meta.env
+              .VITE_UPLOADTHING_SECRET_KEY,
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log("Upload response:", data);
+      {
+        /* setNewModel({ ...newModel, image: data?.[0]?.url || "" });*/
+      } // Set the image URL from the response
+    }
+  };
+
   return (
     <div className="container mx-auto py-10">
       <header className="flex justify-between items-center mb-8">
@@ -121,7 +200,6 @@ export default function ClothingDashboard() {
                   onChange={(e) =>
                     setNewModel({ ...newModel, name: e.target.value })
                   }
-                  autocomplete="off"
                 />
               </div>
               <div className="grid gap-2">
@@ -166,35 +244,42 @@ export default function ClothingDashboard() {
               <div className="grid gap-4">
                 <p>Sizes Available</p>
                 <div className="flex gap-3">
-                  <Toggle
-                    pressed={newModel.sizes.includes("L")}
-                    onPressedChange={() =>
-                      handleToggleSize(newModel, "L", setNewModel)
-                    }
-                  >
-                    L
-                  </Toggle>
-                  <Toggle
-                    pressed={newModel.sizes.includes("XL")}
-                    onPressedChange={() =>
-                      handleToggleSize(newModel, "XL", setNewModel)
-                    }
-                  >
-                    XL
-                  </Toggle>
+                  {["S", "M", "L", "XL", "XXL"].map((size) => (
+                    <Toggle
+                      key={size}
+                      pressed={newModel.sizes.includes(size)}
+                      onPressedChange={() =>
+                        handleToggleSize(newModel, size, setNewModel)
+                      }
+                    >
+                      {size}
+                    </Toggle>
+                  ))}
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <div className="flex items-center gap-4">
                   <div className="h-20 w-20 rounded border overflow-hidden">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                    />
                     <img
                       src={newModel.image || "/placeholder.svg"}
                       alt="Preview"
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover cursor-pointer"
+                      onClick={handleImageClick}
                     />
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    onClick={handleImageUpload}
+                    size="sm"
+                  >
                     <Upload className="mr-2 h-4 w-4" /> Upload
                   </Button>
                 </div>
@@ -217,6 +302,7 @@ export default function ClothingDashboard() {
         <TabsList className="mb-4">
           <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
         <TabsContent value="models">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -257,7 +343,9 @@ export default function ClothingDashboard() {
                       <p className="text-sm text-muted-foreground">
                         {model.collection}
                       </p>
-                      <p className="text-sm text-black">{model.sizes?.join(", ") || "N/A"}</p>
+                      <p className="text-sm text-black">
+                        {model.sizes?.join(", ") || "N/A"}
+                      </p>
                       <p className="text-sm mt-2">{model.description}</p>
                     </div>
                   </div>
@@ -299,6 +387,70 @@ export default function ClothingDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="orders">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="col-span-2 md:col-span-1 lg:col-span-1">
+              <CardHeader className="pb-2">
+                <CardTitle>Orders</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-4">
+                  <div className="border rounded p-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Total Orders
+                    </p>
+                    <p className="text-3xl font-bold">0</p>
+                  </div>
+                  <div className="border rounded p-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Pending Orders
+                    </p>
+                    <p className="text-3xl font-bold">0</p>
+                  </div>
+                  <div className="border rounded p-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Completed Orders
+                    </p>
+                    <p className="text-3xl font-bold">0</p>
+                  </div>
+                </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  No orders available at the moment. Orders will be displayed
+                  here once they are placed.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="col-span-2 md:col-span-1 lg:col-span-1">
+              <CardHeader className="pb-2">
+                <CardTitle>Order History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-4">
+                  <div className="border rounded p-4 text-center">
+                    <p className="text-sm text-muted-foreground">Last Order</p>
+                    <p className="text-3xl font-bold">No orders yet</p>
+                  </div>
+                  <div className="border rounded p-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Total Orders
+                    </p>
+                    <p className="text-3xl font-bold">0</p>
+                  </div>
+                  <div className="border rounded p-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Total Revenue
+                    </p>
+                    <p className="text-3xl font-bold">₦0.00</p>
+                  </div>
+                </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  No order history available. Orders will be displayed here once
+                  they are placed.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
 
@@ -345,10 +497,9 @@ export default function ClothingDashboard() {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select collection" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectValue placeholder="Select collection" />
                     <SelectItem value="Default">Default</SelectItem>
                     <SelectItem value="Limited">Limited</SelectItem>
                     <SelectItem value="New">New</SelectItem>
@@ -371,32 +522,35 @@ export default function ClothingDashboard() {
               <div className="grid gap-4">
                 <p>Sizes Available</p>
                 <div className="flex gap-3">
-                  <Toggle
-                    pressed={editingModel.sizes.includes("L")}
-                    onPressedChange={() =>
-                      handleToggleSize(editingModel, "L", setEditingModel)
-                    }
-                  >
-                    L
-                  </Toggle>
-                  <Toggle
-                    pressed={editingModel.sizes.includes("XL")}
-                    onPressedChange={() =>
-                      handleToggleSize(editingModel, "XL", setEditingModel)
-                    }
-                  >
-                    XL
-                  </Toggle>
+                  {["S", "M", "L", "XL", "XXL"].map((size) => (
+                    <Toggle
+                      key={size}
+                      pressed={newModel.sizes.includes(size)}
+                      onPressedChange={() =>
+                        handleToggleSize(editingModel, size, setEditingModel)
+                      }
+                    >
+                      {size}
+                    </Toggle>
+                  ))}
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <div className="flex items-center gap-4">
                   <div className="h-20 w-20 rounded border overflow-hidden">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleEditFileChange}
+                    />
                     <img
                       src={editingModel.image || "/placeholder.svg"}
                       alt="Preview"
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover cursor-pointer"
+                      onClick={handleImageClick}
                     />
                   </div>
                   <Button variant="outline" size="sm">
