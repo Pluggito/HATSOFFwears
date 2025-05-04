@@ -6,65 +6,119 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import axios from "axios";
 import { db } from "./firebase";
 
-// Function to fetch all orders from the "orders" collection in Firestore
-export const getOrders = async () => {
-  const orderRef = collection(db, "orders"); // Reference to the "orders" collection
-  const querySnapshot = await getDocs(orderRef); // Fetch all documents in the collection
-  const orders = querySnapshot.docs.map((doc) => doc.data()); // Map the documents to their data
-  return orders; // Return the list of orders
-};
+// 🔄 Uploads an image to Cloudinary and returns its URL
+const handleImageUpload = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "hatsoff_preset");
 
-// Function to add a new product to the "products" collection in Firestore
-export const addProduct = async (productData) => {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+  if (!cloudName) {
+    console.error("Cloudinary cloud name is not set in environment variables.");
+    return null;
+  }
+
   try {
-    const productRef = collection(db, "products"); // Reference to the "products" collection
-    const docRef = await addDoc(productRef, productData); // Add the new product data to the collection
+    const response = await axios.post(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      formData
+    );
 
-    // Attempt to update the product with its generated ID (this part seems unnecessary as `addDoc` doesn't return the document reference directly)
-    await updateDoc(docRef, {
-      id: docRef.id,
-    });
+    return response.data?.secure_url || null;
   } catch (error) {
-    console.log("Add Product Error", error); // Log any errors that occur
+    console.error("Cloudinary upload failed:", error.response?.data || error.message);
+    return null;
   }
 };
 
-// Function to fetch all products from the "products" collection in Firestore
-export const getProducts = async () => {
-  const productRef = collection(db, "products"); // Reference to the "products" collection
-  const querySnapshot = await getDocs(productRef); // Fetch all documents in the collection
-  const products = querySnapshot.docs.map((doc) => doc.data()); // Map the documents to their data
-  return products; // Return the list of products
+// 📥 Adds a new product to Firestore with image upload
+export const addProduct = async (productData, file, setNewModel) => {
+  try {
+    if (!file) {
+      throw new Error("Image file is required.");
+    }
+
+    const imgUrl = await handleImageUpload(file);
+    if (!imgUrl) {
+      throw new Error("Image upload failed. Aborting product addition.");
+    }
+
+    const productRef = collection(db, "products");
+
+    const docRef = await addDoc(productRef, {
+      ...productData,
+      imgUrl,
+      id: "", // Temporary placeholder
+    });
+
+    await updateDoc(docRef, { id: docRef.id });
+
+    if (typeof setNewModel === "function") {
+      setNewModel({ ...productData, imgUrl, id: docRef.id });
+    }
+
+    console.log("Product added successfully");
+  } catch (error) {
+    console.error("Add Product Error:", error.message);
+  }
 };
 
-// Function to update an existing product in the "products" collection
+// 📦 Fetches all products from Firestore
+export const getProducts = async () => {
+  try {
+    const productRef = collection(db, "products");
+    const querySnapshot = await getDocs(productRef);
+    return querySnapshot.docs.map((doc) => doc.data());
+  } catch (error) {
+    console.error("Get Products Error:", error.message);
+    return [];
+  }
+};
+
+// 📃 Fetches all orders from Firestore
+export const getOrders = async () => {
+  try {
+    const orderRef = collection(db, "orders");
+    const querySnapshot = await getDocs(orderRef);
+    return querySnapshot.docs.map((doc) => doc.data());
+  } catch (error) {
+    console.error("Get Orders Error:", error.message);
+    return [];
+  }
+};
+
+// ✏️ Updates a product in Firestore
 export const updateProduct = async (productData) => {
   try {
-    if (!productData.id) {
-      throw new Error("Product ID is required to update.");
+    if (!productData?.id) {
+      throw new Error("Product ID is required for update.");
     }
-    const productDocRef = doc(db, "products", productData.id); // Reference to the specific product document
-    await updateDoc(productDocRef, productData); // Update the product data in Firestore
+
+    const productDocRef = doc(db, "products", productData.id);
+    await updateDoc(productDocRef, productData);
 
     console.log("Product updated successfully");
   } catch (error) {
-    console.log("Update Product Error", error); // Log any errors that occur
+    console.error("Update Product Error:", error.message);
   }
 };
 
-// Function to delete a product from the "products" collection
+// ❌ Deletes a product from Firestore
 export const deleteProduct = async (productId) => {
   try {
     if (!productId) {
-      throw new Error("Product ID is required to delete.");
+      throw new Error("Product ID is required for deletion.");
     }
+
     const productDocRef = doc(db, "products", productId);
     await deleteDoc(productDocRef);
 
     console.log("Product deleted successfully");
   } catch (error) {
-    console.log("Delete Product Error", error);
+    console.error("Delete Product Error:", error.message);
   }
 };
