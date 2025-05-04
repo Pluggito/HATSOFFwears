@@ -1,7 +1,9 @@
 import { createContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { products } from "../assets/asset";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router";
+import {  useNavigate } from "react-router";
+
 
 
  export const ShopContext = createContext();
@@ -12,6 +14,7 @@ import { useNavigate } from "react-router";
     const delivery_fee = 3000;
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    
     
     const [cartItems, setCartItems] = useState(() => {
         const savedCart = localStorage.getItem('cartItems');
@@ -69,7 +72,7 @@ import { useNavigate } from "react-router";
                     }
                     
                 } catch (error) {
-                    
+                    console.error("Error calculating cart count:", error);
                 }
             }
         }
@@ -128,7 +131,7 @@ import { useNavigate } from "react-router";
         getCartCount,
         updateQuantity,
         getCartAmount,
-        navigate
+        navigate,       
 
     }
 
@@ -139,5 +142,8 @@ import { useNavigate } from "react-router";
     )
  }
 
+ShopContextProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
- export default ShopContextProvider;
+export default ShopContextProvider;
