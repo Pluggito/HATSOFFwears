@@ -31,7 +31,7 @@ import {
   updateProduct,
 } from "../Backend/AdminLogic";
 
-import Testing from "../Components/Testing";
+import Testing from "./Testing";
 
 export default function ClothingDashboard() {
   const [models, setModels] = useState([]);

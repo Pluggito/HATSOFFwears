@@ -19,6 +19,8 @@ import OrderSummary from "./Pages/OrderSummary"
 import ShopNow from "./Pages/ShopNow"
 import Admin from "./Pages/Admin"
 import ClothingDashboard from "./Pages/Dashboard"
+import Testing from "./Components/Testing"
+import ImageUploader from "./Components/ImageUploader"
 // import 'react-toastify/dist/ReactToastify.css'
 
 
@@ -43,6 +45,8 @@ const App = () => {
         <Route path="/product/:productId" element={<Product />}/>
         <Route path="/admin" element={<Admin/>}/>
         <Route path="/dashboard" element={<ClothingDashboard/>}/>
+        <Route path="/testing" element={<Testing/>}/>
+        <Route path="/Dash2" element={<ImageUploader/>}/>
 
         <Route path="/cart" element={<Cart />}/>
         <Route path="/placeorder" element={<PlaceOrder />}/>
