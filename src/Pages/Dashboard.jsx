@@ -45,15 +45,18 @@ export default function ClothingDashboard() {
   });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [file , setFile] = useState()
 
 
   const handleAddModel = async () => {
     const modelToAdd = {
       ...newModel,
-      id: Date.now().toString(),
       price: parseFloat(newModel.price),
     };
     setModels([...models, modelToAdd]);
+    setIsAddDialogOpen(false);
+    await addProduct(modelToAdd,file,setNewModel); // Assuming addProduct is a function that adds the model to your database
+    fetchModels(); // Refresh the models after adding
     setNewModel({
       name: "",
       price: "",
@@ -61,9 +64,6 @@ export default function ClothingDashboard() {
       collection: "",
       sizes: [],
     });
-    await addProduct(modelToAdd); // Assuming addProduct is a function that adds the model to your database
-    fetchModels(); // Refresh the models after adding
-    setIsAddDialogOpen(false);
   };
 
   const handleToggleSize = (model, size, setter) => {
@@ -205,7 +205,7 @@ export default function ClothingDashboard() {
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <div className="flex items-center gap-4">
-                   <Testing newModel={newModel} setNewModel={setNewModel}/>
+                   <Testing setFile={setFile}/>
               </div>
             </div>
           </div> {/* Closing the missing div */}
@@ -257,7 +257,7 @@ export default function ClothingDashboard() {
                   <div className="flex gap-4">
                     <div className="h-24 w-24 rounded overflow-hidden">
                       <img
-                        src={model.image || "/placeholder.svg"}
+                        src={model.imgUrl || "/placeholder.svg"}
                         alt={model.name}
                         className="h-full w-full object-cover"
                       />
