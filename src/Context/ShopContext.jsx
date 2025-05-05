@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { products } from "../assets/asset";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import {  useNavigate } from "react-router";
 
 

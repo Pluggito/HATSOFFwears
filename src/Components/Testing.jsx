@@ -1,7 +1,6 @@
-import axios from "axios";
 import PropTypes from "prop-types";
 
-const Testing = ({setFile }) => {
+const Testing = ({ setFile }) => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -29,10 +28,14 @@ const Testing = ({setFile }) => {
           display: "none",
           marginTop: "10px",
           maxWidth: "100%",
-          maxHeight: "150px",
+          maxHeight: "100px",
         }}
       />
     </div>
   );
 };
+Testing.propTypes = {
+  setFile: PropTypes.func.isRequired,
+};
+
 export default Testing;

@@ -14,20 +14,20 @@ import Orders from './Pages/Orders'
 import Navbar from './Components/Navbar'
 import Footer from "./Components/Footer"
 import SearchBar from "./Components/SearchBar"
-import { ToastContainer } from 'react-toastify';
 import OrderSummary from "./Pages/OrderSummary"
 import ShopNow from "./Pages/ShopNow"
 import Admin from "./Pages/Admin"
 import ClothingDashboard from "./Pages/Dashboard"
 import Testing from "./Components/Testing"
 import ImageUploader from "./Components/ImageUploader"
+import { Toaster } from "sonner"
 // import 'react-toastify/dist/ReactToastify.css'
 
 
 const App = () => {
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] overflow-x-hidden">
-      <ToastContainer />
+       <Toaster />
       <Navbar />
       <SearchBar />
       <Routes>

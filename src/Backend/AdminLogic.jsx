@@ -8,12 +8,13 @@ import {
 } from "firebase/firestore";
 import axios from "axios";
 import { db } from "./firebase";
+import { toast } from "sonner";
 
 // 🔄 Uploads an image to Cloudinary and returns its URL
 const handleImageUpload = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", "hatsoff_preset");
+  formData.append("upload_preset", "model_uploads"); // Replace with your upload preset 
 
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
@@ -61,6 +62,7 @@ export const addProduct = async (productData, file, setNewModel) => {
       setNewModel({ ...productData, imgUrl, id: docRef.id });
     }
 
+    toast.success("Model added successfully!");
     console.log("Product added successfully");
   } catch (error) {
     console.error("Add Product Error:", error.message);

@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef,  } from "react";
-import { Edit, Plus, Trash, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Edit, Plus, Trash } from "lucide-react";
 
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
@@ -33,6 +33,9 @@ import {
 
 import Testing from "../Components/Testing";
 
+
+
+
 export default function ClothingDashboard() {
   const [models, setModels] = useState([]);
   const [editingModel, setEditingModel] = useState(null);
@@ -45,8 +48,7 @@ export default function ClothingDashboard() {
   });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [file , setFile] = useState()
-
+  const [file, setFile] = useState(null);
 
   const handleAddModel = async () => {
     const modelToAdd = {
@@ -55,7 +57,7 @@ export default function ClothingDashboard() {
     };
     setModels([...models, modelToAdd]);
     setIsAddDialogOpen(false);
-    await addProduct(modelToAdd,file,setNewModel); // Assuming addProduct is a function that adds the model to your database
+    await addProduct(modelToAdd, file, setNewModel); // Assuming addProduct is a function that adds the model to your database
     fetchModels(); // Refresh the models after adding
     setNewModel({
       name: "",
@@ -108,12 +110,6 @@ export default function ClothingDashboard() {
   // Images uploading
   // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
 
-  const fileInputRef = useRef();
-
-  const handleImageClick = () => {
-    fileInputRef.current?.click(); // Trigger the hidden input
-  };
-
 
 
   return (
@@ -157,14 +153,13 @@ export default function ClothingDashboard() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label  id="collection-label">Collection</Label>
+                <Label id="collection-label">Collection</Label>
                 <Select
                   onValueChange={(value) =>
                     setNewModel({ ...newModel, collection: value })
                   }
                   value={newModel.collection}
-                 aria-labelledby="collection-label"
-                 
+                  aria-labelledby="collection-label"
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select collection" />
@@ -205,10 +200,11 @@ export default function ClothingDashboard() {
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <div className="flex items-center gap-4">
-                   <Testing setFile={setFile}/>
+                  <Testing setFile={setFile} />
+                </div>
               </div>
-            </div>
-          </div> {/* Closing the missing div */}
+            </div>{" "}
+            {/* Closing the missing div */}
             <DialogFooter>
               <Button
                 variant="outline"
@@ -296,7 +292,7 @@ export default function ClothingDashboard() {
                     <p className="text-sm text-muted-foreground">
                       Total Revenue
                     </p>
-                    <p className="text-3xl font-bold">
+                    <p className="md:text-3xl text-xl font-bold">
                       ₦
                       {models
                         .reduce((sum, model) => sum + model.price, 0)
@@ -449,7 +445,7 @@ export default function ClothingDashboard() {
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
                     <Toggle
                       key={size}
-                      pressed={newModel.sizes.includes(size)}
+                      pressed={editingModel.sizes.includes(size)}
                       onPressedChange={() =>
                         handleToggleSize(editingModel, size, setEditingModel)
                       }
@@ -462,24 +458,7 @@ export default function ClothingDashboard() {
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <div className="flex items-center gap-4">
-                  <div className="h-20 w-20 rounded border overflow-hidden">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      ref={fileInputRef}
-                      
-                    />
-                    <img
-                      src={editingModel.image || "/placeholder.svg"}
-                      alt="Preview"
-                      className="h-full w-full object-cover cursor-pointer"
-                      onClick={handleImageClick}
-                    />
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <Upload className="mr-2 h-4 w-4" /> Upload
-                  </Button>
+                  {/*<Testing setFile={(file) => setEditingModel({ ...editingModel, file })} />*/}
                 </div>
               </div>
             </div>
