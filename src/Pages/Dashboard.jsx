@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef,  } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Edit, Plus, Trash, Upload } from "lucide-react";
 
 import { Button } from "@/Components/ui/button";
@@ -27,7 +27,9 @@ import { Toggle } from "@/Components/ui/toggle";
 import {
   addProduct,
   deleteProduct,
+  getOrders,
   getProducts,
+  handleImageUpload,
   updateProduct,
 } from "../Backend/AdminLogic";
 
@@ -45,9 +47,12 @@ export default function ClothingDashboard() {
   });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [file , setFile] = useState()
-
-
+  const [isProduct, setIsProduct] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [orderCount, setOrderCount] = useState(0);
+  const [pendingOrderCount, setPendingOrderCount] = useState(0);
+  const [completedOrderCount, setCompletedOrderCount] = useState(0);
+  const [file, setFile] = useState();
   const handleAddModel = async () => {
     const modelToAdd = {
       ...newModel,
@@ -55,7 +60,7 @@ export default function ClothingDashboard() {
     };
     setModels([...models, modelToAdd]);
     setIsAddDialogOpen(false);
-    await addProduct(modelToAdd,file,setNewModel); // Assuming addProduct is a function that adds the model to your database
+    await addProduct(modelToAdd, file, setNewModel); // Assuming addProduct is a function that adds the model to your database
     fetchModels(); // Refresh the models after adding
     setNewModel({
       name: "",
@@ -75,6 +80,15 @@ export default function ClothingDashboard() {
   };
 
   const handleEditModel = async () => {
+    if (file != null || file != undefined) {
+      const imgUrl = await handleImageUpload(file);
+      if (!imgUrl) {
+        console.error("Image upload failed. Aborting product update.");
+        return;
+      }
+      editingModel.imgUrl = imgUrl; // Update the image URL in the model
+    }
+
     await updateProduct(editingModel);
     fetchModels(); // Refresh the models after editing
     setModels(
@@ -98,11 +112,25 @@ export default function ClothingDashboard() {
 
   const fetchModels = async () => {
     const modelsFromDB = await getProducts(); // Assuming getProducts is a function that fetches models from your database
+    if (modelsFromDB.length === 0) {
+      setIsProduct(false);
+    } else {
+      setIsProduct(true);
+    }
     setModels(modelsFromDB);
   };
 
+  const fetchOrders = async () => {
+    const ordersFromDB = await getOrders();
+    setOrderCount(ordersFromDB.length); // Assuming getOrders is a function that fetches orders from your database
+    setPendingOrderCount(ordersFromDB.filter((order) => order.status === "Pending").length);
+    setCompletedOrderCount(ordersFromDB.filter((order) => order.status === "completed").length);
+    setOrders(ordersFromDB); // Assuming getOrders is a function that fetches orders from your database
+  }
+
   useEffect(() => {
     fetchModels();
+    fetchOrders(); // Fetch orders when the component mounts
   }, []);
 
   // Images uploading
@@ -113,8 +141,6 @@ export default function ClothingDashboard() {
   const handleImageClick = () => {
     fileInputRef.current?.click(); // Trigger the hidden input
   };
-
-
 
   return (
     <div className="container mx-auto py-10">
@@ -157,14 +183,13 @@ export default function ClothingDashboard() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label  id="collection-label">Collection</Label>
+                <Label id="collection-label">Collection</Label>
                 <Select
                   onValueChange={(value) =>
                     setNewModel({ ...newModel, collection: value })
                   }
                   value={newModel.collection}
-                 aria-labelledby="collection-label"
-                 
+                  aria-labelledby="collection-label"
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select collection" />
@@ -205,10 +230,11 @@ export default function ClothingDashboard() {
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <div className="flex items-center gap-4">
-                   <Testing setFile={setFile}/>
+                  <Testing setFile={setFile} />
+                </div>
               </div>
-            </div>
-          </div> {/* Closing the missing div */}
+            </div>{" "}
+            {/* Closing the missing div */}
             <DialogFooter>
               <Button
                 variant="outline"
@@ -230,52 +256,58 @@ export default function ClothingDashboard() {
         </TabsList>
         <TabsContent value="models">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {models.map((model) => (
-              <Card key={model.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle>{model.name}</CardTitle>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => startEditing(model)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteModel(model.id)}
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-4">
-                    <div className="h-24 w-24 rounded overflow-hidden">
-                      <img
-                        src={model.imgUrl || "/placeholder.svg"}
-                        alt={model.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-bold">₦{model.price.toFixed(2)}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {model.collection}
-                      </p>
-                      <p className="text-sm text-black">
-                        {model.sizes?.join(", ") || "N/A"}
-                      </p>
-                      <p className="text-sm mt-2">{model.description}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {isProduct ? (
+              <>
+                {models.map((model) => (
+                  <Card key={model.id}>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <CardTitle>{model.name}</CardTitle>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => startEditing(model)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteModel(model.id)}
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex gap-4">
+                        <div className="h-24 w-24 rounded overflow-hidden">
+                          <img
+                            src={model.imgUrl || "/placeholder.svg"}
+                            alt={model.name}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <p className="font-bold">₦{model.price.toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {model.collection}
+                          </p>
+                          <p className="text-sm text-black">
+                            {model.sizes?.join(", ") || "N/A"}
+                          </p>
+                          <p className="text-sm mt-2">{model.description}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            ) : (
+              <div className="">No Products....</div>
+            )}
           </div>
         </TabsContent>
         <TabsContent value="stats">
@@ -324,19 +356,19 @@ export default function ClothingDashboard() {
                     <p className="text-sm text-muted-foreground">
                       Total Orders
                     </p>
-                    <p className="text-3xl font-bold">0</p>
+                    <p className="text-3xl font-bold">{orderCount}</p>
                   </div>
                   <div className="border rounded p-4 text-center">
                     <p className="text-sm text-muted-foreground">
                       Pending Orders
                     </p>
-                    <p className="text-3xl font-bold">0</p>
+                    <p className="text-3xl font-bold">{pendingOrderCount}</p>
                   </div>
                   <div className="border rounded p-4 text-center">
                     <p className="text-sm text-muted-foreground">
                       Completed Orders
                     </p>
-                    <p className="text-3xl font-bold">0</p>
+                    <p className="text-3xl font-bold">{completedOrderCount}</p>
                   </div>
                 </div>
                 <p className="text-center text-sm text-muted-foreground">
@@ -462,24 +494,7 @@ export default function ClothingDashboard() {
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <div className="flex items-center gap-4">
-                  <div className="h-20 w-20 rounded border overflow-hidden">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      ref={fileInputRef}
-                      
-                    />
-                    <img
-                      src={editingModel.image || "/placeholder.svg"}
-                      alt="Preview"
-                      className="h-full w-full object-cover cursor-pointer"
-                      onClick={handleImageClick}
-                    />
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <Upload className="mr-2 h-4 w-4" /> Upload
-                  </Button>
+                  <Testing setFile={setFile} imgSrc={editingModel.imgUrl} />
                 </div>
               </div>
             </div>

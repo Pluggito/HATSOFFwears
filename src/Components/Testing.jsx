@@ -1,17 +1,16 @@
-import axios from "axios";
-import PropTypes from "prop-types";
-
-const Testing = ({setFile }) => {
+const Testing = ({setFile}) => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file) {
-        const preview = document.getElementById("image-preview");
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = "block";
+        // const preview = document.getElementById("image-preview");
+        // const fileSrc = URL.createObjectURL(file);
+        // preview.src = fileSrc;
+        // preview.style.display = "block";
         setFile(file)
       }
     }
+    
   };
 
   return (

@@ -10,7 +10,7 @@ import axios from "axios";
 import { db } from "./firebase";
 
 // 🔄 Uploads an image to Cloudinary and returns its URL
-const handleImageUpload = async (file) => {
+export const handleImageUpload = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", "hatsoff_preset");
@@ -27,10 +27,15 @@ const handleImageUpload = async (file) => {
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       formData
     );
+    const secureUrl = response.data?.secure_url;
+    const publicId = response.data?.public_id;
 
-    return response.data?.secure_url || null;
+    return { secureUrl, publicId } || null;
   } catch (error) {
-    console.error("Cloudinary upload failed:", error.response?.data || error.message);
+    console.error(
+      "Cloudinary upload failed:",
+      error.response?.data || error.message
+    );
     return null;
   }
 };
@@ -42,8 +47,9 @@ export const addProduct = async (productData, file, setNewModel) => {
       throw new Error("Image file is required.");
     }
 
-    const imgUrl = await handleImageUpload(file);
-    if (!imgUrl) {
+    const imgData = await handleImageUpload(file);
+    console.log(imgData);
+    if (!imgData) {
       throw new Error("Image upload failed. Aborting product addition.");
     }
 
@@ -51,14 +57,20 @@ export const addProduct = async (productData, file, setNewModel) => {
 
     const docRef = await addDoc(productRef, {
       ...productData,
-      imgUrl,
+      imgUrl: imgData.secureUrl,
+      imgPublicId: imgData.publicId,
       id: "", // Temporary placeholder
     });
 
     await updateDoc(docRef, { id: docRef.id });
 
     if (typeof setNewModel === "function") {
-      setNewModel({ ...productData, imgUrl, id: docRef.id });
+      setNewModel({
+        ...productData,
+        imgUrl: imgData.secureUrl,
+        imgPublicId: imgData.publicId,
+        id: docRef.id,
+      });
     }
 
     console.log("Product added successfully");
