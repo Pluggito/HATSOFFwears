@@ -1,25 +1,46 @@
-import { useContext } from "react";
-import { ShopContext } from "../Context/ShopContext";
-import { Link } from "react-router-dom";
 
+import { useContext } from "react"
+import { ShopContext } from "../Context/ShopContext"
+import { Link } from "react-router-dom"
+//import { ShoppingBag } from "lucide-react"
+import PropTypes from "prop-types"
 
-export default function ProductsItem ({id,image,name,price}){
-    const {currency} = useContext(ShopContext);
+export default function ProductsItem({ id, image, name, price }) {
+  const { currency } = useContext(ShopContext)
 
-
-    return(
-        <Link  className="text-gray cursor-pointer rounded-sm shadow-xs p-2" to={`/product/${id}`}>
-        
-        <div className="overflow-hidden ">
-        <img 
-            className='hover:scale-110 transition ease-in-out' 
-            src={Array.isArray(image) ? image[0] : image} 
-            alt={name || "Product"}
+  return (
+    <Link
+      className="group relative overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md flex flex-col h-full"
+      to={`/product/${id}`}
+    >
+      <div className="aspect-square overflow-hidden bg-gray-100">
+        <img
+          className="h-full w-full object-cover transition-all group-hover:scale-105"
+          src={Array.isArray(image) ? image[0] : image}
+          alt={name || "Product"}
         />
-        </div>
-        <p className="pt-3 pb-1 text-sm">{name}</p>
-        <p className="text-sm font-medium">{currency}{price}</p>
-        </Link>
+      </div>
 
-    )
+      <div className="p-4 flex flex-col flex-grow">
+        <h3 className="font-semibold text-base">{name}</h3>
+        <div className="mt-auto pt-3 flex items-center justify-between">
+          <span className="font-medium text-lg">
+            {currency}
+            {price}
+          </span>
+        </div>
+      </div>
+    </Link>
+  )
 }
+
+
+ProductsItem.propTypes = {
+    id: PropTypes.string.isRequired,
+    image: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.arrayOf(PropTypes.string),
+    ]).isRequired,
+    name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+};
