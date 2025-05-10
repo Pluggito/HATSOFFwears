@@ -31,7 +31,7 @@ export const handleImageUpload = async (file) => {
     const secureUrl = response.data?.secure_url;
     const publicId = response.data?.public_id;
 
-    return { secureUrl, publicId } || null;
+    return { secureUrl, publicId };
   } catch (error) {
     console.error(
       "Cloudinary upload failed:",

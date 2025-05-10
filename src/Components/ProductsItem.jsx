@@ -1,12 +1,11 @@
-
-import { useContext } from "react"
-import { ShopContext } from "../Context/ShopContext"
-import { Link } from "react-router-dom"
+import { useContext } from "react";
+import { ShopContext } from "../Context/ShopContext";
+import { Link } from "react-router-dom";
 //import { ShoppingBag } from "lucide-react"
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 
 export default function ProductsItem({ id, image, name, price }) {
-  const { currency } = useContext(ShopContext)
+  const { currency } = useContext(ShopContext);
 
   return (
     <Link
@@ -31,16 +30,15 @@ export default function ProductsItem({ id, image, name, price }) {
         </div>
       </div>
     </Link>
-  )
+  );
 }
 
-
 ProductsItem.propTypes = {
-    id: PropTypes.string.isRequired,
-    image: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.arrayOf(PropTypes.string),
-    ]).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
+  image: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]).isRequired,
+  name: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
 };
