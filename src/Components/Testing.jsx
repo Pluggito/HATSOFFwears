@@ -1,12 +1,14 @@
-const Testing = ({setFile}) => {
+import PropTypes from "prop-types";
+
+const Testing = ({ setFile }) => {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file) {
-        // const preview = document.getElementById("image-preview");
-        // const fileSrc = URL.createObjectURL(file);
-        // preview.src = fileSrc;
-        // preview.style.display = "block";
+         const preview = document.getElementById("image-preview");
+         const fileSrc = URL.createObjectURL(file);
+         preview.src = fileSrc;
+         preview.style.display = "block";
         setFile(file)
       }
     }
@@ -28,10 +30,14 @@ const Testing = ({setFile}) => {
           display: "none",
           marginTop: "10px",
           maxWidth: "100%",
-          maxHeight: "150px",
+          maxHeight: "100px",
         }}
       />
     </div>
   );
 };
+Testing.propTypes = {
+  setFile: PropTypes.func.isRequired,
+};
+
 export default Testing;
