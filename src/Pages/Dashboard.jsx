@@ -45,7 +45,7 @@ export default function ClothingDashboard() {
     description: "",
     collection: "",
     //category: "",
-    status: "",
+    availability: "",
     sizes: [],
   });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -81,7 +81,7 @@ export default function ClothingDashboard() {
       description: "",
       collection: "",
       sizes: [],
-      status: "",
+      availability: "",
     });
   };
 
@@ -93,7 +93,7 @@ export default function ClothingDashboard() {
       !model.description ||
       !model.collection ||
       !model.sizes.length ||
-      !model.status ||
+      !model.availability ||
       file == null
     ) {
       return false;
@@ -232,14 +232,14 @@ export default function ClothingDashboard() {
               </div>
               <div className="flex gap-5 items-center">
                 <div className="grid gap-2">
-                  <Label id="status-label">Status</Label>
+                  <Label id="availability-label">Availability</Label>
                   <Select
                     onValueChange={(value) =>
-                      setNewModel({ ...newModel, status: value })
+                      setNewModel({ ...newModel, availability: value })
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Available">Available</SelectItem>
@@ -371,8 +371,8 @@ export default function ClothingDashboard() {
                         </div>
                         <div>
                           <p className="text-md text-muted-foreground">
-                            Status:{" "}
-                            <span className="font-medium">{model.status}</span>
+                            Availability:{" "}
+                            <span className="font-medium">{model.availability}</span>
                           </p>
                         </div>
                       </div>
@@ -517,14 +517,14 @@ export default function ClothingDashboard() {
               </div>
               <div className="flex gap-5 items-center">
                 <div className="grid gap-2">
-                  <Label id="status-label">Status</Label>
+                  <Label id="availability-label">Availability</Label>
                   <Select
                     onValueChange={(value) =>
-                      setEditingModel({ ...editingModel, status: value })
+                      setEditingModel({ ...editingModel, availability: value })
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="available">Available</SelectItem>
