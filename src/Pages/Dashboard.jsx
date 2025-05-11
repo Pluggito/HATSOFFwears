@@ -115,23 +115,24 @@ export default function ClothingDashboard() {
 
   const handleEditModel = async () => {
     if (file != null || file != undefined) {
-      const imgUrl = await handleImageUpload(file);
-      if (!imgUrl) {
-        console.error("Image upload failed. Aborting product update.");
+      const imgData = await handleImageUpload(file);
+      if (!imgData) {
+        toast.error("Image upload failed. Aborting product update.");
         return;
       }
-      editingModel.imgUrl = imgUrl; // Update the image URL in the model
+      editingModel.imgUrl = imgData.imgUrl; // Update the image URL in the model
+      editingModel.imgPublicId = imgData.publicId; // Update the public ID in the model
     }
-
+    
     await updateProduct(editingModel);
     fetchModels(); // Refresh the models after editing
     setModels(
       models.map((model) =>
         model.id === editingModel.id ? editingModel : model
-      )
-    );
-    toast.success("Model updated successfully");
-    setIsEditDialogOpen(false);
+    )
+  );
+  setIsEditDialogOpen(false);
+  toast.success("Model updated successfully");
   };
 
   const handleDeleteModel = async (productId) => {
@@ -437,6 +438,7 @@ export default function ClothingDashboard() {
                   <thead className="bg-gray-100">
                     <tr className="text-left text-sm text-gray-600">
                       <th className="py-2 px-4">Order Number</th>
+                      <th className="py-2 px-4">Customer Email</th>
                       <th className="py-2 px-4">Date</th>
                       <th className="py-2 px-4">Total</th>
                       <th className="py-2 px-4">Status</th>
@@ -446,13 +448,14 @@ export default function ClothingDashboard() {
                   <tbody>
                     {orders.map((order) => (
                       <tr
-                        key={order.id}
+                        key={order.orderNumber}
                         className="border-t border-gray-200 text-sm"
                       >
-                        <td className="py-2 px-4">#{order.orderNumber}</td>
+                        <td className="py-2 px-4"><strong>#{order.orderNumber}</strong></td>
+                        <td className="py-2 px-4">{order.customer.email}</td>
                         <td className="py-2 px-4">
-                          {order.date
-                            ? new Date(order.date).toLocaleDateString()
+                          {order.timestamp
+                            ? new Date(order.timestamp).toLocaleDateString()
                             : "N/A"}
                         </td>
                         <td className="py-2 px-4">

@@ -119,23 +119,6 @@ const ShopContextProvider = (props) => {
     return totalAmount;
   }, [cartItems, products]);
 
-  // const value ={
-  //     products,
-  //     currency,
-  //     delivery_fee,
-  //     search,
-  //     setSearch,
-  //     showSearch,
-  //     setShowSearch,
-  //     cartItems,
-  //     addToCart,
-  //     getCartCount,
-  //     updateQuantity,
-  //     getCartAmount,
-  //     navigate,
-
-  // }
-
   const value = useMemo(
     () => ({
       products,
@@ -153,6 +136,7 @@ const ShopContextProvider = (props) => {
       getCartAmount,
       updateQuantity,
       navigate,
+      setCartItems,
     }),
     [
       products,
@@ -170,6 +154,7 @@ const ShopContextProvider = (props) => {
       getCartAmount,
       navigate,
       updateQuantity,
+      setCartItems,
     ]
   );
 

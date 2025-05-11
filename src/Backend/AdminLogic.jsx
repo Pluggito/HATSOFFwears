@@ -29,10 +29,10 @@ export const handleImageUpload = async (file) => {
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       formData
     );
-    const secureUrl = response.data?.secure_url;
+    const imgUrl = response.data?.secure_url;
     const publicId = response.data?.public_id;
 
-    return { secureUrl, publicId };
+    return { imgUrl, publicId };
   } catch (error) {
     console.error(
       "Cloudinary upload failed:",
@@ -75,9 +75,8 @@ export const addProduct = async (productData, file, setNewModel) => {
     }
 
     toast.success("Model added successfully!");
-    console.log("Product added successfully");
   } catch (error) {
-    console.error("Add Product Error:", error.message);
+    toast.error("Add Product Error:", error.message);
   }
 };
 
@@ -114,8 +113,6 @@ export const updateProduct = async (productData) => {
 
     const productDocRef = doc(db, "products", productData.id);
     await updateDoc(productDocRef, productData);
-
-    console.log("Product updated successfully");
   } catch (error) {
     console.error("Update Product Error:", error.message);
   }

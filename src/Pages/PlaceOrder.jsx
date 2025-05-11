@@ -20,7 +20,7 @@ const PlaceOrder = () => {
         address
     }
 
-    const { cartItems, getCartAmount, delivery_fee, navigate } = useContext(ShopContext);
+    const { cartItems, getCartAmount, delivery_fee, navigate,products,setCartItems } = useContext(ShopContext);
     const Amount = getCartAmount() + delivery_fee;
 
     const handleSubmit = async (e) => {
@@ -34,7 +34,8 @@ const PlaceOrder = () => {
         //window.location.href = "https://sandbox.flutterwave.com/pay/3yqcw1lfjesg";
         
         // function to handle order placement logic 
-       handlePayment(userDetails, Amount, cartItems,navigate)
+       handlePayment(userDetails, Amount, cartItems,navigate,products,setCartItems);
+       localStorage.removeItem('cartItems');
     }
 
     return (

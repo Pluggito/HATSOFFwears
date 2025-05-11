@@ -15,7 +15,7 @@ export default function ProductsItem({ id, image, name, price }) {
       <div className="aspect-square overflow-hidden bg-gray-100">
         <img
           className="h-full w-full object-cover transition-all group-hover:scale-105"
-          src={Array.isArray(image) ? image[0] : image}
+          src={image}
           alt={name || "Product"}
         />
       </div>
@@ -35,11 +35,8 @@ export default function ProductsItem({ id, image, name, price }) {
 
 ProductsItem.propTypes = {
   id: PropTypes.string.isRequired,
-  image: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]).isRequired,
+  // image: PropTypes.string,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  availability: PropTypes.string.isRequired,
+  availability: PropTypes.string,
 };

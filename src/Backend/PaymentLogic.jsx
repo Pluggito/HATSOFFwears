@@ -1,7 +1,8 @@
 import { useFlutterwave } from "flutterwave-react-v3";
 import { handlePlaceOrder } from "./OrderLogic";
+import { toast } from "sonner";
 
-const paymentLogic = (userDetails, amount, cartItems, navigate) => {
+const paymentLogic = (userDetails, amount, cartItems, navigate,products,setCartItems) => {
     const config = {
         public_key: "FLWPUBK_TEST-d94776c57970d805d8371952a814636c-X",
         tx_ref: Date.now(),
@@ -16,7 +17,7 @@ const paymentLogic = (userDetails, amount, cartItems, navigate) => {
         customizations: {
             title: "HatsOff Store",
             description: "Payment for items in cart",
-            logo: "https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg",
+            logo: "https://salescabal.s3.eu-west-3.amazonaws.com/stores/208793/hatsoff.jpeg?t=1746971899511",
         },
     };
 
@@ -25,18 +26,18 @@ const paymentLogic = (userDetails, amount, cartItems, navigate) => {
     handleFlutterPayment({
         callback: async (response) => {
             if (response.status !== "completed") {
-                console.log("Payment Failed Try Again");
+                toast.error("Payment Failed Try Again");
             } else {
                 const trans_id = response.transaction_id;
-                await handlePlaceOrder(cartItems, userDetails, trans_id);
+                await handlePlaceOrder(cartItems, userDetails, trans_id, products,setCartItems);
                 navigate('/order-summary');
-                console.log("Payment successful");
+                toast.success("Payment successful");
             }
         },
         onClose: () => {},
     });
 };
 
-export const handlePayment = (userDetails, amount, cartItems, navigate) => {
-    paymentLogic(userDetails, amount, cartItems, navigate);
+export const handlePayment = (userDetails, amount, cartItems, navigate,products,setCartItems) => {
+    paymentLogic(userDetails, amount, cartItems, navigate,products,setCartItems);
 }; 
