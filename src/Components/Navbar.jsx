@@ -17,7 +17,7 @@ const Navbar = () => {
         if(path.includes(location.pathname)) return null
      
   return (
-    <div className="flex items-center justify-between py-5 font-medium">
+    <div className="flex items-center justify-between  font-medium">
 
         <Link to='/'>
         <img  src={assets.logo_icon1} className='w-20 h-20' alt=""/>
