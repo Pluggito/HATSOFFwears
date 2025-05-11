@@ -1,24 +1,29 @@
 import { db, addDoc, collection } from "./firebase"; // Ensure correct Firebase imports
-import { products } from "../assets/asset"; // Import your product details
 import emailjs from "@emailjs/browser";
+import { toast } from "sonner";
 
 // Function to process cartItems into a structured order
-export const processOrderDetails = (cartItems, userDetails, trns_id) => {
+export const processOrderDetails = (
+  cartItems,
+  userDetails,
+  trns_id,
+  products
+) => {
   const orderItems = [];
 
   // Loop through cartItems and match with product details
   for (const productId in cartItems) {
     for (const size in cartItems[productId]) {
       if (cartItems[productId][size] > 0) {
-        const product = products.find((p) => p._id === productId);
+        const product = products.find((p) => p.id === productId);
         if (product) {
           orderItems.push({
-            productId: product._id,
+            productId: product.id,
             name: product.name,
             size: size,
             quantity: cartItems[productId][size],
             price: product.price,
-            image: product.image[0],
+            image: product.imgUrl,
           });
         }
       }
@@ -62,9 +67,13 @@ const sendOrderEmail = async (orderDetails) => {
           `<tr>
             <td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td>
             <td style="padding: 8px; border: 1px solid #ddd;">${item.size}</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${item.quantity}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${
+              item.quantity
+            }</td>
             <td style="padding: 8px; border: 1px solid #ddd;">${item.price}</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${item.price * item.quantity}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${
+              item.price * item.quantity
+            }</td>
           </tr>`
       )
       .join(""),
@@ -73,12 +82,12 @@ const sendOrderEmail = async (orderDetails) => {
 
   try {
     await emailjs.send(
-      "service_gx8rbik", // Replace with your EmailJS service ID
-      "template_iojecih", // Replace with your EmailJS template ID
+      "service_gx8rbik", //EmailJS service ID
+      "template_iojecih", //EmailJS template ID
       templateParams,
-      "AyUIdWYKZpdfCippf" // Replace with your EmailJS public key
+      "AyUIdWYKZpdfCippf" //EmailJS public key
     );
-    console.log("Order confirmation email sent!");
+    toast.success("Order confirmation email sent!");
   } catch (error) {
     console.error("Failed to send email:", error);
   }
@@ -96,18 +105,17 @@ export const saveOrderToFirebase = async (orderDetails) => {
 };
 
 // Function to handle complete order placement logic
-export const placeOrder = async (cartItems, userDetails, trns_id) => {
+export const placeOrder = async (cartItems, userDetails, trns_id,products,setCartItems) => {
   try {
     // Process order details
-    const orderDetails = processOrderDetails(cartItems, userDetails, trns_id);
+    const orderDetails = processOrderDetails(cartItems, userDetails, trns_id, products);
 
     // Save to Firebase
     const orderId = await saveOrderToFirebase(orderDetails);
 
-   // console.log("Order placed successfully with ID:", orderId);
-
     await sendOrderEmail(orderDetails);
-   console.log("Order confirmation email sent!");
+
+    setCartItems({}); // Clear cart after order placement
 
     return orderId; // Returning orderId for reference
   } catch (error) {
@@ -116,6 +124,6 @@ export const placeOrder = async (cartItems, userDetails, trns_id) => {
   }
 };
 
-export const handlePlaceOrder = async (cartItems, userDetails, trns_id) => {
-  await placeOrder(cartItems, userDetails, trns_id);
+export const handlePlaceOrder = async (cartItems, userDetails, trns_id,products,setCartItems) => {
+  await placeOrder(cartItems, userDetails, trns_id,products,setCartItems);
 };
