@@ -13,8 +13,9 @@ import { toast } from "sonner";
 // 🔄 Uploads an image to Cloudinary and returns its URL
 export const handleImageUpload = async (file) => {
   const formData = new FormData();
+  const presetName = import.meta.env.VITE_CLOUDINARY_PRESET;
   formData.append("file", file);
-  formData.append("upload_preset", "model_uploads"); // Replace with your upload preset 
+  formData.append("upload_preset", presetName); // Replace with your upload preset 
 
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
@@ -49,7 +50,6 @@ export const addProduct = async (productData, file, setNewModel) => {
     }
 
     const imgData = await handleImageUpload(file);
-    console.log(imgData);
     if (!imgData) {
       throw new Error("Image upload failed. Aborting product addition.");
     }

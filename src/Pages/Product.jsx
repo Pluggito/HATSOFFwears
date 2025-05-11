@@ -17,9 +17,9 @@ const Product = () => {
 
   const fetchProductData = async () =>{
     products.map((item)=>{
-      if (item._id === productId) {
+      if (item.id === productId) {
           setProductData(item)
-          setImage(Array.isArray(item.image) ? item.image : [item.image])
+          setImage(Array.isArray(item.imgUrl) ? item.imgUrl : [item.imgUrl])
           return null;
           
       }
@@ -29,7 +29,7 @@ const Product = () => {
 
   useEffect(()=>{
     fetchProductData()
-  },[])
+  },[products])
   return productData ? (
     <div className="border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100">
         {/*Product Data */}   
@@ -38,18 +38,16 @@ const Product = () => {
         {/*------Product images---------*/}
         <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row ">
             <div className="flex flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
-            {Array.isArray(productData.image) && productData.image.map((item, index) => (
+            
                         <img 
-                            src={item} 
-                            key={index} 
+                            src={productData.imgUrl} 
                             className="w-[50%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
-                            onClick={() => setImage(item)}
+                            onClick={() => setImage(productData.imgUrl)}
                             alt=""
                         /> 
-                    ))}
             </div>
             <div className="w-full sm:w-[80%]">
-              <img src={image} onClick={()=> setImage(item)} className="w-full h-auto" alt=""/>
+              <img src={image} onClick={()=> setImage(productData.imgUrl)} className="w-full h-auto" alt=""/>
             </div>
         </div>
 
@@ -67,7 +65,7 @@ const Product = () => {
                     </div> 
           </div>
 
-          <button ref={buttonRef} className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700" onClick={()=>addToCart(productData._id,size)}>ADD TO CART</button>
+          <button ref={buttonRef} className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700" onClick={()=>addToCart(productData.id,size)}>ADD TO CART</button>
           <hr className="mt-8 sms:w-4/5"/>
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
             <p>100% Original Product</p>
@@ -98,7 +96,7 @@ const Product = () => {
                     
           {/*-----Display ------- */}
 
-          <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
+          <RelatedProducts category={productData.category} subCategory={productData.type} />
     </div>
 
 ): <div className="opacity-0"></div>

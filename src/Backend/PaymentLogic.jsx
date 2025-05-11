@@ -1,4 +1,4 @@
-{/*import { useFlutterwave } from "flutterwave-react-v3";
+import { useFlutterwave } from "flutterwave-react-v3";
 import { handlePlaceOrder } from "./OrderLogic";
 
 const paymentLogic = (userDetails, amount, cartItems, navigate) => {
@@ -39,4 +39,4 @@ const paymentLogic = (userDetails, amount, cartItems, navigate) => {
 
 export const handlePayment = (userDetails, amount, cartItems, navigate) => {
     paymentLogic(userDetails, amount, cartItems, navigate);
-}; */}
+}; 
