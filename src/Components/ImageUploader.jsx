@@ -35,6 +35,7 @@ import {
 
 import Testing from "../Components/Testing";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 export default function ClothingDashboard() {
   const [models, setModels] = useState([]);
@@ -45,6 +46,9 @@ export default function ClothingDashboard() {
     description: "",
     collection: "",
     sizes: [],
+    availability: "",
+    category: [],
+    type: "",
   });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -54,6 +58,8 @@ export default function ClothingDashboard() {
   const [pendingOrderCount, setPendingOrderCount] = useState(0);
   const [completedOrderCount, setCompletedOrderCount] = useState(0);
   const [orders, setOrders] = useState([]); // State to hold orders
+const [selectedOrder, setSelectedOrder] = useState(null);
+
 
   const handleAddModel = async () => {
     if (!validateModel(newModel)) {
@@ -79,7 +85,9 @@ export default function ClothingDashboard() {
       description: "",
       collection: "",
       sizes: [],
-      status: "",
+      availability: "",
+      category: [],
+      type: "",
     });
   };
 
@@ -91,7 +99,8 @@ export default function ClothingDashboard() {
       !model.description ||
       !model.collection ||
       !model.sizes.length ||
-      !model.status ||
+      !model.availability ||
+      !model.category.length ||
       file == null
     ) {
       return false;
@@ -109,12 +118,13 @@ export default function ClothingDashboard() {
 
   const handleEditModel = async () => {
     if (file != null || file != undefined) {
-      const imgUrl = await handleImageUpload(file);
-      if (!imgUrl) {
-        console.error("Image upload failed. Aborting product update.");
+      const imgData = await handleImageUpload(file);
+      if (!imgData) {
+        toast.error("Image upload failed. Aborting product update.");
         return;
       }
-      editingModel.imgUrl = imgUrl; // Update the image URL in the model
+      editingModel.imgUrl = imgData.imgUrl; // Update the image URL in the model
+      editingModel.imgPublicId = imgData.publicId; // Update the public ID in the model
     }
 
     await updateProduct(editingModel);
@@ -124,8 +134,8 @@ export default function ClothingDashboard() {
         model.id === editingModel.id ? editingModel : model
       )
     );
-    toast.success("Model updated successfully");
     setIsEditDialogOpen(false);
+    toast.success("Model updated successfully");
   };
 
   const handleDeleteModel = async (productId) => {
@@ -159,30 +169,12 @@ export default function ClothingDashboard() {
     setCompletedOrderCount(
       ordersFromDB.filter((order) => order.status === "completed").length
     );
-    //setOrders(ordersFromDB); // Assuming getOrders is a function that fetches orders from your database
+    setOrders(ordersFromDB); // Assuming getOrders is a function that fetches orders from your database
   };
 
   useEffect(() => {
     fetchModels();
     fetchOrders(); // Fetch orders when the component mounts
-  }, []);
-
-  useEffect(() => {
-    // Example orders data, replace with actual fetch logic if needed
-    setOrders([
-      {
-        id: 1,
-        name: "Nee TEE 1",
-        date: "2023-10-01",
-        total: 5000,
-      },
-      {
-        id: 2,
-        name: "Nee TEE 2",
-        date: "2023-10-02",
-        total: 7000,
-      },
-    ]);
   }, []);
 
   // Images uploading
@@ -230,14 +222,14 @@ export default function ClothingDashboard() {
               </div>
               <div className="flex gap-5 items-center">
                 <div className="grid gap-2">
-                  <Label id="status-label">Status</Label>
+                  <Label id="availability-label">Availability</Label>
                   <Select
                     onValueChange={(value) =>
-                      setNewModel({ ...newModel, status: value })
+                      setNewModel({ ...newModel, availability: value })
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Available">Available</SelectItem>
@@ -262,6 +254,25 @@ export default function ClothingDashboard() {
                       <SelectItem value="Default">Default</SelectItem>
                       <SelectItem value="Limited">Limited</SelectItem>
                       <SelectItem value="New">New</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label id="category-label">Category</Label>
+                  <Select
+                    onValueChange={(value) =>
+                      setNewModel({ ...newModel, category: value })
+                    }
+                    value={newModel.category}
+                    aria-labelledby="category-label"
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="T-shirt">T-shirt</SelectItem>
+                      <SelectItem value="Jeans">Jeans</SelectItem>
+                      <SelectItem value="Accessories">Accessories</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -369,8 +380,10 @@ export default function ClothingDashboard() {
                         </div>
                         <div>
                           <p className="text-md text-muted-foreground">
-                            Status:{" "}
-                            <span className="font-medium">{model.status}</span>
+                            Availability:{" "}
+                            <span className="font-medium">
+                              {model.availability}
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -420,61 +433,57 @@ export default function ClothingDashboard() {
           </Card>
         </TabsContent>
         <TabsContent value="orders">
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">Orders</h2>
-            <div className="overflow-x-auto">
-              {orders.length > 0 ? (
-                <table className="min-w-full table-auto border border-gray-200 rounded-md">
-                  <thead className="bg-gray-100">
-                    <tr className="text-left text-sm text-gray-600">
-                      <th className="py-2 px-4">Name</th>
-                      <th className="py-2 px-4">Date</th>
-                      <th className="py-2 px-4">Total</th>
-                      <th className="py-2 px-4">Status</th>
-                      <th className="py-2 px-4">Status update</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((order) => (
-                      <tr
-                        key={order.id}
-                        className="border-t border-gray-200 text-sm"
-                      >
-                        <td className="py-2 px-4">{order.name}</td>
-                        <td className="py-2 px-4">{order.date}</td>
-                        <td className="py-2 px-4">₦{order.total}</td>
-                        <td className="py-2 px-4">
-                          <select
-                            className="border border-gray-300 rounded px-2 py-1"
-                            value={order.status || "Pending"}
-                            onChange={(e) =>
-                              setOrders((prevOrders) =>
-                                prevOrders.map((o) =>
-                                  o.id === order.id
-                                    ? { ...o, status: e.target.value }
-                                    : o
-                                )
-                              )
-                            }
-                          >
-                            <option value="Pending">Pending</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Canceled">Canceled</option>
-                          </select>
-                        </td>
-                        <td>{order.status}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="text-center text-sm text-muted-foreground">
-                  No orders available at the moment. Orders will be displayed
-                  here once they are placed.
-                </div>
-              )}
-            </div>
-          </div>
+           <div className="space-y-4">
+    <h2 className="text-xl font-bold">Orders</h2>
+
+    {/* Status Controller Outside */}
+    <div className="flex items-center gap-4 border p-4 rounded-md w-fit">
+      <Select
+        onValueChange={(value) => {
+          if (!selectedOrder) return;
+
+          setOrders((prevOrders) =>
+            prevOrders.map((order) =>
+              order.id === selectedOrder.id
+                ? { ...order, status: value }
+                : order
+            )
+          );
+
+          setSelectedOrder((prev) => ({
+            ...prev,
+            status: value,
+          }));
+        }}
+        disabled={!selectedOrder}
+        value={selectedOrder?.status || "Pending"}
+      >
+        <SelectTrigger className="border border-gray-300 rounded px-2 py-1 min-w-[120px]">
+          <SelectValue placeholder="Select status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="Pending">Pending</SelectItem>
+          <SelectItem value="Delivered">Delivered</SelectItem>
+          <SelectItem value="Canceled">Canceled</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Show Current Status */}
+      <span className="text-sm text-gray-700">
+        Status: <strong>{selectedOrder?.status || "None selected"}</strong>
+      </span>
+    </div>
+
+    {/* Table */}
+    <div className="overflow-x-auto">
+      <div className="flex justify-center items-center">
+         <Link to="/orders" className="text-blue-600 underline">
+           View All Orders
+         </Link>
+       </div>
+
+    </div>
+  </div>
         </TabsContent>
       </Tabs>
 
@@ -515,14 +524,14 @@ export default function ClothingDashboard() {
               </div>
               <div className="flex gap-5 items-center">
                 <div className="grid gap-2">
-                  <Label id="status-label">Status</Label>
+                  <Label id="availability-label">Availability</Label>
                   <Select
                     onValueChange={(value) =>
-                      setEditingModel({ ...editingModel, status: value })
+                      setEditingModel({ ...editingModel, availability: value })
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
+                      <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="available">Available</SelectItem>
@@ -535,9 +544,9 @@ export default function ClothingDashboard() {
                   <Label id="collection-label">Collection</Label>
                   <Select
                     onValueChange={(value) =>
-                      setNewModel({ ...newModel, collection: value })
+                      setEditingModel({ ...editingModel, collection: value })
                     }
-                    value={newModel.collection}
+                    value={editingModel.collection}
                     aria-labelledby="collection-label"
                   >
                     <SelectTrigger>
@@ -547,6 +556,25 @@ export default function ClothingDashboard() {
                       <SelectItem value="Default">Default</SelectItem>
                       <SelectItem value="Limited">Limited</SelectItem>
                       <SelectItem value="New">New</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label id="category-label">Category</Label>
+                  <Select
+                    onValueChange={(value) =>
+                      setEditingModel({ ...editingModel, category: value })
+                    }
+                    value={editingModel.category}
+                    aria-labelledby="category-label"
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="T-shirt">T-shirt</SelectItem>
+                      <SelectItem value="Jeans">Jeans</SelectItem>
+                      <SelectItem value="Accessories">Accessories</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -602,3 +630,15 @@ export default function ClothingDashboard() {
     </div>
   );
 }
+// ClothingDashboard.propTypes = {
+//   models: PropTypes.arrayOf(
+//     PropTypes.shape({
+//       id: PropTypes.string.isRequired,
+//       name: PropTypes.string.isRequired,
+//       price: PropTypes.number.isRequired,
+//       description: PropTypes.string.isRequired,
+//       collection: PropTypes.string.isRequired,
+//       sizes: PropTypes.arrayOf(PropTypes.string).isRequired,
+//       status: PropTypes.string.isRequired,
+//       imgUrl: PropTypes.string,
+//     })
