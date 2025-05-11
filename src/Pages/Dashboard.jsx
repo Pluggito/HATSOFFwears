@@ -58,8 +58,7 @@ export default function ClothingDashboard() {
   const [pendingOrderCount, setPendingOrderCount] = useState(0);
   const [completedOrderCount, setCompletedOrderCount] = useState(0);
   const [orders, setOrders] = useState([]); // State to hold orders
-const [selectedOrder, setSelectedOrder] = useState(null);
-
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const handleAddModel = async () => {
     if (!validateModel(newModel)) {
@@ -186,18 +185,18 @@ const [selectedOrder, setSelectedOrder] = useState(null);
         <h1 className="text-2xl sm:text-3xl font-bold">HatsOff Dashboard</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <div className="flex items-center gap-3">
-           <Button variant={`secondary`} className='font-bold cursor-pointer'>
-            <Link to="/orders" className="text-black ">
-             Orders
-         </Link>
-            </Button> 
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-1 h-4 w-4" /> Add New Model
+            <Button variant={`secondary`} className="font-bold cursor-pointer">
+              <Link to="/orders" className="text-black ">
+                Orders
+              </Link>
             </Button>
-          </DialogTrigger>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-1 h-4 w-4" /> Add New Model
+              </Button>
+            </DialogTrigger>
           </div>
-          
+
           <DialogContent className="space-y-4">
             <DialogHeader>
               <DialogTitle>Add New Clothing Model</DialogTitle>
@@ -426,8 +425,8 @@ const [selectedOrder, setSelectedOrder] = useState(null);
                     <p className="md:text-3xl text-xl font-bold">
                       ₦
                       {models
-                        .reduce((sum, model) => sum + model.price, 0).toLocaleString()
-                        }
+                        .reduce((sum, model) => sum + model.price, 0)
+                        .toLocaleString()}
                     </p>
                   </div>
                 </div>

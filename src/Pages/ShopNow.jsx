@@ -8,16 +8,15 @@ const ShopNow = () => {
   const { products, loading, error } = useContext(ShopContext);
   const [newProducts, setNewProducts] = useState([]);
 
+  useEffect(() => {
+    // runs when products has loaded
+    if (products.length === 0) return;
 
-   useEffect(() => {
-      // runs when products has loaded
-      if (products.length === 0) return;
-
-      const newProduct = products
-        .filter((item) => item.collection === "New")
-        .slice(0, 5);
-      setNewProducts(newProduct);
-    }, [products]);
+    const newProduct = products
+      .filter((item) => item.collection === "New")
+      .slice(0, 5);
+    setNewProducts(newProduct);
+  }, [products]);
 
   if (loading) return <p>Loading products…</p>;
   if (error) return <p className="text-red-500">{error}</p>;
