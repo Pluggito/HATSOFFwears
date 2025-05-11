@@ -27,6 +27,8 @@ export default function OrderManagement() {
       timestamp: Date.now(),
       totalAmount: 2500,
       status: "Pending",
+      Quantity: 2,
+      size: "XL",
     },
     {
       id: 2,
@@ -34,6 +36,8 @@ export default function OrderManagement() {
       product: "NEE TEE 12",
       timestamp: Date.now() - 86400000,
       totalAmount: 4500,
+      Quantity: 2,
+      size: "L",
       status: "Delivered",
     },
     {
@@ -43,6 +47,8 @@ export default function OrderManagement() {
       timestamp: Date.now() - 172800000,
       totalAmount: 3200,
       status: "Canceled",
+      Quantity: 2,
+      size: "M",
     },
   ]
 
@@ -198,12 +204,14 @@ export default function OrderManagement() {
             <table className="min-w-full table-auto">
           <thead className="bg-gray-100">
             <tr className="text-left text-sm text-gray-600">
-              <th className="py-3 px-4 font-medium">Order Number</th>
-              <th className="py-3 px-4 font-medium">Product</th>
-              <th className="py-3 px-4 font-medium">Date</th>
-              <th className="py-3 px-4 font-medium">Total</th>
-              <th className="py-3 px-4 font-medium">Status</th>
-              <th className="py-3 px-4 font-medium">Actions</th>
+              <th className="py-3 px-2 font-medium">Order Number</th>
+              <th className="py-3 px-2 font-medium">Product</th>
+              <th className="py-3 px-2 font-medium">Size</th>
+              <th className="py-3 px-2 font-medium">Quantity</th>
+              <th className="py-3 px-2 font-medium">Date</th>
+              <th className="py-3 px-2 font-medium">Total</th>
+              <th className="py-3 px-2 font-medium">Status</th>
+              <th className="py-3 px-2 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -215,22 +223,24 @@ export default function OrderManagement() {
             }`}
               >
             <td
-              className="py-3 px-4 font-medium cursor-pointer text-blue-600 hover:underline"
+              className="py-3 px-2 font-medium cursor-pointer text-blue-600 hover:underline"
               onClick={() => setSelectedOrder(order)}
             >
               #{order.orderNumber}
             </td>
-            <td className="py-3 px-4">{order.product}</td>
-            <td className="py-3 px-4">
+            <td className="py-3 px-2">{order.product}</td>
+            <td className="py-3 px-3">{order.size}</td>
+            <td className="py-3 px-4">{order.Quantity}</td>
+            <td className="py-3 px-2">
               {order.timestamp ? new Date(order.timestamp).toLocaleDateString() : "N/A"}
             </td>
-            <td className="py-3 px-4 font-medium">₦{order.totalAmount.toLocaleString()}</td>
-            <td className="py-3 px-4">
+            <td className="py-3 px-2 font-medium">₦{order.totalAmount.toLocaleString()}</td>
+            <td className="py-3 px-2">
               <Badge variant="outline" className={getStatusColor(order.status)}>
                 {order.status || "Pending"}
               </Badge>
             </td>
-            <td className="py-3 px-4">
+            <td className="py-3 px-2">
               <Button
                 variant={selectedOrder?.id === order.id ? "secondary" : "ghost"}
                 size="sm"
