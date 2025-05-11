@@ -193,67 +193,98 @@ export default function OrderManagement() {
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto border rounded-md">
-        {filteredOrders.length > 0 ? (
-          <table className="min-w-full table-auto">
-            <thead className="bg-gray-100">
-              <tr className="text-left text-sm text-gray-600">
-                <th className="py-3 px-4 font-medium">Order Number</th>
-                <th className="py-3 px-4 font-medium">Product</th>
-                <th className="py-3 px-4 font-medium">Date</th>
-                <th className="py-3 px-4 font-medium">Total</th>
-                <th className="py-3 px-4 font-medium">Status</th>
-                <th className="py-3 px-4 font-medium">Actions</th>
+        <div className="overflow-x-auto border rounded-md">
+          {filteredOrders.length > 0 ? (
+            <table className="min-w-full table-auto">
+          <thead className="bg-gray-100">
+            <tr className="text-left text-sm text-gray-600">
+              <th className="py-3 px-4 font-medium">Order Number</th>
+              <th className="py-3 px-4 font-medium">Product</th>
+              <th className="py-3 px-4 font-medium">Date</th>
+              <th className="py-3 px-4 font-medium">Total</th>
+              <th className="py-3 px-4 font-medium">Status</th>
+              <th className="py-3 px-4 font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredOrders.map((order) => (
+              <tr
+            key={order.id}
+            className={`border-t border-gray-200 text-sm hover:bg-gray-50 ${
+              selectedOrder?.id === order.id ? "bg-blue-50" : ""
+            }`}
+              >
+            <td
+              className="py-3 px-4 font-medium cursor-pointer text-blue-600 hover:underline"
+              onClick={() => setSelectedOrder(order)}
+            >
+              #{order.orderNumber}
+            </td>
+            <td className="py-3 px-4">{order.product}</td>
+            <td className="py-3 px-4">
+              {order.timestamp ? new Date(order.timestamp).toLocaleDateString() : "N/A"}
+            </td>
+            <td className="py-3 px-4 font-medium">₦{order.totalAmount.toLocaleString()}</td>
+            <td className="py-3 px-4">
+              <Badge variant="outline" className={getStatusColor(order.status)}>
+                {order.status || "Pending"}
+              </Badge>
+            </td>
+            <td className="py-3 px-4">
+              <Button
+                variant={selectedOrder?.id === order.id ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setSelectedOrder(order)}
+              >
+                {selectedOrder?.id === order.id ? (
+              <>
+                <Check className="h-4 w-4 mr-1" /> Selected
+              </>
+                ) : (
+              "Select"
+                )}
+              </Button>
+            </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.map((order) => (
-                <tr
-                  key={order.id}
-                  className={`border-t border-gray-200 text-sm hover:bg-gray-50 ${
-                    selectedOrder?.id === order.id ? "bg-blue-50" : ""
-                  }`}
-                >
-                  <td className="py-3 px-4 font-medium">#{order.orderNumber}</td>
-                  <td className="py-3 px-4">{order.product}</td>
-                  <td className="py-3 px-4">
-                    {order.timestamp ? new Date(order.timestamp).toLocaleDateString() : "N/A"}
-                  </td>
-                  <td className="py-3 px-4 font-medium">₦{order.totalAmount.toLocaleString()}</td>
-                  <td className="py-3 px-4">
-                    <Badge variant="outline" className={getStatusColor(order.status)}>
-                      {order.status || "Pending"}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Button
-                      variant={selectedOrder?.id === order.id ? "secondary" : "ghost"}
-                      size="sm"
-                      onClick={() => setSelectedOrder(order)}
-                    >
-                      {selectedOrder?.id === order.id ? (
-                        <>
-                          <Check className="h-4 w-4 mr-1" /> Selected
-                        </>
-                      ) : (
-                        "Select"
-                      )}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="text-center py-8 text-sm text-gray-500">
-            {searchQuery || filterStatus !== "all"
-              ? "No orders match your search or filter criteria."
-              : "No orders available at the moment."}
+            ))}
+          </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-8 text-sm text-gray-500">
+          {searchQuery || filterStatus !== "all"
+            ? "No orders match your search or filter criteria."
+            : "No orders available at the moment."}
+            </div>
+          )}
+        </div>
+
+        {/* Dialog for Billing Address */}
+        {selectedOrder && (
+          <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-lg flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+              <h3 className="text-lg font-bold mb-4">Billing Address</h3>
+              <div className="space-y-2">
+                <p>
+                  <span className="font-medium">Name:</span> John Doe
+                </p>
+                <p>
+                  <span className="font-medium">Address:</span> 123 Main Street, Lagos, Nigeria
+                </p>
+                <p>
+                  <span className="font-medium">Email:</span> johndoe@example.com
+                </p>
+                <p>
+                  <span className="font-medium">Phone Number:</span> +234 812 345 6789
+                </p>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Button variant="outline" size="sm" onClick={() => setSelectedOrder(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
           </div>
         )}
-      </div>
-
-      {/* Order count */}
       {orders.length > 0 && (
         <div className="text-sm text-gray-500">
           Showing {filteredOrders.length} of {orders.length} orders
