@@ -35,6 +35,7 @@ import {
 
 import Testing from "../Components/Testing";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 export default function ClothingDashboard() {
   const [models, setModels] = useState([]);
@@ -57,6 +58,8 @@ export default function ClothingDashboard() {
   const [pendingOrderCount, setPendingOrderCount] = useState(0);
   const [completedOrderCount, setCompletedOrderCount] = useState(0);
   const [orders, setOrders] = useState([]); // State to hold orders
+const [selectedOrder, setSelectedOrder] = useState(null);
+
 
   const handleAddModel = async () => {
     if (!validateModel(newModel)) {
@@ -123,16 +126,16 @@ export default function ClothingDashboard() {
       editingModel.imgUrl = imgData.imgUrl; // Update the image URL in the model
       editingModel.imgPublicId = imgData.publicId; // Update the public ID in the model
     }
-    
+
     await updateProduct(editingModel);
     fetchModels(); // Refresh the models after editing
     setModels(
       models.map((model) =>
         model.id === editingModel.id ? editingModel : model
-    )
-  );
-  setIsEditDialogOpen(false);
-  toast.success("Model updated successfully");
+      )
+    );
+    setIsEditDialogOpen(false);
+    toast.success("Model updated successfully");
   };
 
   const handleDeleteModel = async (productId) => {
@@ -180,13 +183,21 @@ export default function ClothingDashboard() {
   return (
     <div className=" mx-auto py-10">
       <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">HatsOff Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">HatsOff Dashboard</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <div className="flex items-center gap-3">
+           <Button variant={`secondary`} className='font-bold cursor-pointer'>
+            <Link to="/orders" className="text-black ">
+             Orders
+         </Link>
+            </Button> 
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add New Model
+              <Plus className="mr-1 h-4 w-4" /> Add New Model
             </Button>
           </DialogTrigger>
+          </div>
+          
           <DialogContent className="space-y-4">
             <DialogHeader>
               <DialogTitle>Add New Clothing Model</DialogTitle>
@@ -272,8 +283,8 @@ export default function ClothingDashboard() {
                       <SelectItem value="Accessories">Accessories</SelectItem>
                     </SelectContent>
                   </Select>
-                  </div>
                 </div>
+              </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="description">Description</Label>
@@ -325,7 +336,6 @@ export default function ClothingDashboard() {
         <TabsList className="mb-4">
           <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
         <TabsContent value="models">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -416,8 +426,8 @@ export default function ClothingDashboard() {
                     <p className="md:text-3xl text-xl font-bold">
                       ₦
                       {models
-                        .reduce((sum, model) => sum + model.price, 0)
-                        .toFixed(2)}
+                        .reduce((sum, model) => sum + model.price, 0).toLocaleString()
+                        }
                     </p>
                   </div>
                 </div>
@@ -428,78 +438,6 @@ export default function ClothingDashboard() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-        <TabsContent value="orders">
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">Orders</h2>
-            <div className="overflow-x-auto">
-              {orders.length > 0 ? (
-                <table className="min-w-full table-auto border border-gray-200 rounded-md">
-                  <thead className="bg-gray-100">
-                    <tr className="text-left text-sm text-gray-600">
-                      <th className="py-2 px-4">Order Number</th>
-                      <th className="py-2 px-4">Customer Email</th>
-                      <th className="py-2 px-4">Date</th>
-                      <th className="py-2 px-4">Total</th>
-                      <th className="py-2 px-4">Status</th>
-                      <th className="py-2 px-4">Status update</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((order) => (
-                      <tr
-                        key={order.orderNumber}
-                        className="border-t border-gray-200 text-sm"
-                      >
-                        <td className="py-2 px-4"><strong>#{order.orderNumber}</strong></td>
-                        <td className="py-2 px-4">{order.customer.email}</td>
-                        <td className="py-2 px-4">
-                          {order.timestamp
-                            ? new Date(order.timestamp).toLocaleDateString()
-                            : "N/A"}
-                        </td>
-                        <td className="py-2 px-4">
-                          ₦{order.totalAmount.toLocaleString()}
-                        </td>
-                        <td className="py-2 px-4">
-                          <Select
-                            onValueChange={(value) =>
-                              setOrders((prevOrders) =>
-                                prevOrders.map((o) =>
-                                  o.id === order.id
-                                    ? { ...o, status: value }
-                                    : o
-                                )
-                              )
-                            }
-                            className="border border-gray-300 rounded px-2 py-1"
-                            value={order.status || "Pending"}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Pending">Pending</SelectItem>
-                              <SelectItem value="Delivered">
-                                Delivered
-                              </SelectItem>
-                              <SelectItem value="Canceled">Canceled</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </td>
-                        <td>{order.status}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="text-center text-sm text-muted-foreground">
-                  No orders available at the moment. Orders will be displayed
-                  here once they are placed.
-                </div>
-              )}
-            </div>
-          </div>
         </TabsContent>
       </Tabs>
 

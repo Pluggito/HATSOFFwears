@@ -12,7 +12,7 @@ const Navbar = () => {
         const [visible,setVisible] = useState (false);
         const {setShowSearch, getCartCount} = useContext(ShopContext);
         const location = useLocation()
-        const path = ['/admin','/dashboard']
+        const path = ['/admin','/dashboard','/orders']
 
         if(path.includes(location.pathname)) return null
      

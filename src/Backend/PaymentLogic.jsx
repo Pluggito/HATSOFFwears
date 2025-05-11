@@ -38,6 +38,6 @@ const paymentLogic = (userDetails, amount, cartItems, navigate,products,setCartI
     });
 };
 
-export const handlePayment = (userDetails, amount, cartItems, navigate,products,setCartItems) => {
-    paymentLogic(userDetails, amount, cartItems, navigate,products,setCartItems);
-}; 
+export const handlePayment = (userDetails, amount, cartItems, navigate, products, setCartItems) => {
+    paymentLogic(userDetails, amount, cartItems, navigate, products, setCartItems);
+};

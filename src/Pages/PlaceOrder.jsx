@@ -26,7 +26,11 @@ const PlaceOrder = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!firstName || !lastName || !email || !phone || !address) {
-            setError('Please fill in all fields');
+             setError('Please fill in all fields');
+            setTimeout(() => {
+               setError('')
+            }, 3000);
+            
             return;
         }
         // If validation passes, proceed to payment

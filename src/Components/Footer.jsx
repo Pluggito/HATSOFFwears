@@ -5,7 +5,7 @@ import {  useLocation } from "react-router-dom";
 
 export default function Footer(){
      const location = useLocation()
-            const path = ['/admin','/dashboard']
+            const path = ['/admin','/dashboard','/orders']
     
             if(path.includes(location.pathname)) return null
 
