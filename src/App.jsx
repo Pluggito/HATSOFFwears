@@ -20,6 +20,7 @@ import Admin from "./Pages/Admin"
 import ClothingDashboard from "./Pages/Dashboard"
 import ImageUploader from "./Components/ImageUploader"
 import { Toaster } from "sonner"
+import OrderItems from "./Pages/OrderItems"
 // import 'react-toastify/dist/ReactToastify.css'
 
 
@@ -51,6 +52,7 @@ const App = () => {
         <Route path="/placeorder" element={<PlaceOrder />}/>
         <Route path="/orders" element={<Orders />}/>
         <Route path="/order-summary" element={<OrderSummary />}/>
+        <Route path="/order-items/:orderId" element={<OrderItems/>}/>
       </Routes>
       <Footer/>
     </div>

@@ -35,7 +35,7 @@ export default function ProductsItem({ id, image, name, price }) {
 
 ProductsItem.propTypes = {
   id: PropTypes.string.isRequired,
-  // image: PropTypes.string,
+  image: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   availability: PropTypes.string,
