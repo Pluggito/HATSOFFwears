@@ -44,9 +44,10 @@ export default function ClothingDashboard() {
     price: "",
     description: "",
     collection: "",
-    //category: "",
-    availability: "",
     sizes: [],
+    availability: "",
+    category: [],
+    type: "",
   });
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -82,6 +83,8 @@ export default function ClothingDashboard() {
       collection: "",
       sizes: [],
       availability: "",
+      category: [],
+      type: "",
     });
   };
 
@@ -161,31 +164,15 @@ export default function ClothingDashboard() {
     setCompletedOrderCount(
       ordersFromDB.filter((order) => order.status === "completed").length
     );
-    //setOrders(ordersFromDB); // Assuming getOrders is a function that fetches orders from your database
+    setOrders(ordersFromDB); // Assuming getOrders is a function that fetches orders from your database
   };
 
+  
   useEffect(() => {
     fetchModels();
     fetchOrders(); // Fetch orders when the component mounts
   }, []);
 
-  useEffect(() => {
-    // Example orders data, replace with actual fetch logic if needed
-    setOrders([
-      {
-        id: 1,
-        name: "Nee TEE 1",
-        date: "2023-10-01",
-        total: 5000,
-      },
-      {
-        id: 2,
-        name: "Nee TEE 2",
-        date: "2023-10-02",
-        total: 7000,
-      },
-    ]);
-  }, []);
 
   // Images uploading
   // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
@@ -372,7 +359,9 @@ export default function ClothingDashboard() {
                         <div>
                           <p className="text-md text-muted-foreground">
                             Availability:{" "}
-                            <span className="font-medium">{model.availability}</span>
+                            <span className="font-medium">
+                              {model.availability}
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -429,7 +418,7 @@ export default function ClothingDashboard() {
                 <table className="min-w-full table-auto border border-gray-200 rounded-md">
                   <thead className="bg-gray-100">
                     <tr className="text-left text-sm text-gray-600">
-                      <th className="py-2 px-4">Name</th>
+                      <th className="py-2 px-4">Order Number</th>
                       <th className="py-2 px-4">Date</th>
                       <th className="py-2 px-4">Total</th>
                       <th className="py-2 px-4">Status</th>
@@ -442,9 +431,9 @@ export default function ClothingDashboard() {
                         key={order.id}
                         className="border-t border-gray-200 text-sm"
                       >
-                        <td className="py-2 px-4">{order.name}</td>
-                        <td className="py-2 px-4">{order.date}</td>
-                        <td className="py-2 px-4">₦{order.total}</td>
+                        <td className="py-2 px-4">#{order.orderNumber}</td>
+                        <td className="py-2 px-4"> Date</td>
+                        <td className="py-2 px-4">₦{order.totalAmount}</td>
                         <td className="py-2 px-4">
                           <select
                             className="border border-gray-300 rounded px-2 py-1"
@@ -537,9 +526,9 @@ export default function ClothingDashboard() {
                   <Label id="collection-label">Collection</Label>
                   <Select
                     onValueChange={(value) =>
-                      setNewModel({ ...newModel, collection: value })
+                      setEditingModel({ ...editingModel, collection: value })
                     }
-                    value={newModel.collection}
+                    value={editingModel.collection}
                     aria-labelledby="collection-label"
                   >
                     <SelectTrigger>
