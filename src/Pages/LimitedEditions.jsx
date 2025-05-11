@@ -11,7 +11,7 @@ const LimitedEditions = () => {
     // runs when products has loaded
     if (products.length === 0) return;
 
-    const limitedEdition = products.filter((item) => item.collection === "Limited").slice(0, 12);
+    const limitedEdition = products.filter((item) => item.collection === "Limited").slice(0, 5);
 
     setLimittedEditions(limitedEdition);
   }, [products]);
