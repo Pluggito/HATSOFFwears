@@ -1,17 +1,30 @@
 import { assets } from "../assets/asset";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCartPlus,
   faMagnifyingGlass,
-  faAngleLeft,
 } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { ShopContext } from "../Context/ShopContext";
 import { Menu } from "lucide-react";
+import PropTypes from "prop-types";
+import Loader from "../Pages/Loader";
 
-const Navbar = () => {
-  const [visible, setVisible] = useState(false);
+
+const Navbar = ({ setVisible, loading, setLoading = () => {} }) => {
+
+    const navigate = useNavigate()
+
+    const handleCartNavigation =()=>{
+        setLoading(true)
+        setTimeout(() => {
+            navigate('/cart')
+            setLoading(false);
+        }, 5000);
+        
+    }
+ 
   const { setShowSearch, getCartCount } = useContext(ShopContext);
   const location = useLocation();
   const hideNavbarRoutes = ["/admin", "/dashboard", "/orders"];
@@ -25,7 +38,10 @@ const Navbar = () => {
   if (shouldHideNavbar) return null;
 
   return (
+    <>
+      { loading && <Loader/>}
     <div className="flex items-center justify-between  font-medium">
+       
       <Link to="/">
         <img src={assets.logo_icon1} className="w-20 h-20" alt="" />
       </Link>
@@ -65,12 +81,12 @@ const Navbar = () => {
           onClick={() => setShowSearch(true)}
         />
 
-        <Link to="/cart" className="relative">
+        <div onClick={handleCartNavigation} className="relative">
           <FontAwesomeIcon icon={faCartPlus} className="text-[20px]" />
           <p className="absolute left-[15px] top-[-7px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]">
             {getCartCount()}
           </p>
-        </Link>
+        </div>
 
         <Menu
           className="sm:hidden cursor-pointer"
@@ -78,56 +94,18 @@ const Navbar = () => {
         />
 
         {/* Sidebar Menu for Small Screen */}
-        <div
-          className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-white transition-all ${
-            visible ? "w-full" : "w-0"
-          }`}
-        >
-          <div className="flex flex-col text-gray-600">
-            <div
-              onClick={() => setVisible(false)}
-              className="flex itmes-center gap-4 p-3 cursor-pointer"
-            >
-              <FontAwesomeIcon
-                icon={faAngleLeft}
-                className="text-[20px] mt-[4px] mr-[-5px]"
-              />
-              <p>Back</p>
-            </div>
-
-            <NavLink
-              onClick={() => setVisible(false)}
-              to="/"
-              className="py-2 pl-6 border"
-            >
-              HOME
-            </NavLink>
-            <NavLink
-              onClick={() => setVisible(false)}
-              to="/collections"
-              className="py-2 pl-6 border"
-            >
-              COLLECTIONS
-            </NavLink>
-            <NavLink
-              onClick={() => setVisible(false)}
-              to="/about"
-              className="py-2 pl-6 border"
-            >
-              ABOUT
-            </NavLink>
-            <NavLink
-              onClick={() => setVisible(false)}
-              to="/contact"
-              className="py-2 pl-6 border"
-            >
-              CONTACT
-            </NavLink>
-          </div>
-        </div>
+        
       </div>
     </div>
+    </>
+   
   );
+};
+Navbar.propTypes = {
+  setVisible: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  setLoading: PropTypes.func,
 };
 
 export default Navbar;
+
