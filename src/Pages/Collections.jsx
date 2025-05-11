@@ -9,10 +9,10 @@ const Collections = () => {
   const { products, search, showSearch } = useContext(ShopContext);
 
   // UI state
-  const [showFilter, setShowFilter]       = useState(false);
-  const [category, setCategory]           = useState([]);
-  const [subCategory, setSubCategory]     = useState([]);
-  const [sortType, setSortType]           = useState("relavent");
+  const [showFilter, setShowFilter] = useState(false);
+  const [category, setCategory] = useState([]);
+  const [subCategory, setSubCategory] = useState([]);
+  const [sortType, setSortType] = useState("relavent");
 
   // Derived state
   const [filterProducts, setFilterProducts] = useState([]);
@@ -102,7 +102,7 @@ const Collections = () => {
         >
           <p className="mb-3 text-sm font-medium">CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-            {["T-shirt", "Accessories"].map((cat) => (
+            {["T-shirt", "Accessories", "Jeans"].map((cat) => (
               <label key={cat} className="flex gap-2">
                 <input
                   type="checkbox"

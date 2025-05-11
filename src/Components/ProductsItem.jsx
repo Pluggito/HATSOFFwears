@@ -20,14 +20,14 @@ export default function ProductsItem({ id, image, name, price }) {
         />
       </div>
 
-      <div className="p-4 flex flex-col flex-grow">
+      <div className="p-3 flex flex-col flex-grow">
         <h3 className="font-semibold text-base">{name}</h3>
-        <div className="mt-auto pt-3 flex items-center justify-between">
+          <div className="mt-auto pt-1 flex items-center justify-between">
           <span className="font-medium text-lg">
             {currency}
-            {price}
+            {price.toLocaleString()}
           </span>
-        </div>
+        </div>        
       </div>
     </Link>
   );
@@ -41,4 +41,5 @@ ProductsItem.propTypes = {
   ]).isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
+  availability: PropTypes.string.isRequired,
 };

@@ -13,8 +13,8 @@ const NewCollections = () => {
     if (products.length === 0) return;
 
     const newCollection = products
-      .filter((item) => item.collection === "New")
-      .slice(0, 2);
+      .filter((item) => item.collection === "Default")
+      .slice(0, 5);
     setNewCollections(newCollection);
   }, [products]);
 

@@ -4,6 +4,7 @@ import Title from "../Components/Title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import CartTotal from "../Components/CartTotal";
+import { toast } from "sonner";
 
 const Cart = () => {
   const {
@@ -34,6 +35,11 @@ const Cart = () => {
     setCartData(tempData);
   }, [cartItems]);
 
+  const handleDelete =(id, size) => {
+    updateQuantity(id, size, 0);
+    toast.success("Item removed from cart");
+  };
+
   if (loading) return <p>Loading Cart</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
@@ -63,7 +69,7 @@ const Cart = () => {
                   <div className="flex items-center gap-5 mt-2">
                     <p>
                       {currency}
-                      {productData.price.toFixed(2)}
+                      {Number(productData.price).toLocaleString()}
                     </p>
                     <p className="px-2 sm:px-3 border bg-slate-50">
                       {item.size}
@@ -86,7 +92,8 @@ const Cart = () => {
               <FontAwesomeIcon
                 icon={faTrash}
                 className="text-[20px] cursor-pointer"
-                onClick={() => updateQuantity(item.id, item.size, 0)}
+                onClick={() => handleDelete(item.id, item.size)}
+                style={{ color: "red" }}
               />
             </div>
           );

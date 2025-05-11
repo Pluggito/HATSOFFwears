@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { getProducts } from "../Backend/AdminLogic";
+import { useCallback } from "react";
 
 export const ShopContext = createContext();
 
@@ -15,6 +16,8 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
 
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("cartItems");
@@ -36,37 +39,41 @@ const ShopContextProvider = (props) => {
     };
 
     fetchProducts();
-  }, []); // run only once
+    setRefreshTrigger((prev) => prev + 1);
+  }, [refreshTrigger]);
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = async (itemId, size) => {
-    if (!size) {
-      toast.error("Select Product Size");
-      return;
-    } else if (size) {
-      toast.success("Added to cart");
-    }
+  const addToCart = useCallback(
+    async (itemId, size) => {
+      if (!size) {
+        toast.error("Select Product Size");
+        return;
+      } else if (size) {
+        toast.success("Added to cart");
+      }
 
-    let cartData = structuredClone(cartItems);
+      let cartData = structuredClone(cartItems);
 
-    if (cartData[itemId]) {
-      if (cartData[itemId][size]) {
-        cartData[itemId][size] += 1;
+      if (cartData[itemId]) {
+        if (cartData[itemId][size]) {
+          cartData[itemId][size] += 1;
+        } else {
+          cartData[itemId][size] = 1;
+        }
       } else {
+        cartData[itemId] = {};
         cartData[itemId][size] = 1;
       }
-    } else {
-      cartData[itemId] = {};
-      cartData[itemId][size] = 1;
-    }
 
-    setCartItems(cartData);
-  };
+      setCartItems(cartData);
+    },
+    [cartItems]
+  );
 
-  const getCartCount = () => {
+  const getCartCount = useCallback(() => {
     let totalCount = 0;
 
     for (const items in cartItems) {
@@ -82,19 +89,18 @@ const ShopContextProvider = (props) => {
     }
 
     return totalCount;
-  };
+  }, [cartItems]);
 
-  const updateQuantity = async (itemId, size, quantity) => {
+  const updateQuantity = useCallback(async (itemId, size, quantity) => {
     let cartData = structuredClone(cartItems);
 
     cartData[itemId][size] = quantity;
-
     setCartItems(cartData);
-  };
+  }, [cartItems]);
 
   // I helped you update the getCartAmount function, there was a mistake before
 
-  const getCartAmount = () => {
+  const getCartAmount = useCallback(() => {
     let totalAmount = 0;
 
     for (const items in cartItems) {
@@ -114,7 +120,7 @@ const ShopContextProvider = (props) => {
     }
 
     return totalAmount;
-  };
+  }, [cartItems, products]);
 
   // const value ={
   //     products,
