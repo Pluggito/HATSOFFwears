@@ -97,6 +97,7 @@ export default function ClothingDashboard() {
       !model.collection ||
       !model.sizes.length ||
       !model.availability ||
+      !model.category.length ||
       file == null
     ) {
       return false;
@@ -167,12 +168,10 @@ export default function ClothingDashboard() {
     setOrders(ordersFromDB); // Assuming getOrders is a function that fetches orders from your database
   };
 
-  
   useEffect(() => {
     fetchModels();
     fetchOrders(); // Fetch orders when the component mounts
   }, []);
-
 
   // Images uploading
   // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
@@ -254,7 +253,26 @@ export default function ClothingDashboard() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
+                <div className="grid gap-2">
+                  <Label id="category-label">Category</Label>
+                  <Select
+                    onValueChange={(value) =>
+                      setNewModel({ ...newModel, category: value })
+                    }
+                    value={newModel.category}
+                    aria-labelledby="category-label"
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="T-shirt">T-shirt</SelectItem>
+                      <SelectItem value="Jeans">Jeans</SelectItem>
+                      <SelectItem value="Accessories">Accessories</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  </div>
+                </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="description">Description</Label>
@@ -432,26 +450,39 @@ export default function ClothingDashboard() {
                         className="border-t border-gray-200 text-sm"
                       >
                         <td className="py-2 px-4">#{order.orderNumber}</td>
-                        <td className="py-2 px-4"> Date</td>
-                        <td className="py-2 px-4">₦{order.totalAmount}</td>
                         <td className="py-2 px-4">
-                          <select
-                            className="border border-gray-300 rounded px-2 py-1"
-                            value={order.status || "Pending"}
-                            onChange={(e) =>
+                          {order.date
+                            ? new Date(order.date).toLocaleDateString()
+                            : "N/A"}
+                        </td>
+                        <td className="py-2 px-4">
+                          ₦{order.totalAmount.toLocaleString()}
+                        </td>
+                        <td className="py-2 px-4">
+                          <Select
+                            onValueChange={(value) =>
                               setOrders((prevOrders) =>
                                 prevOrders.map((o) =>
                                   o.id === order.id
-                                    ? { ...o, status: e.target.value }
+                                    ? { ...o, status: value }
                                     : o
                                 )
                               )
                             }
+                            className="border border-gray-300 rounded px-2 py-1"
+                            value={order.status || "Pending"}
                           >
-                            <option value="Pending">Pending</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Canceled">Canceled</option>
-                          </select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Pending">Pending</SelectItem>
+                              <SelectItem value="Delivered">
+                                Delivered
+                              </SelectItem>
+                              <SelectItem value="Canceled">Canceled</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </td>
                         <td>{order.status}</td>
                       </tr>
@@ -538,6 +569,25 @@ export default function ClothingDashboard() {
                       <SelectItem value="Default">Default</SelectItem>
                       <SelectItem value="Limited">Limited</SelectItem>
                       <SelectItem value="New">New</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label id="category-label">Category</Label>
+                  <Select
+                    onValueChange={(value) =>
+                      setEditingModel({ ...editingModel, category: value })
+                    }
+                    value={editingModel.category}
+                    aria-labelledby="category-label"
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="T-shirt">T-shirt</SelectItem>
+                      <SelectItem value="Jeans">Jeans</SelectItem>
+                      <SelectItem value="Accessories">Accessories</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

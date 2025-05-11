@@ -16,8 +16,6 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
 
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("cartItems");
@@ -39,8 +37,7 @@ const ShopContextProvider = (props) => {
     };
 
     fetchProducts();
-    setRefreshTrigger((prev) => prev + 1);
-  }, [refreshTrigger]);
+  }, []); // run only once
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
