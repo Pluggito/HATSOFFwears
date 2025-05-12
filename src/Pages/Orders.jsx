@@ -14,59 +14,34 @@ import {
 import { Badge } from "@/Components/ui/badge";
 import { toast } from "sonner"; // Assuming this function exists
 import { useNavigate } from "react-router-dom";
+import { getOrders, updateOrderStatus } from "../Backend/AdminLogic";
 
 // Mock function for updating order status
-async function updateOrderStatus(orderId, status) {
-  // Simulate an API call
-  return new Promise((resolve) =>
-    setTimeout(() => resolve({ orderId, status }), 1000)
-  );
-}
+// async function updateOrderStatus(orderId, status) {
+//   await updateOrderStatus(orderId, status);
+// }
 
 export default function OrderManagement() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Dummy data for testing
-  const dummyOrders = [
-    {
-      id: 1,
-      orderNumber: 1001,
-      product: "NEE TEE 13",
-      timestamp: Date.now(),
-      totalAmount: 2500,
-      status: "Pending",
-      Quantity: 2,
-      size: "XL",
-    },
-    {
-      id: 2,
-      orderNumber: 1002,
-      product: "NEE TEE 12",
-      timestamp: Date.now() - 86400000,
-      totalAmount: 4500,
-      Quantity: 2,
-      size: "L",
-      status: "Delivered",
-    },
-    {
-      id: 3,
-      orderNumber: 1003,
-      product: "NEE TEE 11",
-      timestamp: Date.now() - 172800000,
-      totalAmount: 3200,
-      status: "Canceled",
-      Quantity: 2,
-      size: "M",
-    },
-  ];
+  const handleUpdateOrderStatus = async (orderId,status) => {
+    await updateOrderStatus(orderId,status)
+  }
+  const fetchOrders = async () => {
+    try {
+      const ordersFromDB = await getOrders();
+      setOrders(ordersFromDB);
+      
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast.error("Failed to fetch orders");
+    }
+  } 
 
   // Initialize orders with dummy data if no initialOrders are provided
   useState(() => {
-    const initialOrders = []; // Define initialOrders as an empty array
-    if (initialOrders.length === 0) {
-      setOrders(dummyOrders);
-    }
+    fetchOrders();
   }, []);
   const [isUpdating, setIsUpdating] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
@@ -99,7 +74,7 @@ export default function OrderManagement() {
 
     try {
       // Update in database
-      await updateOrderStatus(selectedOrder.id, value);
+      await handleUpdateOrderStatus(selectedOrder.id, value);
 
       // Update in state
       setOrders((prevOrders) =>
@@ -136,6 +111,8 @@ export default function OrderManagement() {
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+
+
 
   const navigate = useNavigate();
   return (

@@ -1,5 +1,6 @@
-import { db, addDoc, collection } from "./firebase"; // Ensure correct Firebase imports
+import { db, addDoc, collection, } from "./firebase"; // Ensure correct Firebase imports
 import emailjs from "@emailjs/browser";
+import { updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
 
 // Function to process cartItems into a structured order
@@ -96,7 +97,9 @@ const sendOrderEmail = async (orderDetails) => {
 // Function to save order details to Firebase
 export const saveOrderToFirebase = async (orderDetails) => {
   try {
-    const docRef = await addDoc(collection(db, "orders"), orderDetails);
+    const docRef = await addDoc(collection(db, "orders"), {...orderDetails,id: ""});
+
+    await updateDoc(docRef, { id: docRef.id });
     return docRef.id; // Returning the order ID if needed
   } catch (error) {
     console.error("Error saving order:", error);

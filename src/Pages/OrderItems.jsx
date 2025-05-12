@@ -1,37 +1,39 @@
 "use client";
 
 import { useParams } from "react-router-dom";
-import {
-  Package,
-  User,
-  MapPin,
-  Mail,
-  Phone,
-  ShoppingBag,
-  Calendar,
-} from "lucide-react";
+import { User, MapPin, Mail, Phone, ShoppingBag, Calendar } from "lucide-react";
 import { Badge } from "@/Components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Separator } from "@/Components/ui/separator";
+import { useEffect, useState } from "react";
+import { getOrders } from "../Backend/AdminLogic";
+import { toast } from "sonner";
 
 const OrderItems = () => {
-  const { id } = useParams();
+  const { orderId } = useParams();
+  const [order, setOrder] = useState(null);
 
-  // Mock data for demonstration purposes
-  const orderDetails = {
-    orderNumber: id,
-    orderDate: "2023-05-15",
-    status: "Delivered",
-    customerName: "John Doe",
-    productName: "Cool Hat",
-    productQuantity: 2,
-    productSizes: ["M", "L"],
-    totalAmount: 5000,
-    address: "123 Main St, Springfield",
-    email: "johndoe@example.com",
-    phoneNumber: "123-456-7890",
+  const fetchOrders = async () => {
+    try {
+      const ordersFromDB = await getOrders();
+      const order = ordersFromDB.find((order) => order.id === orderId);
+      if (order) {
+        setOrder(order);
+      } else {
+        toast.error("Order not found");
+      }
+    } catch (error) {
+      console.error("Error fetching order:", error);
+    }
   };
 
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  if (order === null) {
+    return <div>Loading OrderDetails.....</div>;
+  }
   const getStatusColor = (status) => {
     switch (status) {
       case "Pending":
@@ -51,15 +53,12 @@ const OrderItems = () => {
         <div>
           <h1 className="text-2xl font-bold">Order Details</h1>
           {/* Add the order number here */}
-          <p className="text-gray-500">Order #{orderDetails.orderNumber}</p>
+          <p className="text-gray-500">Order #{order.orderNumber}</p>
         </div>
         <div className="mt-2 md:mt-0">
           {/*it gets the status from the orders page and updates here */}
-          <Badge
-            variant="outline"
-            className={getStatusColor(orderDetails.status)}
-          >
-            {orderDetails.status}
+          <Badge variant="outline" className={getStatusColor(order.status)}>
+            {order.status}
           </Badge>
         </div>
       </div>
@@ -75,34 +74,39 @@ const OrderItems = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  <div className="h-16 w-16 rounded-md bg-gray-100 flex items-center justify-center">
-                    <Package className="h-8 w-8 text-gray-500" />
+              {order.items.map((item,index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center"
+                >
+                  <div className="flex items-center">
+                    <div className="h-16 w-16 rounded-md bg-gray-100 flex items-center justify-center">
+                      <img src={item.image} />
+                    </div>
+
+                    <div className="ml-4">
+                      <h3 className="font-medium">{item.name}</h3>
+                      <p className="text-sm text-gray-500">
+                        Quantity: {item.quantity} • Sizes:{" "}
+                        {Array.isArray(item.size) ? item.size.join(", ") : item.size}
+                      </p>
+                    </div>
                   </div>
-                  <div className="ml-4">
-                    <h3 className="font-medium">{orderDetails.productName}</h3>
-                    <p className="text-sm text-gray-500">
-                      Quantity: {orderDetails.productQuantity} • Sizes:{" "}
-                      {orderDetails.productSizes.join(", ")}
-                    </p>
+                  <div className="text-right">
+                    <p className="font-bold">₦{item.price.toLocaleString()}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold">
-                    ₦{orderDetails.totalAmount.toLocaleString()}
-                  </p>
-                </div>
-              </div>
+              ))}
 
               <Separator />
 
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-2 text-gray-500" />
                 <span className="text-sm text-gray-600">
-                  Order Date:{" "}
-                  {new Date(orderDetails.orderDate).toLocaleDateString()}
+                  Order Date: {new Date(order.timestamp).toLocaleDateString()}
                 </span>
+
+                <span>Total Amount : {order.totalAmount.toLocaleString()}</span>
               </div>
             </div>
           </CardContent>
@@ -121,21 +125,23 @@ const OrderItems = () => {
               <div className="flex items-start">
                 <User className="h-4 w-4 mr-2 mt-0.5 text-gray-500" />
                 <div>
-                  <p className="font-medium">{orderDetails.customerName}</p>
+                  <p className="font-medium">
+                    {order.customer.firstName} {order.customer.lastName}
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start">
                 <Mail className="h-4 w-4 mr-2 mt-0.5 text-gray-500" />
                 <div>
-                  <p className="text-sm">{orderDetails.email}</p>
+                  <p className="text-sm">{order.customer.email}</p>
                 </div>
               </div>
 
               <div className="flex items-start">
                 <Phone className="h-4 w-4 mr-2 mt-0.5 text-gray-500" />
                 <div>
-                  <p className="text-sm">{orderDetails.phoneNumber}</p>
+                  <p className="text-sm">{order.customer.phone}</p>
                 </div>
               </div>
 
@@ -146,7 +152,7 @@ const OrderItems = () => {
                 <div>
                   <p className="text-sm font-medium">Shipping Address</p>
                   <p className="text-sm text-gray-500">
-                    {orderDetails.address}
+                    {order.customer.address}
                   </p>
                 </div>
               </div>
