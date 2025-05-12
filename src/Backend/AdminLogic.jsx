@@ -104,6 +104,23 @@ export const getOrders = async () => {
   }
 };
 
+
+export const updateOrderStatus = async (orderId, status) => {
+  try {
+    if (!orderId) {
+      throw new Error("Order ID is required for update.");
+    }
+
+    const orderDocRef = doc(db, "orders", orderId);
+    await updateDoc(orderDocRef, { status: status });
+
+    toast.success("Order status updated successfully!");
+  } catch (error) {
+    toast.error("Update Order Status Error:", error.message);
+    console.log(error)
+  }
+}
+
 // ✏️ Updates a product in Firestore
 export const updateProduct = async (productData) => {
   try {
