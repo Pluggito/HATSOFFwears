@@ -11,12 +11,14 @@ const LimitedEditions = () => {
     // runs when products has loaded
     if (products.length === 0) return;
 
-    const limitedEdition = products.filter((item) => item.collection === "Limited").slice(0, 5);
+    const limitedEdition = products
+      .filter((item) => item.collection === "Limited")
+      .slice(0, 5);
 
     setLimittedEditions(limitedEdition);
   }, [products]);
 
-  // Loading 
+  // Loading
   if (products.length === 0) {
     return (
       <div className="my-10 text-center">

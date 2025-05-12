@@ -17,6 +17,7 @@ export default function ProductsItem({ id, image, name, price }) {
           className="h-full w-full object-cover transition-all group-hover:scale-105"
           src={image}
           alt={name || "Product"}
+          loading="lazy"
         />
       </div>
 

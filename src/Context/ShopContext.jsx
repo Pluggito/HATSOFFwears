@@ -10,7 +10,7 @@ export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
   const currency = "₦";
-  const delivery_fee = 3000;
+  const delivery_fee = 5000;
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [products, setProducts] = useState([]);
@@ -88,12 +88,15 @@ const ShopContextProvider = (props) => {
     return totalCount;
   }, [cartItems]);
 
-  const updateQuantity = useCallback(async (itemId, size, quantity) => {
-    let cartData = structuredClone(cartItems);
+  const updateQuantity = useCallback(
+    async (itemId, size, quantity) => {
+      let cartData = structuredClone(cartItems);
 
-    cartData[itemId][size] = quantity;
-    setCartItems(cartData);
-  }, [cartItems]);
+      cartData[itemId][size] = quantity;
+      setCartItems(cartData);
+    },
+    [cartItems]
+  );
 
   // I helped you update the getCartAmount function, there was a mistake before
 

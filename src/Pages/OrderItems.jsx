@@ -73,12 +73,9 @@ const OrderItems = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {order.items.map((item,index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center"
-                >
+            <div className="space-y-4 px-3">
+              {order.items.map((item, index) => (
+                <div key={index} className="flex justify-between items-center">
                   <div className="flex items-center">
                     <div className="h-16 w-16 rounded-md bg-gray-100 flex items-center justify-center">
                       <img src={item.image} />
@@ -88,7 +85,9 @@ const OrderItems = () => {
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500">
                         Quantity: {item.quantity} • Sizes:{" "}
-                        {Array.isArray(item.size) ? item.size.join(", ") : item.size}
+                        {Array.isArray(item.size)
+                          ? item.size.join(", ")
+                          : item.size}
                       </p>
                     </div>
                   </div>
@@ -100,7 +99,7 @@ const OrderItems = () => {
 
               <Separator />
 
-              <div className="flex items-center">
+              <div className="flex items-center ">
                 <Calendar className="h-4 w-4 mr-2 text-gray-500" />
                 <span className="text-sm text-gray-600">
                   Order Date: {new Date(order.timestamp).toLocaleDateString()}
@@ -113,7 +112,7 @@ const OrderItems = () => {
         </Card>
 
         {/* Customer Information */}
-        <Card>
+        <Card className="px-3">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center">
               <User className="mr-2 h-5 w-5" />
