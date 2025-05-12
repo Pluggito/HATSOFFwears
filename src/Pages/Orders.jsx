@@ -25,19 +25,18 @@ export default function OrderManagement() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const handleUpdateOrderStatus = async (orderId,status) => {
-    await updateOrderStatus(orderId,status)
-  }
+  const handleUpdateOrderStatus = async (orderId, status) => {
+    await updateOrderStatus(orderId, status);
+  };
   const fetchOrders = async () => {
     try {
       const ordersFromDB = await getOrders();
       setOrders(ordersFromDB);
-      
     } catch (error) {
       console.error("Error fetching orders:", error);
       toast.error("Failed to fetch orders");
     }
-  } 
+  };
 
   // Initialize orders with dummy data if no initialOrders are provided
   useState(() => {
@@ -111,8 +110,6 @@ export default function OrderManagement() {
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
-
-
 
   const navigate = useNavigate();
   return (

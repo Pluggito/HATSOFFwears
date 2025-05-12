@@ -36,14 +36,10 @@ const Cart = () => {
   }, [cartItems]);
 
   if (products.length === 0) {
-    return (
-      <div className="p-10 text-center">
-        Loading your cart…
-      </div>
-    );
+    return <div className="p-10 text-center">Loading your cart…</div>;
   }
 
-  const handleDelete =(id, size) => {
+  const handleDelete = (id, size) => {
     updateQuantity(id, size, 0);
     toast.success("Item removed from cart");
   };

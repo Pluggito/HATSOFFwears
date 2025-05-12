@@ -1,5 +1,4 @@
-
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const Loader = () => {
   return (
@@ -24,7 +23,7 @@ const Loader = () => {
       </div>
     </StyledWrapper>
   );
-}
+};
 
 const StyledWrapper = styled.div`
   position: fixed;
@@ -149,6 +148,5 @@ const StyledWrapper = styled.div`
     }
   }
 `;
-
 
 export default Loader;
