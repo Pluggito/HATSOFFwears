@@ -100,7 +100,7 @@ export const saveOrderToFirebase = async (orderDetails) => {
     const docRef = await addDoc(collection(db, "orders"), {...orderDetails,id: ""});
 
     await updateDoc(docRef, { id: docRef.id });
-    return docRef.id; // Returning the order ID if needed
+    return orderDetails.orderNumber; // Return order number for reference
   } catch (error) {
     console.error("Error saving order:", error);
     throw error;
@@ -128,5 +128,6 @@ export const placeOrder = async (cartItems, userDetails, trns_id,products,setCar
 };
 
 export const handlePlaceOrder = async (cartItems, userDetails, trns_id,products,setCartItems) => {
-  await placeOrder(cartItems, userDetails, trns_id,products,setCartItems);
+  const orderID = await placeOrder(cartItems, userDetails, trns_id,products,setCartItems);
+ return orderID
 };

@@ -30,6 +30,16 @@ const PlaceOrder = () => {
   } = useContext(ShopContext);
   const Amount = getCartAmount() + delivery_fee;
 
+  const sendWhatsappMessage = (orderID) => {
+    const message = `Hello, My name is ${userDetails.firstName} I have just placed an order with the ID: ${orderID}. Please let me know if any further information is needed. Thank you!`;
+    const phoneNumber = "2348116354898";
+
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(url, "_blank"); // open in new tab
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!firstName || !lastName || !email || !phone || !address) {
@@ -40,12 +50,10 @@ const PlaceOrder = () => {
 
       return;
     }
-    // If validation passes, proceed to payment
-
     //window.location.href = "https://sandbox.flutterwave.com/pay/3yqcw1lfjesg";
 
     // function to handle order placement logic
-    handlePayment(
+    const orderID = await handlePayment(
       userDetails,
       Amount,
       cartItems,
@@ -53,6 +61,7 @@ const PlaceOrder = () => {
       products,
       setCartItems
     );
+    sendWhatsappMessage(orderID);
     localStorage.removeItem("cartItems");
   };
 
