@@ -183,7 +183,7 @@ export default function ClothingDashboard() {
     <div className=" mx-auto py-10">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold">HatsOff Dashboard</h1>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isAddDialogOpen}  onOpenChange={setIsAddDialogOpen}>
           <div className="flex items-center gap-3">
             <Button variant={`secondary`} className="font-bold cursor-pointer">
               <Link to="/orders" className="text-black ">
@@ -197,14 +197,14 @@ export default function ClothingDashboard() {
             </DialogTrigger>
           </div>
 
-          <DialogContent className="space-y-4">
+          <DialogContent className="space-y-3 ">
             <DialogHeader>
               <DialogTitle>Add New Clothing Model</DialogTitle>
               <DialogDescription>
                 Enter the details for the new clothing model.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 ">
+            <div className="grid gap-3">
               <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -214,6 +214,7 @@ export default function ClothingDashboard() {
                     setNewModel({ ...newModel, name: e.target.value })
                   }
                   autoComplete="off"
+                  
                 />
               </div>
               <div className="grid gap-2">
@@ -227,7 +228,7 @@ export default function ClothingDashboard() {
                   }
                 />
               </div>
-              <div className="flex gap-5 items-center">
+              <div className="flex gap-5 items-center mx-auto">
                 <div className="grid gap-2">
                   <Label id="availability-label">Availability</Label>
                   <Select
