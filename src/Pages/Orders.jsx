@@ -112,6 +112,8 @@ export default function OrderManagement() {
   };
 
   const navigate = useNavigate();
+
+  console.log(orders.timestamp);
   return (
     <div className="space-y-6 py-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -233,7 +235,7 @@ export default function OrderManagement() {
                     #{order.orderNumber}
                   </td>
                   <td className="py-3 px-2">
-                    {order.timestamp
+                    {order.timestamp && !isNaN(new Date(order.timestamp))
                       ? new Date(order.timestamp).toLocaleDateString()
                       : "N/A"}
                   </td>

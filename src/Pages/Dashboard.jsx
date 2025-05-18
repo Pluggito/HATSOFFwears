@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Edit, Plus, Trash } from "lucide-react"
+import { Edit, Plus, Trash, X } from "lucide-react"
 
 import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
@@ -9,15 +9,6 @@ import { Input } from "@/Components/ui/input"
 import { Label } from "@/Components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import { Textarea } from "@/Components/ui/textarea"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/Components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
 import { Toggle } from "@/Components/ui/toggle"
 import {
@@ -46,8 +37,8 @@ export default function ClothingDashboard() {
     category: [],
     type: "",
   })
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [file, setFile] = useState(null)
   const [isProduct, setIsProduct] = useState(null)
   const [orderCount, setOrderCount] = useState(0)
@@ -55,6 +46,31 @@ export default function ClothingDashboard() {
   const [completedOrderCount, setCompletedOrderCount] = useState(0)
   const [orders, setOrders] = useState([]) // State to hold orders
   const [selectedOrder, setSelectedOrder] = useState(null)
+
+  // Close modal when escape key is pressed
+  useEffect(() => {
+    const handleEscapeKey = (e) => {
+      if (e.key === "Escape") {
+        if (isAddModalOpen) setIsAddModalOpen(false)
+        if (isEditModalOpen) setIsEditModalOpen(false)
+      }
+    }
+
+    window.addEventListener("keydown", handleEscapeKey)
+    return () => window.removeEventListener("keydown", handleEscapeKey)
+  }, [isAddModalOpen, isEditModalOpen])
+
+  // Prevent body scrolling when modal is open
+  useEffect(() => {
+    if (isAddModalOpen || isEditModalOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+    }
+    return () => {
+      document.body.style.overflow = "auto"
+    }
+  }, [isAddModalOpen, isEditModalOpen])
 
   const handleAddModel = async () => {
     if (!validateModel(newModel)) {
@@ -71,7 +87,7 @@ export default function ClothingDashboard() {
       price: Number.parseFloat(newModel.price),
     }
     setModels([...models, modelToAdd])
-    setIsAddDialogOpen(false)
+    setIsAddModalOpen(false)
     await addProduct(modelToAdd, file, setNewModel) // Assuming addProduct is a function that adds the model to your database
     fetchModels() // Refresh the models after adding
     setNewModel({
@@ -123,7 +139,7 @@ export default function ClothingDashboard() {
     await updateProduct(editingModel)
     fetchModels() // Refresh the models after editing
     setModels(models.map((model) => (model.id === editingModel.id ? editingModel : model)))
-    setIsEditDialogOpen(false)
+    setIsEditModalOpen(false)
     toast.success("Model updated successfully")
   }
 
@@ -136,7 +152,7 @@ export default function ClothingDashboard() {
 
   const startEditing = (model) => {
     setEditingModel({ ...model })
-    setIsEditDialogOpen(true)
+    setIsEditModalOpen(true)
   }
 
   const fetchModels = async () => {
@@ -166,29 +182,47 @@ export default function ClothingDashboard() {
   // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
 
   return (
-    <div className=" mx-auto py-10">
+    <div className="mx-auto py-10">
       <header className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold">HatsOff Dashboard</h1>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <div className="flex items-center gap-3">
-            <Button variant={`secondary`} className="font-bold cursor-pointer">
-              <Link to="/orders" className="text-black ">
-                Orders
-              </Link>
-            </Button>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-1 h-4 w-4" /> Add New Model
-              </Button>
-            </DialogTrigger>
-          </div>
+        <h1 className="text-3xl font-bold">HatsOff Dashboard</h1>
+        <div className="flex items-center gap-3">
+          <Button variant="secondary" className="font-bold cursor-pointer">
+            <Link to="/orders" className="text-black">
+              Orders
+            </Link>
+          </Button>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" /> Add New Model
+          </Button>
+        </div>
+      </header>
 
-          <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-            <DialogHeader>
-              <DialogTitle>Add New Clothing Model</DialogTitle>
-              <DialogDescription>Enter the details for the new clothing model.</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4">
+      {/* Add Model Modal - Using semantic HTML */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-opacity-50">
+          <div
+            className="bg-white rounded-lg shadow-lg w-full sm:w-full  sm:max-w-lg max-h-[85vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-model-title"
+          >
+            <header className="mb-4">
+              <div className="flex justify-between items-center">
+                <h2 id="add-model-title" className="text-lg font-semibold">
+                  Add New Clothing Model
+                </h2>
+                <button
+                  onClick={() => setIsAddModalOpen(false)}
+                  className="p-1 rounded-full hover:bg-gray-100"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-500">Enter the details for the new clothing model.</p>
+            </header>
+
+            <main className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -208,7 +242,6 @@ export default function ClothingDashboard() {
                 />
               </div>
 
-              {/* Replace the horizontal flex layout with a responsive grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="grid gap-2">
                   <Label id="availability-label">Availability</Label>
@@ -269,13 +302,13 @@ export default function ClothingDashboard() {
               </div>
               <div className="grid gap-3">
                 <p>Sizes Available</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 w-full">
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
                     <Toggle
                       key={size}
                       pressed={newModel.sizes.includes(size)}
                       onPressedChange={() => handleToggleSize(newModel, size, setNewModel)}
-                      className="min-w-[40px]"
+                      className="flex-1 min-w-[40px] max-w-[60px]"
                     >
                       {size}
                     </Toggle>
@@ -288,20 +321,23 @@ export default function ClothingDashboard() {
                   <Testing setFile={setFile} />
                 </div>
               </div>
-            </div>
-            <DialogFooter className="mt-4">
-              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+            </main>
+
+            <footer className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+              <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleAddModel}>Add Model</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </header>
+            </footer>
+          </div>
+        </div>
+      )}
+
       <Tabs defaultValue="models">
         <TabsList className="mb-4">
           <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
         <TabsContent value="models">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -367,7 +403,7 @@ export default function ClothingDashboard() {
                   <div className="border rounded p-4 text-center">
                     <p className="text-sm text-muted-foreground">Total Revenue</p>
                     <p className="md:text-3xl text-xl font-bold">
-                      ₦{models.reduce((sum, model) => sum + model.price, 0).toLocaleString()}
+                      ₦{models.reduce((sum, model) => sum + model.price, 0).toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -378,16 +414,82 @@ export default function ClothingDashboard() {
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value="orders">
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold">Orders</h2>
+
+            {/* Status Controller Outside */}
+            <div className="flex items-center gap-4 border p-4 rounded-md w-fit">
+              <Select
+                onValueChange={(value) => {
+                  if (!selectedOrder) return
+
+                  setOrders((prevOrders) =>
+                    prevOrders.map((order) => (order.id === selectedOrder.id ? { ...order, status: value } : order)),
+                  )
+
+                  setSelectedOrder((prev) => ({
+                    ...prev,
+                    status: value,
+                  }))
+                }}
+                disabled={!selectedOrder}
+                value={selectedOrder?.status || "Pending"}
+              >
+                <SelectTrigger className="border border-gray-300 rounded px-2 py-1 min-w-[120px]">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Delivered">Delivered</SelectItem>
+                  <SelectItem value="Canceled">Canceled</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Show Current Status */}
+              <span className="text-sm text-gray-700">
+                Status: <strong>{selectedOrder?.status || "None selected"}</strong>
+              </span>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <div className="flex justify-center items-center">
+                <Link to="/orders" className="text-blue-600 underline">
+                  View All Orders
+                </Link>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-          <DialogHeader>
-            <DialogTitle>Edit Clothing Model</DialogTitle>
-            <DialogDescription>Update the details for this clothing model.</DialogDescription>
-          </DialogHeader>
-          {editingModel && (
-            <div className="grid gap-4 py-2">
+      {/* Edit Model Modal - Using semantic HTML */}
+      {isEditModalOpen && editingModel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div
+            className="bg-white rounded-lg shadow-lg w-[95vw] sm:w-full max-w-[95vw] sm:max-w-lg max-h-[85vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-model-title"
+          >
+            <header className="mb-4">
+              <div className="flex justify-between items-center">
+                <h2 id="edit-model-title" className="text-lg font-semibold">
+                  Edit Clothing Model
+                </h2>
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="p-1 rounded-full hover:bg-gray-100"
+                  aria-label="Close"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-500">Update the details for this clothing model.</p>
+            </header>
+
+            <main className="grid gap-4 py-2">
               <div className="grid gap-2">
                 <Label htmlFor="edit-name">Name</Label>
                 <Input
@@ -413,8 +515,11 @@ export default function ClothingDashboard() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="grid gap-2">
-                  <Label id="availability-label">Availability</Label>
-                  <Select onValueChange={(value) => setEditingModel({ ...editingModel, availability: value })}>
+                  <Label id="edit-availability-label">Availability</Label>
+                  <Select
+                    onValueChange={(value) => setEditingModel({ ...editingModel, availability: value })}
+                    value={editingModel.availability}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
@@ -426,11 +531,11 @@ export default function ClothingDashboard() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label id="collection-label">Collection</Label>
+                  <Label id="edit-collection-label">Collection</Label>
                   <Select
                     onValueChange={(value) => setEditingModel({ ...editingModel, collection: value })}
                     value={editingModel.collection}
-                    aria-labelledby="collection-label"
+                    aria-labelledby="edit-collection-label"
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select collection" />
@@ -443,11 +548,11 @@ export default function ClothingDashboard() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label id="category-label">Category</Label>
+                  <Label id="edit-category-label">Category</Label>
                   <Select
                     onValueChange={(value) => setEditingModel({ ...editingModel, category: value })}
                     value={editingModel.category}
-                    aria-labelledby="category-label"
+                    aria-labelledby="edit-category-label"
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -475,13 +580,13 @@ export default function ClothingDashboard() {
               </div>
               <div className="grid gap-3">
                 <p>Sizes Available</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 w-full">
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
                     <Toggle
                       key={size}
                       pressed={editingModel.sizes.includes(size)}
                       onPressedChange={() => handleToggleSize(editingModel, size, setEditingModel)}
-                      className="min-w-[40px]"
+                      className="flex-1 min-w-[40px] max-w-[60px]"
                     >
                       {size}
                     </Toggle>
@@ -494,30 +599,17 @@ export default function ClothingDashboard() {
                   <Testing setFile={setFile} imgSrc={editingModel.imgUrl} />
                 </div>
               </div>
-            </div>
-          )}
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditModel}>Save Changes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </main>
+
+            <footer className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleEditModel}>Save Changes</Button>
+            </footer>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
-// ClothingDashboard.propTypes = {
-//   models: PropTypes.arrayOf(
-//     PropTypes.shape({
-//       id: PropTypes.string.isRequired,
-//       name: PropTypes.string.isRequired,
-//       price: PropTypes.number.isRequired,
-//       description: PropTypes.string.isRequired,
-//       collection: PropTypes.string.isRequired,
-//       sizes: PropTypes.arrayOf(PropTypes.string).isRequired,
-//       status: PropTypes.string.isRequired,
-//       imgUrl: PropTypes.string,
-//     })
-//   ),
-// };
