@@ -197,7 +197,7 @@ export default function ClothingDashboard() {
             </DialogTrigger>
           </div>
 
-          <DialogContent className="space-y-3 ">
+          <DialogContent className="space-y-3">
             <DialogHeader>
               <DialogTitle>Add New Clothing Model</DialogTitle>
               <DialogDescription>
