@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
-import { Edit, Plus, Trash } from "lucide-react";
+"use client"
 
-import { Button } from "@/Components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Input } from "@/Components/ui/input";
-import { Label } from "@/Components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
-import { Textarea } from "@/Components/ui/textarea";
+import { useEffect, useState } from "react"
+import { Edit, Plus, Trash } from "lucide-react"
+
+import { Button } from "@/Components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
+import { Input } from "@/Components/ui/input"
+import { Label } from "@/Components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
+import { Textarea } from "@/Components/ui/textarea"
 import {
   Dialog,
   DialogContent,
@@ -15,15 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/Components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/Components/ui/select";
-import { Toggle } from "@/Components/ui/toggle";
+} from "@/Components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
+import { Toggle } from "@/Components/ui/toggle"
 import {
   addProduct,
   deleteProduct,
@@ -31,15 +27,15 @@ import {
   getProducts,
   handleImageUpload,
   updateProduct,
-} from "../Backend/AdminLogic";
+} from "../Backend/AdminLogic"
 
-import Testing from "../Components/Testing";
-import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import Testing from "../Components/Testing"
+import { toast } from "sonner"
+import { Link } from "react-router-dom"
 
 export default function ClothingDashboard() {
-  const [models, setModels] = useState([]);
-  const [editingModel, setEditingModel] = useState(null);
+  const [models, setModels] = useState([])
+  const [editingModel, setEditingModel] = useState(null)
   const [newModel, setNewModel] = useState({
     name: "",
     price: "",
@@ -49,35 +45,35 @@ export default function ClothingDashboard() {
     availability: "",
     category: [],
     type: "",
-  });
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [file, setFile] = useState(null);
-  const [isProduct, setIsProduct] = useState(null);
-  const [orderCount, setOrderCount] = useState(0);
-  const [pendingOrderCount, setPendingOrderCount] = useState(0);
-  const [completedOrderCount, setCompletedOrderCount] = useState(0);
-  const [orders, setOrders] = useState([]); // State to hold orders
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  })
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [file, setFile] = useState(null)
+  const [isProduct, setIsProduct] = useState(null)
+  const [orderCount, setOrderCount] = useState(0)
+  const [pendingOrderCount, setPendingOrderCount] = useState(0)
+  const [completedOrderCount, setCompletedOrderCount] = useState(0)
+  const [orders, setOrders] = useState([]) // State to hold orders
+  const [selectedOrder, setSelectedOrder] = useState(null)
 
   const handleAddModel = async () => {
     if (!validateModel(newModel)) {
-      toast.error("Validation failed. Please fill in all fields.");
-      return;
+      toast.error("Validation failed. Please fill in all fields.")
+      return
     }
     if (file == null || file == undefined) {
-      toast.error("Image file is required.");
-      return;
+      toast.error("Image file is required.")
+      return
     }
 
     const modelToAdd = {
       ...newModel,
-      price: parseFloat(newModel.price),
-    };
-    setModels([...models, modelToAdd]);
-    setIsAddDialogOpen(false);
-    await addProduct(modelToAdd, file, setNewModel); // Assuming addProduct is a function that adds the model to your database
-    fetchModels(); // Refresh the models after adding
+      price: Number.parseFloat(newModel.price),
+    }
+    setModels([...models, modelToAdd])
+    setIsAddDialogOpen(false)
+    await addProduct(modelToAdd, file, setNewModel) // Assuming addProduct is a function that adds the model to your database
+    fetchModels() // Refresh the models after adding
     setNewModel({
       name: "",
       price: "",
@@ -87,8 +83,8 @@ export default function ClothingDashboard() {
       availability: "",
       category: [],
       type: "",
-    });
-  };
+    })
+  }
 
   // you have to validate before adding a model
   const validateModel = (model) => {
@@ -102,79 +98,69 @@ export default function ClothingDashboard() {
       !model.category.length ||
       file == null
     ) {
-      return false;
+      return false
     }
-    return true;
-  };
+    return true
+  }
 
   const handleToggleSize = (model, size, setter) => {
-    const sizes = model.sizes || [];
-    const newSizes = sizes.includes(size)
-      ? sizes.filter((s) => s !== size)
-      : [...sizes, size];
-    setter({ ...model, sizes: newSizes });
-  };
+    const sizes = model.sizes || []
+    const newSizes = sizes.includes(size) ? sizes.filter((s) => s !== size) : [...sizes, size]
+    setter({ ...model, sizes: newSizes })
+  }
 
   const handleEditModel = async () => {
     if (file != null || file != undefined) {
-      const imgData = await handleImageUpload(file);
+      const imgData = await handleImageUpload(file)
       if (!imgData) {
-        toast.error("Image upload failed. Aborting product update.");
-        return;
+        toast.error("Image upload failed. Aborting product update.")
+        return
       }
-      editingModel.imgUrl = imgData.imgUrl; // Update the image URL in the model
-      editingModel.imgPublicId = imgData.publicId; // Update the public ID in the model
+      editingModel.imgUrl = imgData.imgUrl // Update the image URL in the model
+      editingModel.imgPublicId = imgData.publicId // Update the public ID in the model
     }
 
-    await updateProduct(editingModel);
-    fetchModels(); // Refresh the models after editing
-    setModels(
-      models.map((model) =>
-        model.id === editingModel.id ? editingModel : model
-      )
-    );
-    setIsEditDialogOpen(false);
-    toast.success("Model updated successfully");
-  };
+    await updateProduct(editingModel)
+    fetchModels() // Refresh the models after editing
+    setModels(models.map((model) => (model.id === editingModel.id ? editingModel : model)))
+    setIsEditDialogOpen(false)
+    toast.success("Model updated successfully")
+  }
 
   const handleDeleteModel = async (productId) => {
-    setModels(models.filter((model) => model.id !== productId));
-    await deleteProduct(productId);
-    toast.success("Model deleted successfully");
-    fetchModels(); // Refresh the models after deletion
-  };
+    setModels(models.filter((model) => model.id !== productId))
+    await deleteProduct(productId)
+    toast.success("Model deleted successfully")
+    fetchModels() // Refresh the models after deletion
+  }
 
   const startEditing = (model) => {
-    setEditingModel({ ...model });
-    setIsEditDialogOpen(true);
-  };
+    setEditingModel({ ...model })
+    setIsEditDialogOpen(true)
+  }
 
   const fetchModels = async () => {
-    const modelsFromDB = await getProducts(); // Assuming getProducts is a function that fetches models from your database
+    const modelsFromDB = await getProducts() // Assuming getProducts is a function that fetches models from your database
     if (modelsFromDB.length === 0) {
-      setIsProduct(false);
+      setIsProduct(false)
     } else {
-      setIsProduct(true);
+      setIsProduct(true)
     }
-    setModels(modelsFromDB);
-  };
+    setModels(modelsFromDB)
+  }
 
   const fetchOrders = async () => {
-    const ordersFromDB = await getOrders();
-    setOrderCount(ordersFromDB.length); // Assuming getOrders is a function that fetches orders from your database
-    setPendingOrderCount(
-      ordersFromDB.filter((order) => order.status === "Pending").length
-    );
-    setCompletedOrderCount(
-      ordersFromDB.filter((order) => order.status === "completed").length
-    );
-    setOrders(ordersFromDB); // Assuming getOrders is a function that fetches orders from your database
-  };
+    const ordersFromDB = await getOrders()
+    setOrderCount(ordersFromDB.length) // Assuming getOrders is a function that fetches orders from your database
+    setPendingOrderCount(ordersFromDB.filter((order) => order.status === "Pending").length)
+    setCompletedOrderCount(ordersFromDB.filter((order) => order.status === "completed").length)
+    setOrders(ordersFromDB) // Assuming getOrders is a function that fetches orders from your database
+  }
 
   useEffect(() => {
-    fetchModels();
-    fetchOrders(); // Fetch orders when the component mounts
-  }, []);
+    fetchModels()
+    fetchOrders() // Fetch orders when the component mounts
+  }, [])
 
   // Images uploading
   // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
@@ -183,7 +169,7 @@ export default function ClothingDashboard() {
     <div className=" mx-auto py-10">
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold">HatsOff Dashboard</h1>
-        <Dialog open={isAddDialogOpen}  onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <div className="flex items-center gap-3">
             <Button variant={`secondary`} className="font-bold cursor-pointer">
               <Link to="/orders" className="text-black ">
@@ -197,24 +183,19 @@ export default function ClothingDashboard() {
             </DialogTrigger>
           </div>
 
-          <DialogContent className="space-y-3">
+          <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:p-6">
             <DialogHeader>
               <DialogTitle>Add New Clothing Model</DialogTitle>
-              <DialogDescription>
-                Enter the details for the new clothing model.
-              </DialogDescription>
+              <DialogDescription>Enter the details for the new clothing model.</DialogDescription>
             </DialogHeader>
-            <div className="grid gap-3">
+            <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
                   value={newModel.name}
-                  onChange={(e) =>
-                    setNewModel({ ...newModel, name: e.target.value })
-                  }
+                  onChange={(e) => setNewModel({ ...newModel, name: e.target.value })}
                   autoComplete="off"
-                  
                 />
               </div>
               <div className="grid gap-2">
@@ -223,19 +204,15 @@ export default function ClothingDashboard() {
                   id="price"
                   type="number"
                   value={newModel.price}
-                  onChange={(e) =>
-                    setNewModel({ ...newModel, price: e.target.value })
-                  }
+                  onChange={(e) => setNewModel({ ...newModel, price: e.target.value })}
                 />
               </div>
-              <div className="flex gap-5 items-center mx-auto">
+
+              {/* Replace the horizontal flex layout with a responsive grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="grid gap-2">
                   <Label id="availability-label">Availability</Label>
-                  <Select
-                    onValueChange={(value) =>
-                      setNewModel({ ...newModel, availability: value })
-                    }
-                  >
+                  <Select onValueChange={(value) => setNewModel({ ...newModel, availability: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
@@ -249,9 +226,7 @@ export default function ClothingDashboard() {
                 <div className="grid gap-2">
                   <Label id="collection-label">Collection</Label>
                   <Select
-                    onValueChange={(value) =>
-                      setNewModel({ ...newModel, collection: value })
-                    }
+                    onValueChange={(value) => setNewModel({ ...newModel, collection: value })}
                     value={newModel.collection}
                     aria-labelledby="collection-label"
                   >
@@ -268,9 +243,7 @@ export default function ClothingDashboard() {
                 <div className="grid gap-2">
                   <Label id="category-label">Category</Label>
                   <Select
-                    onValueChange={(value) =>
-                      setNewModel({ ...newModel, category: value })
-                    }
+                    onValueChange={(value) => setNewModel({ ...newModel, category: value })}
                     value={newModel.category}
                     aria-labelledby="category-label"
                   >
@@ -291,21 +264,18 @@ export default function ClothingDashboard() {
                 <Textarea
                   id="description"
                   value={newModel.description}
-                  onChange={(e) =>
-                    setNewModel({ ...newModel, description: e.target.value })
-                  }
+                  onChange={(e) => setNewModel({ ...newModel, description: e.target.value })}
                 />
               </div>
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 <p>Sizes Available</p>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-2">
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
                     <Toggle
                       key={size}
                       pressed={newModel.sizes.includes(size)}
-                      onPressedChange={() =>
-                        handleToggleSize(newModel, size, setNewModel)
-                      }
+                      onPressedChange={() => handleToggleSize(newModel, size, setNewModel)}
+                      className="min-w-[40px]"
                     >
                       {size}
                     </Toggle>
@@ -318,13 +288,9 @@ export default function ClothingDashboard() {
                   <Testing setFile={setFile} />
                 </div>
               </div>
-            </div>{" "}
-            {/* Closing the missing div */}
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsAddDialogOpen(false)}
-              >
+            </div>
+            <DialogFooter className="mt-4">
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                 Cancel
               </Button>
               <Button onClick={handleAddModel}>Add Model</Button>
@@ -345,22 +311,12 @@ export default function ClothingDashboard() {
                   <Card key={model.id} className="border-2 border-gray-300">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-2xl font-bold">
-                          {model.name}
-                        </CardTitle>
+                        <CardTitle className="text-2xl font-bold">{model.name}</CardTitle>
                         <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => startEditing(model)}
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => startEditing(model)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteModel(model.id)}
-                          >
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteModel(model.id)}>
                             <Trash className="h-4 w-4" />
                           </Button>
                         </div>
@@ -377,20 +333,13 @@ export default function ClothingDashboard() {
                         </div>
                         <div>
                           <p className="font-bold">₦{model.price.toFixed(2)}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {model.collection}
-                          </p>
-                          <p className="text-sm text-black">
-                            {model.sizes?.join(", ") || "N/A"}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{model.collection}</p>
+                          <p className="text-sm text-black">{model.sizes?.join(", ") || "N/A"}</p>
                           <p className="text-sm mt-2">{model.description}</p>
                         </div>
                         <div>
                           <p className="text-md text-muted-foreground">
-                            Availability:{" "}
-                            <span className="font-medium">
-                              {model.availability}
-                            </span>
+                            Availability: <span className="font-medium">{model.availability}</span>
                           </p>
                         </div>
                       </div>
@@ -399,9 +348,7 @@ export default function ClothingDashboard() {
                 ))}
               </>
             ) : (
-              <div className="flex items-center justify-center">
-                No Products Available
-              </div>
+              <div className="flex items-center justify-center">No Products Available</div>
             )}
           </div>
         </TabsContent>
@@ -414,26 +361,18 @@ export default function ClothingDashboard() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="border rounded p-4 text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Total Models
-                    </p>
+                    <p className="text-sm text-muted-foreground">Total Models</p>
                     <p className="text-3xl font-bold">{models.length}</p>
                   </div>
                   <div className="border rounded p-4 text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Total Revenue
-                    </p>
+                    <p className="text-sm text-muted-foreground">Total Revenue</p>
                     <p className="md:text-3xl text-xl font-bold">
-                      ₦
-                      {models
-                        .reduce((sum, model) => sum + model.price, 0)
-                        .toLocaleString()}
+                      ₦{models.reduce((sum, model) => sum + model.price, 0).toLocaleString()}
                     </p>
                   </div>
                 </div>
                 <p className="text-center text-sm text-muted-foreground">
-                  Simple statistics dashboard. More detailed analytics coming
-                  soon.
+                  Simple statistics dashboard. More detailed analytics coming soon.
                 </p>
               </div>
             </CardContent>
@@ -442,24 +381,20 @@ export default function ClothingDashboard() {
       </Tabs>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>Edit Clothing Model</DialogTitle>
-            <DialogDescription>
-              Update the details for this clothing model.
-            </DialogDescription>
+            <DialogDescription>Update the details for this clothing model.</DialogDescription>
           </DialogHeader>
           {editingModel && (
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-2">
               <div className="grid gap-2">
                 <Label htmlFor="edit-name">Name</Label>
                 <Input
                   id="edit-name"
                   className="w-full"
                   value={editingModel.name}
-                  onChange={(e) =>
-                    setEditingModel({ ...editingModel, name: e.target.value })
-                  }
+                  onChange={(e) => setEditingModel({ ...editingModel, name: e.target.value })}
                 />
               </div>
               <div className="grid gap-2">
@@ -471,35 +406,29 @@ export default function ClothingDashboard() {
                   onChange={(e) =>
                     setEditingModel({
                       ...editingModel,
-                      price: parseFloat(e.target.value),
+                      price: Number.parseFloat(e.target.value),
                     })
                   }
                 />
               </div>
-              <div className="flex gap-5 items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="grid gap-2">
                   <Label id="availability-label">Availability</Label>
-                  <Select
-                    onValueChange={(value) =>
-                      setEditingModel({ ...editingModel, availability: value })
-                    }
-                  >
+                  <Select onValueChange={(value) => setEditingModel({ ...editingModel, availability: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select availability" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="out-of-stock">Out of Stock</SelectItem>
-                      <SelectItem value="discontinued">Discontinued</SelectItem>
+                      <SelectItem value="Available">Available</SelectItem>
+                      <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+                      <SelectItem value="Discontinued">Discontinued</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label id="collection-label">Collection</Label>
                   <Select
-                    onValueChange={(value) =>
-                      setEditingModel({ ...editingModel, collection: value })
-                    }
+                    onValueChange={(value) => setEditingModel({ ...editingModel, collection: value })}
                     value={editingModel.collection}
                     aria-labelledby="collection-label"
                   >
@@ -516,9 +445,7 @@ export default function ClothingDashboard() {
                 <div className="grid gap-2">
                   <Label id="category-label">Category</Label>
                   <Select
-                    onValueChange={(value) =>
-                      setEditingModel({ ...editingModel, category: value })
-                    }
+                    onValueChange={(value) => setEditingModel({ ...editingModel, category: value })}
                     value={editingModel.category}
                     aria-labelledby="category-label"
                   >
@@ -546,16 +473,15 @@ export default function ClothingDashboard() {
                   }
                 />
               </div>
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 <p>Sizes Available</p>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-2">
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
                     <Toggle
                       key={size}
                       pressed={editingModel.sizes.includes(size)}
-                      onPressedChange={() =>
-                        handleToggleSize(editingModel, size, setEditingModel)
-                      }
+                      onPressedChange={() => handleToggleSize(editingModel, size, setEditingModel)}
+                      className="min-w-[40px]"
                     >
                       {size}
                     </Toggle>
@@ -570,11 +496,8 @@ export default function ClothingDashboard() {
               </div>
             </div>
           )}
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsEditDialogOpen(false)}
-            >
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleEditModel}>Save Changes</Button>
@@ -582,7 +505,7 @@ export default function ClothingDashboard() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }
 // ClothingDashboard.propTypes = {
 //   models: PropTypes.arrayOf(
@@ -596,3 +519,5 @@ export default function ClothingDashboard() {
 //       status: PropTypes.string.isRequired,
 //       imgUrl: PropTypes.string,
 //     })
+//   ),
+// };

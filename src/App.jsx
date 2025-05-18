@@ -47,7 +47,7 @@ const App = () => {
               <Hero />
               <NewCollections />
               <ShopNow />
-              <LimitedEditions />
+              {/*<LimitedEditions />*/}
               <Policy />
               <NewsLetter />
             </>
