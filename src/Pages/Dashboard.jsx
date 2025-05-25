@@ -337,7 +337,6 @@ export default function ClothingDashboard() {
         <TabsList className="mb-4">
           <TabsTrigger value="models">Models</TabsTrigger>
           <TabsTrigger value="stats">Stats</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
         <TabsContent value="models">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -413,54 +412,6 @@ export default function ClothingDashboard() {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-        <TabsContent value="orders">
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">Orders</h2>
-
-            {/* Status Controller Outside */}
-            <div className="flex items-center gap-4 border p-4 rounded-md w-fit">
-              <Select
-                onValueChange={(value) => {
-                  if (!selectedOrder) return
-
-                  setOrders((prevOrders) =>
-                    prevOrders.map((order) => (order.id === selectedOrder.id ? { ...order, status: value } : order)),
-                  )
-
-                  setSelectedOrder((prev) => ({
-                    ...prev,
-                    status: value,
-                  }))
-                }}
-                disabled={!selectedOrder}
-                value={selectedOrder?.status || "Pending"}
-              >
-                <SelectTrigger className="border border-gray-300 rounded px-2 py-1 min-w-[120px]">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Delivered">Delivered</SelectItem>
-                  <SelectItem value="Canceled">Canceled</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Show Current Status */}
-              <span className="text-sm text-gray-700">
-                Status: <strong>{selectedOrder?.status || "None selected"}</strong>
-              </span>
-            </div>
-
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <div className="flex justify-center items-center">
-                <Link to="/orders" className="text-blue-600 underline">
-                  View All Orders
-                </Link>
-              </div>
-            </div>
-          </div>
         </TabsContent>
       </Tabs>
 
