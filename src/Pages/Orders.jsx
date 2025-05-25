@@ -236,7 +236,7 @@ export default function OrderManagement() {
                   </td>
                   <td className="py-3 px-2">
                     {order.timestamp && !isNaN(new Date(order.timestamp))
-                      ? new Date(order.timestamp).toLocaleDateString()
+                    ? order.timestamp.toLocaleDateString()
                       : "N/A"}
                   </td>
                   <td className="py-3 px-2 font-medium">
