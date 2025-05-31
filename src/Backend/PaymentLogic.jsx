@@ -1,6 +1,6 @@
-import { useFlutterwave } from "flutterwave-react-v3";
-import { handlePlaceOrder } from "./OrderLogic";
-import { toast } from "sonner";
+// import { useFlutterwave } from "flutterwave-react-v3";
+// import { handlePlaceOrder } from "./OrderLogic";
+// import { toast } from "sonner";
 
 // const paymentLogic = (userDetails, amount, cartItems, navigate,products,setCartItems) => {
 //     const config = {
@@ -23,7 +23,7 @@ import { toast } from "sonner";
 
 //     const handleFlutterPayment = useFlutterwave(config);
 
-//     handleFlutterPayment({
+//     // handleFlutterPayment({
 //         callback: async (response) => {
 //             if (response.status !== "completed") {
 //                 toast.error("Payment Failed Try Again");
@@ -38,8 +38,6 @@ import { toast } from "sonner";
 //     });
 // };
 
-export const handlePayment =  async (userDetails, amount, cartItems, navigate, products, setCartItems) => {
-    // paymentLogic(userDetails, amount, cartItems, navigate, products, setCartItems);
-    const orderID = await handlePlaceOrder(cartItems,userDetails,"1234",products,setCartItems)
-    return orderID
-};
+// export const handlePayment = (userDetails, amount, cartItems, navigate,products,setCartItems) => {
+//   return paymentLogic(userDetails, amount, cartItems, navigate,products,setCartItems);
+// }; 
