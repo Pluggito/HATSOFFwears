@@ -23,6 +23,7 @@ import ImageUploader from "./Components/ImageUploader";
 import { Toaster } from "sonner";
 import OrderItems from "./Pages/OrderItems";
 import MobileNavbar from "./Components/MobileNavbar";
+import ProtectedRoute from "./Components/ProtectedRoute";
 // import 'react-toastify/dist/ReactToastify.css'
 
 const App = () => {
@@ -58,7 +59,7 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/admin" element={<Admin />} />
-        <Route path="/dashboard" element={<ClothingDashboard />} />
+        <Route path="/dashboard" element={<ProtectedRoute> <ClothingDashboard /></ProtectedRoute>} />
         {/* <Route path="/testing" element={<Testing/>}/> */}
         <Route path="/Dash2" element={<ImageUploader />} />
 

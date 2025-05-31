@@ -2,7 +2,9 @@ import { useContext, useState } from "react";
 import CartTotal from "../Components/CartTotal";
 import Title from "../Components/Title";
 import { ShopContext } from "../Context/ShopContext";
-import { handlePayment } from "../Backend/PaymentLogic";
+import { useFlutterwave } from "flutterwave-react-v3";
+import { handlePlaceOrder } from "../Backend/OrderLogic";
+import { toast } from "sonner";
 
 const PlaceOrder = () => {
   const [firstName, setFirstName] = useState("");
@@ -12,14 +14,6 @@ const PlaceOrder = () => {
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
 
-  const userDetails = {
-    firstName,
-    lastName,
-    email,
-    phone,
-    address,
-  };
-
   const {
     cartItems,
     getCartAmount,
@@ -28,40 +22,59 @@ const PlaceOrder = () => {
     products,
     setCartItems,
   } = useContext(ShopContext);
+
   const Amount = getCartAmount() + delivery_fee;
 
-  const sendWhatsappMessage = (orderID) => {
-    const message = `Hello, My name is ${userDetails.firstName} I have just placed an order with the ID: ${orderID}. Please let me know if any further information is needed. Thank you!`;
-    const phoneNumber = "2348116354898";
-
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-      message
-    )}`;
-    window.open(url, "_blank"); // open in new tab
+  const userDetails = {
+    firstName,
+    lastName,
+    email,
+    phone,
+    address,
   };
 
-  const handleSubmit = async (e) => {
+  const config = {
+    public_key: "FLWPUBK_TEST-d94776c57970d805d8371952a814636c-X",
+    tx_ref: Date.now().toString(),
+    amount: Amount,
+    currency: "NGN",
+    payment_options: "card,mobilemoney,ussd",
+    customer: {
+      email,
+      phone_number: phone,
+      name: `${firstName} ${lastName}`,
+    },
+    customizations: {
+      title: "HatsOff Store",
+      description: "Payment for items in cart",
+      logo: "https://salescabal.s3.eu-west-3.amazonaws.com/stores/208793/hatsoff.jpeg?t=1746971899511",
+    },
+  };
+
+  const handleFlutterPayment = useFlutterwave(config);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!firstName || !lastName || !email || !phone || !address) {
       setError("Please fill in all fields");
-      setTimeout(() => {
-        setError("");
-      }, 3000);
-
+      setTimeout(() => setError(""), 3000);
       return;
     }
-    //window.location.href = "https://sandbox.flutterwave.com/pay/3yqcw1lfjesg";
 
-    // function to handle order placement logic
-    const orderID = await handlePayment(
-      userDetails,
-      Amount,
-      cartItems,
-      navigate,
-      products,
-      setCartItems
-    );
-    sendWhatsappMessage(orderID);
+    handleFlutterPayment({
+      callback: async (response) => {
+        if (response.status !== "completed") {
+          toast.error("Payment Failed. Try Again");
+        } else {
+          const trans_id = response.transaction_id;
+          await handlePlaceOrder(cartItems, userDetails, trans_id, products, setCartItems);
+          navigate("/order-summary");
+          toast.success("Payment Successful");
+        }
+      },
+      onClose: () => {},
+    });
+
     localStorage.removeItem("cartItems");
   };
 
@@ -118,21 +131,21 @@ const PlaceOrder = () => {
           onChange={(e) => setPhone(e.target.value)}
           value={phone}
         />
+
+        <div className="w-full text-end mt-4">
+          <button
+            type="submit"
+            className="bg-black text-white px-16 py-3 text-sm"
+          >
+            PLACE ORDER
+          </button>
+        </div>
       </form>
 
       {/*---------Right Side -------- */}
       <div className="mt-8">
         <div className="mt-8 min-w-80">
           <CartTotal />
-        </div>
-
-        <div className="w-full text-end mt-8">
-          <button
-            onClick={handleSubmit}
-            className="bg-black text-white px-16 py-3 text-sm"
-          >
-            PLACE ORDER
-          </button>
         </div>
       </div>
     </div>

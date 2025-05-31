@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { setLogLevel } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -10,7 +11,8 @@ const firebaseConfig = {
   appId: "1:650231545482:web:8df9b954d051eefbed3773",
 };
 
+setLogLevel("silent"); // Set log level to silent to suppress logs
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export {addDoc,db,collection}
+export { addDoc, db, collection, app };
