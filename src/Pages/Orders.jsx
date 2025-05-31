@@ -38,6 +38,15 @@ export default function OrderManagement() {
     }
   };
 
+  const TimestampDisplay = ({ timestamp }) => {
+    // Convert Firestore Timestamp to JS Date
+    const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);
+  
+    const formattedDate = date.toLocaleString(); 
+  
+    return <div>{formattedDate}</div>;
+  };
+
   // Initialize orders with dummy data if no initialOrders are provided
   useState(() => {
     fetchOrders();
@@ -112,8 +121,6 @@ export default function OrderManagement() {
   };
 
   const navigate = useNavigate();
-
-  console.log(orders.timestamp);
   return (
     <div className="space-y-6 py-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -214,7 +221,7 @@ export default function OrderManagement() {
             <thead className="bg-gray-100">
               <tr className="text-left text-sm text-gray-600">
                 <th className="py-3 px-2 font-medium">Order Number</th>
-                <th className="py-3 px-2 font-medium">Date</th>
+                <th className="py-3 px-2 font-medium">Date | Time</th>
                 <th className="py-3 px-2 font-medium">Total</th>
                 <th className="py-3 px-2 font-medium">Status</th>
                 <th className="py-3 px-2 font-medium">Actions</th>
@@ -235,8 +242,8 @@ export default function OrderManagement() {
                     #{order.orderNumber}
                   </td>
                   <td className="py-3 px-2">
-                    {order.timestamp && !isNaN(new Date(order.timestamp))
-                    ? order.timestamp.toLocaleDateString()
+                    {order.timestamp
+                      ? <TimestampDisplay timestamp={order.timestamp}/>
                       : "N/A"}
                   </td>
                   <td className="py-3 px-2 font-medium">
