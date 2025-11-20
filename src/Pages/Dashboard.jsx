@@ -41,10 +41,15 @@ export default function ClothingDashboard() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [file, setFile] = useState(null)
   const [isProduct, setIsProduct] = useState(null)
+  //eslint-disable-next-line no-unused-vars
   const [orderCount, setOrderCount] = useState(0)
+   //eslint-disable-next-line no-unused-vars
   const [pendingOrderCount, setPendingOrderCount] = useState(0)
+   //eslint-disable-next-line no-unused-vars
   const [completedOrderCount, setCompletedOrderCount] = useState(0)
+   //eslint-disable-next-line no-unused-vars
   const [orders, setOrders] = useState([]) // State to hold orders
+   //eslint-disable-next-line no-unused-vars
   const [selectedOrder, setSelectedOrder] = useState(null)
 
   // Close modal when escape key is pressed

@@ -6,12 +6,15 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import axios from "axios";
+//import axios from "axios";
 import { db } from "./firebase";
 import { toast } from "sonner";
+import { uploadFiles } from "../lib/uploadthing";
+//import { set } from "mongoose";
 
 // 🔄 Uploads an image to Cloudinary and returns its URL
-export const handleImageUpload = async (file) => {
+{
+  /*export const handleImageUpload = async (file) => {
   const formData = new FormData();
   const presetName = import.meta.env.VITE_CLOUDINARY_PRESET;
   formData.append("file", file);
@@ -38,6 +41,26 @@ export const handleImageUpload = async (file) => {
       "Cloudinary upload failed:",
       error.response?.data || error.message
     );
+    return null;
+  }
+};*/
+}
+
+// 📤 Uploads an image file using UploadThing and returns its URLs
+export const handleImageUpload = async (file) => {
+  try {
+    const res = await uploadFiles("imageUploader", { files: [file] });
+    console.log("UploadThing result:", res);
+
+    if (!res || res.length === 0) {
+      return null;
+    }
+    return {
+      secureUrl: res[0].url, // final CDN URL
+      publicId: res[0].key, // UploadThing file identifier
+    };
+  } catch (error) {
+    console.error("UploadThing upload failed:", error);
     return null;
   }
 };
@@ -104,7 +127,6 @@ export const getOrders = async () => {
   }
 };
 
-
 export const updateOrderStatus = async (orderId, status) => {
   try {
     if (!orderId) {
@@ -117,9 +139,9 @@ export const updateOrderStatus = async (orderId, status) => {
     toast.success("Order status updated successfully!");
   } catch (error) {
     toast.error("Update Order Status Error:", error.message);
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 // ✏️ Updates a product in Firestore
 export const updateProduct = async (productData) => {
