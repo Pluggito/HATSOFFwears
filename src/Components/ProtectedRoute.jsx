@@ -1,39 +1,51 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../Context/AuthContext"; // Adjust path as needed
+import  { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { useAuth } from "../Context/AuthContext"; 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/Components/ui/card";
+
+import { Input } from "@/Components/ui/input";
 
 const LoginForm = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [inputValue, setInputValue] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     try {
-      await login(email, password);
+      await login(inputValue.email, inputValue.password);
     } catch {
       setError("Invalid credentials");
     }
   };
-
 return (
     <form
         onSubmit={handleSubmit}
-        style={{
-            maxWidth: 380,
-            margin: "4rem auto",
-            padding: "2.5rem 2rem",
-            background: "#fff",
-            borderRadius: 12,
-            boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "1.5rem",
-            fontFamily: "Segoe UI, Arial, sans-serif"
-        }}
+    className="min-h-screen flex items-center justify-center px-4"
     >
-        <h2 style={{ textAlign: "center", margin: 0, color: "#222" }}>Hats Off Admin Login</h2>
-        {error && (
+        <div className="w-full max-w-md py-10">
+            <Card className="w-full mx-auto py-10">
+                <CardHeader>
+                    <CardTitle className="text-3xl font-bold text-center">
+                        Admin
+                    </CardTitle>
+                </CardHeader>
+                 {error && (
             <div
                 style={{
                     color: "#d32f2f",
@@ -47,70 +59,32 @@ return (
                 {error}
             </div>
         )}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            <label htmlFor="admin-email" style={{ fontWeight: 500, color: "#444" }}>
-                Email
-            </label>
-            <input
-                id="admin-email"
-                type="email"
-                placeholder="Enter admin email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                style={{
-                    padding: "0.75rem",
-                    borderRadius: 6,
-                    border: "1px solid #ccc",
-                    fontSize: 16,
-                    outline: "none",
-                    transition: "border 0.2s",
-                }}
-                onFocus={e => (e.target.style.border = "1.5px solid #1976d2")}
-                onBlur={e => (e.target.style.border = "1px solid #ccc")}
-            />
+                <CardContent className="flex flex-col gap-4">
+                    <Input
+                        placeholder="Enter your email"
+                        name="email"
+                        id="Email"
+                        onChange={handleInputChange}
+                        value={inputValue.email}
+                    />
+                    <Input
+                        placeholder="Enter your password"
+                        name="password"
+                        id="Password"
+                        onChange={handleInputChange}
+                        value={inputValue.password}
+                    />
+                </CardContent>
+                <CardFooter className="flex justify-center items-center gap-2">
+                    <button
+                        className="bg-black text-white text-sm px-10 py-4 cursor-pointer"
+                        type="submit"
+                    >
+                        Submit
+                    </button>
+                </CardFooter>
+            </Card>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            <label htmlFor="admin-password" style={{ fontWeight: 500, color: "#444" }}>
-                Password
-            </label>
-            <input
-                id="admin-password"
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{
-                    padding: "0.75rem",
-                    borderRadius: 6,
-                    border: "1px solid #ccc",
-                    fontSize: 16,
-                    outline: "none",
-                    transition: "border 0.2s",
-                }}
-                onFocus={e => (e.target.style.border = "1.5px solid #1976d2")}
-                onBlur={e => (e.target.style.border = "1px solid #ccc")}
-            />
-        </div>
-        <button
-            type="submit"
-            style={{
-                padding: "0.85rem",
-                borderRadius: 6,
-                border: "none",
-                background: "linear-gradient(90deg, #1976d2 60%, #1565c0 100%)",
-                color: "#fff",
-                fontWeight: 600,
-                fontSize: 17,
-                cursor: "pointer",
-                letterSpacing: 1,
-                boxShadow: "0 2px 8px rgba(25, 118, 210, 0.08)",
-                transition: "background 0.2s"
-            }}
-        >
-            Login
-        </button>
     </form>
 );
 };
@@ -132,4 +106,9 @@ const ProtectedRoute = ({ children }) => {
 
   return children;
 };
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node
+};
+
 export default ProtectedRoute;
