@@ -3,7 +3,7 @@ import { useState } from "react";
 import NewsLetter from "./Pages/NewsLetter";
 import NewCollections from "./Pages/NewCollections";
 import Hero from "./Components/Hero";
-import LimitedEditions from "./Pages/LimitedEditions";
+//import LimitedEditions from "./Pages/LimitedEditions";
 import Policy from "./Pages/Policy";
 import Collections from "./Pages/Collections";
 import About from "./Pages/About";
@@ -17,7 +17,7 @@ import Footer from "./Components/Footer";
 import SearchBar from "./Components/SearchBar";
 import OrderSummary from "./Pages/OrderSummary";
 import ShopNow from "./Pages/ShopNow";
-import Admin from "./Pages/Admin";
+//import Admin from "./Pages/Admin";
 import ClothingDashboard from "./Pages/Dashboard";
 import ImageUploader from "./Components/ImageUploader";
 import { Toaster } from "sonner";
@@ -58,7 +58,6 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:productId" element={<Product />} />
-        <Route path="/admin" element={<Admin />} />
         <Route path="/dashboard" element={<ProtectedRoute> <ClothingDashboard /></ProtectedRoute>} />
         {/* <Route path="/testing" element={<Testing/>}/> */}
         <Route path="/Dash2" element={<ImageUploader />} />

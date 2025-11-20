@@ -117,7 +117,7 @@ const Collections = () => {
           </div>
         </div>
 
-        <div
+       {/* <div
           className={`border border-gray-300 pl-5 py-3 my-6 ${
             showFilter ? "" : "hidden"
           } sm:block`}
@@ -137,10 +137,10 @@ const Collections = () => {
               </label>
             ))}
           </div>
-        </div>
+        </div>*/}
       </div>
 
-      {/* PRODUCTS GRID */}
+      {/* PRODUCTS */}
       <div className="flex-1">
         <div className="flex justify-between text-base sm:text-2xl mb-4">
           <Title text1="ALL" text2="COLLECTIONS" />
