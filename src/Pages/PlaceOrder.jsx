@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "../Components/ui/dialog"
 import { Button } from "../Components/ui/button"
 
+
 const PlaceOrder = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -42,8 +43,9 @@ const PlaceOrder = () => {
   if (coupon === '1YEAR19') {
     finalAmount = Amount * 0.85; // 15% off
     setTotalAmount(finalAmount)
+    toast.success('15% Coupon applied')
   } else if (coupon.trim()) {
-    // toast.error("Invalid coupon code");
+    //toast.error("Invalid coupon code");
   }
   // PAYSTACK CONFIG
   const paystackConfig = {
