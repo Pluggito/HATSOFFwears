@@ -6,8 +6,8 @@ import { usePaystackPayment } from "react-paystack";
 import { handlePlaceOrder } from "../Backend/OrderLogic";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose} from "../Components/ui/dialog"
-import {Button} from "../Components/ui/button"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "../Components/ui/dialog"
+import { Button } from "../Components/ui/button"
 
 const PlaceOrder = () => {
   const [firstName, setFirstName] = useState("");
@@ -25,6 +25,7 @@ const PlaceOrder = () => {
     delivery_fee,
     products,
     setCartItems,
+    setTotalAmount,
   } = useContext(ShopContext);
 
   const Amount = getCartAmount() + delivery_fee;
@@ -37,13 +38,22 @@ const PlaceOrder = () => {
     address,
   };
 
+  let finalAmount = Amount;
+  if (coupon === '1YEAR19') {
+    finalAmount = Amount * 0.85; // 15% off
+    setTotalAmount(finalAmount)
+  } else if (coupon.trim()) {
+    // toast.error("Invalid coupon code");
+  }
   // PAYSTACK CONFIG
   const paystackConfig = {
     publicKey: "pk_live_193256cd7c094ab828222c22c0cf8f82add8984e", // CHANGE THIS
     email: email,
-    amount: Amount * 100, // In Kobo
+    amount: finalAmount * 100, // In Kobo
     currency: "NGN",
   };
+
+
 
   const initializePayment = usePaystackPayment(paystackConfig);
 
@@ -137,32 +147,32 @@ const PlaceOrder = () => {
           onChange={(e) => setPhone(e.target.value)}
           value={phone}
         />
-      
-      <Dialog>
-        <DialogTrigger asChild >
-      <p className="cursor-pointer">Have a coupon code?</p>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogTitle>
-            Enter Coupon Code
-          </DialogTitle>
-          <DialogHeader>
-          <div className="grid gap-3">
-              <input id="name-1" name="name" defaultValue="Coupon code" 
-              className="border-b-rose-100"
-              onChange={(e)=> setCoupon(e.target.value)}
-              value={coupon}/>
-            </div>
-          </DialogHeader>
-          <DialogFooter>
- <DialogClose asChild>
-              <Button variant="outline">Enter</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
 
-      </Dialog>
-        
+        <Dialog>
+          <DialogTrigger asChild >
+            <p className="cursor-pointer">Have a coupon code?</p>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogTitle>
+              Enter Coupon Code
+            </DialogTitle>
+            <DialogHeader>
+              <div className="grid gap-3">
+                <input id="name-1" name="name" defaultValue="Coupon code"
+                  className="border-b-rose-100"
+                  onChange={(e) => setCoupon(e.target.value)}
+                  value={coupon} />
+              </div>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Enter</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+
+        </Dialog>
+
 
         <div className="w-full text-end mt-4">
           <button

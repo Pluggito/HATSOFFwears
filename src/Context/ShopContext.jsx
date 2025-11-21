@@ -16,6 +16,7 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("cartItems");
@@ -134,12 +135,14 @@ const ShopContextProvider = (props) => {
       showSearch,
       setShowSearch,
       cartItems,
+      totalAmount,
       addToCart,
       getCartCount,
       getCartAmount,
       updateQuantity,
       navigate,
       setCartItems,
+      setTotalAmount,
     }),
     [
       products,
@@ -148,6 +151,7 @@ const ShopContextProvider = (props) => {
       search,
       loading,
       error,
+      totalAmount,
       setSearch,
       showSearch,
       setShowSearch,
@@ -158,6 +162,7 @@ const ShopContextProvider = (props) => {
       navigate,
       updateQuantity,
       setCartItems,
+      setTotalAmount,
     ]
   );
 
