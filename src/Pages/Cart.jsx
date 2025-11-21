@@ -59,6 +59,8 @@ const Cart = () => {
             (product) => product.id === item.id
           );
 
+          if (!productData) return null;
+
           return (
             <div
               key={index}
