@@ -40,13 +40,19 @@ const PlaceOrder = () => {
   };
 
   let finalAmount = Amount;
-  if (coupon === '1YEAR19') {
+
+  const handleCoupon =() =>{
+
+    if (coupon === '1YEAR19') {
     finalAmount = Amount * 0.85; // 15% off
-    setTotalAmount(finalAmount)
-    toast.success('15% Coupon applied')
+    toast.success('15% off Coupon applied')
+    setTotalAmount(finalAmount)    
   } else if (coupon.trim()) {
     //toast.error("Invalid coupon code");
   }
+
+  }
+  
   // PAYSTACK CONFIG
   const paystackConfig = {
     publicKey: "pk_live_193256cd7c094ab828222c22c0cf8f82add8984e", // CHANGE THIS
@@ -168,7 +174,7 @@ const PlaceOrder = () => {
             </DialogHeader>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Enter</Button>
+                <Button variant="outline" onClick={handleCoupon}>Enter</Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>
