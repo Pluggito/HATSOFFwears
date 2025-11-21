@@ -13,6 +13,7 @@ const PlaceOrder = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [coupon, setCoupon] = useState("")
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -133,6 +134,13 @@ const PlaceOrder = () => {
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
           onChange={(e) => setPhone(e.target.value)}
           value={phone}
+        />
+        <input
+        type="text"
+        placeholder="enter coupon"
+        className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+        onChange={(e)=> setCoupon(e.target.value)}
+        value={coupon}
         />
 
         <div className="w-full text-end mt-4">
