@@ -1,13 +1,16 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ShopContext } from "../Context/ShopContext";
 import Title from "./Title";
 
 const CartTotal = () => {
-  const { currency, delivery_fee, getCartAmount } = useContext(ShopContext);
+  const { currency, delivery_fee, getCartAmount, setTotalAmount, totalAmount } = useContext(ShopContext);
 
   const cartAmount = getCartAmount();
-  const totalAmount = cartAmount === 0 ? 0 : cartAmount + delivery_fee;
+  const tAmount = cartAmount === 0 ? 0 : cartAmount + delivery_fee
 
+  useEffect(() => {
+    setTotalAmount(cartAmount + delivery_fee);
+  }, [cartAmount, delivery_fee]);
   return (
     <div className="w-full">
       <div className="text-2xl">
