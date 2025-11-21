@@ -6,6 +6,8 @@ import { usePaystackPayment } from "react-paystack";
 import { handlePlaceOrder } from "../Backend/OrderLogic";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose} from "../Components/ui/dialog"
+import {Button} from "../Components/ui/button"
 
 const PlaceOrder = () => {
   const [firstName, setFirstName] = useState("");
@@ -135,13 +137,32 @@ const PlaceOrder = () => {
           onChange={(e) => setPhone(e.target.value)}
           value={phone}
         />
-        <input
-        type="text"
-        placeholder="enter coupon"
-        className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-        onChange={(e)=> setCoupon(e.target.value)}
-        value={coupon}
-        />
+      
+      <Dialog>
+        <DialogTrigger asChild >
+      <p className="cursor-pointer">Have a coupon code?</p>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogTitle>
+            Enter Coupon Code
+          </DialogTitle>
+          <DialogHeader>
+          <div className="grid gap-3">
+              <input id="name-1" name="name" defaultValue="Coupon code" 
+              className="border-b-rose-100"
+              onChange={(e)=> setCoupon(e.target.value)}
+              value={coupon}/>
+            </div>
+          </DialogHeader>
+          <DialogFooter>
+ <DialogClose asChild>
+              <Button variant="outline">Enter</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+
+      </Dialog>
+        
 
         <div className="w-full text-end mt-4">
           <button
