@@ -26,7 +26,7 @@ export default function Footer() {
             className="cursor-pointer text-gray-700 no-underline"
           >
             <FontAwesomeIcon icon={faInstagram} />
-            _official_hatsoff
+            hatsoff_clb
           </a>
         </ul>
       </div>
