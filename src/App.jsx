@@ -24,6 +24,7 @@ import { Toaster } from "sonner";
 import OrderItems from "./Pages/OrderItems";
 import MobileNavbar from "./Components/MobileNavbar";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import Checkout from "./Pages/TestCheckoutPage";
 // import 'react-toastify/dist/ReactToastify.css'
 
 const App = () => {
@@ -67,6 +68,7 @@ const App = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/order-summary" element={<OrderSummary />} />
         <Route path="/order-items/:orderId" element={<OrderItems />} />
+        <Route path="/test-paystack" element={<Checkout/>}/>
       </Routes>
       <Footer />
     </div>
