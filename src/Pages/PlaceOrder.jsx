@@ -163,7 +163,7 @@ const PlaceOrder = () => {
               <PaystackButton
                 email={email}
                 amount={finalAmount * 100}
-                publicKey="pk_test_5c6400f1abdd229c8ae188982a022e37cee354d5"
+                publicKey="pk_live_193256cd7c094ab828222c22c0cf8f82add8984e"
                 text="PLACE ORDER"
                 onSuccess={handlePaymentSuccess}
                 onClose={() => toast.error("Payment cancelled or closed.")}
