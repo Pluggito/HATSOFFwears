@@ -37,7 +37,7 @@ const Contact = () => {
           </p>
           <p className="text-gray-500">
             <FontAwesomeIcon icon={faInstagram} />
-            <span className="ml-3">_official_hatsoff</span>
+            <span className="ml-3">hatsoff_clb</span>
           </p>
           <p className="text-gray-500">
             <FontAwesomeIcon icon={faEnvelope} />

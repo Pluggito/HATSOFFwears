@@ -291,7 +291,7 @@ export default function ClothingDashboard() {
                     <SelectContent>
                       <SelectItem value="T-shirt">T-shirt</SelectItem>
                       <SelectItem value="Jeans">Jeans</SelectItem>
-                      <SelectItem value="Accessories">Accessories</SelectItem>
+                      <SelectItem value="Cap">Cap</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -516,7 +516,7 @@ export default function ClothingDashboard() {
                     <SelectContent>
                       <SelectItem value="T-shirt">T-shirt</SelectItem>
                       <SelectItem value="Jeans">Jeans</SelectItem>
-                      <SelectItem value="Accessories">Accessories</SelectItem>
+                      <SelectItem value="Cap">Cap</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
