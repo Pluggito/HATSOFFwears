@@ -1,14 +1,21 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import CartTotal from "../Components/CartTotal";
 import Title from "../Components/Title";
 import { ShopContext } from "../Context/ShopContext";
-import { usePaystackPayment } from "react-paystack";
 import { handlePlaceOrder } from "../Backend/OrderLogic";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "../Components/ui/dialog"
-import { Button } from "../Components/ui/button"
-
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "../Components/ui/dialog";
+import { Button } from "../Components/ui/button";
+import { PaystackButton } from "react-paystack";
 
 const PlaceOrder = () => {
   const [firstName, setFirstName] = useState("");
@@ -16,8 +23,9 @@ const PlaceOrder = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [coupon, setCoupon] = useState("")
+  const [coupon, setCoupon] = useState("");
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const {
@@ -31,84 +39,50 @@ const PlaceOrder = () => {
 
   const Amount = getCartAmount() + delivery_fee;
 
-  const userDetails = {
-    firstName,
-    lastName,
-    email,
-    phone,
-    address,
-  };
-
+  // APPLY COUPON DISCOUNT
   let finalAmount = Amount;
-
-  const handleCoupon =() =>{
-
-    if (coupon === '1YEAR19') {
-    finalAmount = Amount * 0.85; // 15% off
-    toast.success('15% off Coupon applied')
-    setTotalAmount(finalAmount)    
-  } else if (coupon.trim()) {
-    //toast.error("Invalid coupon code");
+  if (coupon.trim().toUpperCase() === "1YEAR19") {
+    finalAmount = Amount * 0.85;
   }
 
-  }
-  
-  // PAYSTACK CONFIG
-  const paystackConfig = {
-    publicKey: "pk_live_193256cd7c094ab828222c22c0cf8f82add8984e", // CHANGE THIS
-    email: email,
-    amount: finalAmount * 100, // In Kobo
-    currency: "NGN",
+  useEffect(() => {
+    setTotalAmount(finalAmount);
+  }, [coupon, Amount]);
+
+  const handleCoupon = () => {
+    if (coupon.trim().toUpperCase() === "1YEAR19") {
+      toast.success("15% off coupon applied!");
+    } else {
+      toast.error("Invalid coupon code");
+    }
   };
 
+  const userDetails = { firstName, lastName, email, phone, address };
 
+  // VALIDATION
+  const isFormValid = firstName && lastName && email && phone && address;
 
-  const initializePayment = usePaystackPayment(paystackConfig);
-
-  // HANDLE FORM SUBMIT
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!firstName || !lastName || !email || !phone || !address) {
-      setError("Please fill in all fields");
-      setTimeout(() => setError(""), 3000);
-      return;
-    }
-
-    // TRIGGER PAYSTACK POPUP
-    initializePayment(
-      async (response) => {
-        // SUCCESS CALLBACK
-        const reference = response.reference;
-
-        toast.loading("Processing order...");
-
-        await handlePlaceOrder(
-          cartItems,
-          userDetails,
-          reference,
-          products,
-          setCartItems
-        );
-
-        toast.dismiss();
-        toast.success("Payment Successful!");
-
-        navigate("/order-summary");
-        localStorage.removeItem("cartItems");
-      },
-      () => toast.error("Payment cancelled or closed.")
+  // SUCCESS CALLBACK
+  const handlePaymentSuccess = async (response) => {
+    toast.loading("Processing order...");
+    await handlePlaceOrder(
+      cartItems,
+      userDetails,
+      response.reference,
+      products,
+      setCartItems
     );
+    toast.dismiss();
+    toast.success("Payment Successful!");
+
+    localStorage.removeItem("cartItems");
+    navigate("/order-summary");
   };
 
   return (
     <div className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t">
-
-      {/*-----Left Side-------- */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-full sm:max-w-[480px]"
-      >
+      {/* LEFT SIDE */}
+      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
         <div className="text-xl sm:text-2xl my-3">
           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
         </div>
@@ -120,15 +94,15 @@ const PlaceOrder = () => {
             type="text"
             placeholder="First name"
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            onChange={(e) => setFirstName(e.target.value)}
             value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
           <input
             type="text"
             placeholder="Last name"
             className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            onChange={(e) => setLastName(e.target.value)}
             value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           />
         </div>
 
@@ -136,69 +110,82 @@ const PlaceOrder = () => {
           type="email"
           placeholder="Email address"
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          onChange={(e) => setEmail(e.target.value)}
           value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="text"
           placeholder="Address"
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          onChange={(e) => setAddress(e.target.value)}
           value={address}
+          onChange={(e) => setAddress(e.target.value)}
         />
 
         <input
           type="tel"
           placeholder="Phone number"
           className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          onChange={(e) => setPhone(e.target.value)}
           value={phone}
+          onChange={(e) => setPhone(e.target.value)}
         />
 
+        {/* COUPON */}
         <Dialog>
-          <DialogTrigger asChild >
+          <DialogTrigger asChild>
             <p className="cursor-pointer">Have a coupon code?</p>
           </DialogTrigger>
+
           <DialogContent className="sm:max-w-[425px]">
-            <DialogTitle>
-              Enter Coupon Code
-            </DialogTitle>
+            <DialogTitle>Enter Coupon Code</DialogTitle>
             <DialogHeader>
-              <div className="grid gap-3">
-                <input id="name-1" name="name" defaultValue="Coupon code"
-                  className="border-b-rose-100"
-                  onChange={(e) => setCoupon(e.target.value)}
-                  value={coupon} />
-              </div>
+              <input
+                placeholder="Coupon code"
+                className="border p-2 rounded"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
+              />
             </DialogHeader>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline" onClick={handleCoupon}>Enter</Button>
+                <Button variant="outline" onClick={handleCoupon}>
+                  Apply
+                </Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>
-
         </Dialog>
 
-
+        {/* PAYSTACK BUTTON */}
         <div className="w-full text-end mt-4">
-          <button
-            type="submit"
-            className="bg-black text-white px-16 py-3 text-sm"
-          >
-            PLACE ORDER
-          </button>
-        </div>
-      </form>
-
-      {/*---------Right Side -------- */}
-      <div className="mt-8">
-        <div className="mt-8 min-w-80">
-          <CartTotal />
+          {isFormValid ? (
+            <div className="bg-black text-white px-16 py-3 text-sm rounded">
+              <PaystackButton
+                email={email}
+                amount={finalAmount * 100}
+                publicKey="pk_live_193256cd7c094ab828222c22c0cf8f82add8984e"
+                text="PLACE ORDER"
+                onSuccess={handlePaymentSuccess}
+                onClose={() => toast.error("Payment cancelled or closed.")}
+                className="w-full"
+              />
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setError("Please fill in all fields")}
+              className="bg-black text-white px-16 py-3 text-sm opacity-50 cursor-not-allowed"
+            >
+              PLACE ORDER
+            </button>
+          )}
         </div>
       </div>
 
+      {/* RIGHT SIDE */}
+      <div className="mt-8">
+        <CartTotal />
+      </div>
     </div>
   );
 };
