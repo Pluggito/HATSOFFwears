@@ -29,7 +29,28 @@ const ShopContextProvider = (props) => {
     const fetchProducts = async () => {
       try {
         const productsFromDB = await getProducts();
-        setProducts(productsFromDB);
+
+        // 🏷️ APPLY 15% DISCOUNT LOGIC
+        const DISCOUNT_EXPIRY = new Date("2026-02-14T23:59:59"); // Expiry Date
+        const currentDate = new Date();
+
+        if (currentDate <= DISCOUNT_EXPIRY) {
+          const discountedProducts = productsFromDB.map((product) => {
+            const originalPrice = product.price;
+            const discountAmount = originalPrice * 0.15;
+            const newPrice = originalPrice - discountAmount;
+
+            return {
+              ...product,
+              originalPrice: originalPrice, // Store original price
+              price: newPrice, // Update to discounted price
+              discountPercentage: 15, // Store discount info
+            };
+          });
+          setProducts(discountedProducts);
+        } else {
+          setProducts(productsFromDB);
+        }
       } catch (err) {
         setError(err.message || "Failed to fetch");
       } finally {
@@ -68,7 +89,7 @@ const ShopContextProvider = (props) => {
 
       setCartItems(cartData);
     },
-    [cartItems]
+    [cartItems],
   );
 
   const getCartCount = useCallback(() => {
@@ -96,7 +117,7 @@ const ShopContextProvider = (props) => {
       cartData[itemId][size] = quantity;
       setCartItems(cartData);
     },
-    [cartItems]
+    [cartItems],
   );
 
   // I helped you update the getCartAmount function, there was a mistake before
@@ -163,7 +184,7 @@ const ShopContextProvider = (props) => {
       updateQuantity,
       setCartItems,
       setTotalAmount,
-    ]
+    ],
   );
 
   return (

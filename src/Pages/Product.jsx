@@ -52,10 +52,23 @@ const Product = () => {
         {/*-----Products Detaails------- */}
         <div className="flex-1">
           <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
-          <p className="mt-5 text-3xl font-medium">
-            {currency}
-            {productData.price.toLocaleString()}
-          </p>
+          <div className="mt-5 flex flex-col gap-1">
+            {productData.originalPrice && (
+              <div className="flex items-center gap-2">
+                <p className="text-xl text-gray-500 line-through">
+                  {currency}
+                  {productData.originalPrice.toLocaleString()}
+                </p>
+                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                  {productData.discountPercentage}% OFF
+                </span>
+              </div>
+            )}
+            <p className="text-3xl font-medium text-red-600">
+              {currency}
+              {productData.price.toLocaleString()}
+            </p>
+          </div>
           <p className="mt-5 text-gray-600 md:w-4/5 mb-5">
             {productData.description}
           </p>

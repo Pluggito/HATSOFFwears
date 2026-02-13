@@ -3,10 +3,12 @@ import { ShopContext } from "../Context/ShopContext";
 import Title from "../Components/Title";
 import { useState, useEffect } from "react";
 import ProductsItem from "../Components/ProductsItem";
+import { useNavigate } from "react-router-dom";
 
 const NewCollections = () => {
   const { products } = useContext(ShopContext);
   const [newCollections, setNewCollections] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // runs when products has loaded
@@ -44,8 +46,19 @@ const NewCollections = () => {
             image={item.imgUrl}
             name={item.name}
             price={item.price}
+            originalPrice={item.originalPrice}
+            discountPercentage={item.discountPercentage}
           />
         ))}
+      </div>
+
+      <div className="text-center mt-10">
+        <button
+          onClick={() => navigate("/collections")}
+          className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
+        >
+          VIEW ALL COLLECTIONS
+        </button>
       </div>
     </div>
   );

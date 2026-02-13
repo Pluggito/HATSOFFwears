@@ -58,14 +58,14 @@ const Collections = () => {
   const toggleCategory = (e) => {
     const val = e.target.value;
     setCategory((prev) =>
-      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val]
+      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val],
     );
   };
 
   const toggleSubCategory = (e) => {
     const val = e.target.value;
     setSubCategory((prev) =>
-      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val]
+      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val],
     );
   };
 
@@ -117,7 +117,7 @@ const Collections = () => {
           </div>
         </div>
 
-       {/* <div
+        {/* <div
           className={`border border-gray-300 pl-5 py-3 my-6 ${
             showFilter ? "" : "hidden"
           } sm:block`}
@@ -165,6 +165,8 @@ const Collections = () => {
                 image={item.imgUrl}
                 name={item.name}
                 price={item.price}
+                originalPrice={item.originalPrice}
+                discountPercentage={item.discountPercentage}
               />
             ))}
           </div>
