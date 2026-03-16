@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import NewsLetter from "./Pages/NewsLetter";
 import NewCollections from "./Pages/NewCollections";
