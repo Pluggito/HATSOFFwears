@@ -16,11 +16,10 @@ import {
   deleteProduct,
   getOrders,
   getProducts,
-  handleImageUpload,
   updateProduct,
 } from "../Backend/AdminLogic"
 
-import Testing from "../Components/Testing"
+import MultiImageUploader from "../Components/MultiImageUploader"
 import { toast } from "sonner"
 import { Link } from "react-router-dom"
 
@@ -39,7 +38,10 @@ export default function ClothingDashboard() {
   })
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [file, setFile] = useState(null)
+  // Multi-image state: newly selected File objects
+  const [newFiles, setNewFiles] = useState([])
+  // Edit mode: existing uploaded URLs the user wants to keep
+  const [editExistingUrls, setEditExistingUrls] = useState([])
   const [isProduct, setIsProduct] = useState(null)
   //eslint-disable-next-line no-unused-vars
   const [orderCount, setOrderCount] = useState(0)
@@ -82,8 +84,8 @@ export default function ClothingDashboard() {
       toast.error("Validation failed. Please fill in all fields.")
       return
     }
-    if (file == null || file == undefined) {
-      toast.error("Image file is required.")
+    if (newFiles.length === 0) {
+      toast.error("At least one image is required.")
       return
     }
 
@@ -93,8 +95,9 @@ export default function ClothingDashboard() {
     }
     setModels([...models, modelToAdd])
     setIsAddModalOpen(false)
-    await addProduct(modelToAdd, file, setNewModel) // Assuming addProduct is a function that adds the model to your database
-    fetchModels() // Refresh the models after adding
+    await addProduct(modelToAdd, newFiles, setNewModel)
+    fetchModels()
+    setNewFiles([])
     setNewModel({
       name: "",
       price: "",
@@ -116,8 +119,7 @@ export default function ClothingDashboard() {
       !model.collection ||
       !model.sizes.length ||
       !model.availability ||
-      !model.category.length ||
-      file == null
+      !model.category.length
     ) {
       return false
     }
@@ -131,20 +133,17 @@ export default function ClothingDashboard() {
   }
 
   const handleEditModel = async () => {
-    if (file != null || file != undefined) {
-      const imgData = await handleImageUpload(file)
-      if (!imgData) {
-        toast.error("Image upload failed. Aborting product update.")
-        return
-      }
-      editingModel.imgUrl = imgData.imgUrl // Update the image URL in the model
-      editingModel.imgPublicId = imgData.publicId // Update the public ID in the model
+    if (editExistingUrls.length === 0 && newFiles.length === 0) {
+      toast.error("At least one image is required.")
+      return
     }
 
-    await updateProduct(editingModel)
-    fetchModels() // Refresh the models after editing
+    await updateProduct(editingModel, newFiles, editExistingUrls)
+    fetchModels()
     setModels(models.map((model) => (model.id === editingModel.id ? editingModel : model)))
     setIsEditModalOpen(false)
+    setNewFiles([])
+    setEditExistingUrls([])
     toast.success("Model updated successfully")
   }
 
@@ -157,6 +156,14 @@ export default function ClothingDashboard() {
 
   const startEditing = (model) => {
     setEditingModel({ ...model })
+    // Normalise: support both old imgUrl (string) and new imgUrls (array)
+    const urls = model.imgUrls?.length
+      ? model.imgUrls
+      : model.imgUrl
+      ? [model.imgUrl]
+      : []
+    setEditExistingUrls(urls)
+    setNewFiles([])
     setIsEditModalOpen(true)
   }
 
@@ -321,10 +328,13 @@ export default function ClothingDashboard() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Image</Label>
-                <div className="flex items-center gap-4">
-                  <Testing setFile={setFile} />
-                </div>
+                <Label>Photos</Label>
+                <MultiImageUploader
+                  newFiles={newFiles}
+                  setNewFiles={setNewFiles}
+                  existingUrls={[]}
+                  setExistingUrls={() => {}}
+                />
               </div>
             </main>
 
@@ -366,7 +376,7 @@ export default function ClothingDashboard() {
                       <div className="flex gap-4 sm:gap-8">
                         <div className="h-28 w-28 rounded overflow-hidden">
                           <img
-                            src={model.imgUrl || "/placeholder.svg"}
+                            src={(model.imgUrls?.[0] ?? model.imgUrl) || "/placeholder.svg"}
                             alt={model.name}
                             className="h-full w-full object-cover aspect-square"
                           />
@@ -550,10 +560,13 @@ export default function ClothingDashboard() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Image</Label>
-                <div className="flex items-center gap-4">
-                  <Testing setFile={setFile} imgSrc={editingModel.imgUrl} />
-                </div>
+                <Label>Photos</Label>
+                <MultiImageUploader
+                  newFiles={newFiles}
+                  setNewFiles={setNewFiles}
+                  existingUrls={editExistingUrls}
+                  setExistingUrls={setEditExistingUrls}
+                />
               </div>
             </main>
 

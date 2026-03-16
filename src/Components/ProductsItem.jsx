@@ -44,7 +44,7 @@ export default function ProductsItem({
                 {originalPrice.toLocaleString()}
               </span>
             )}
-            <span className="font-medium text-lg text-red-600">
+            <span className="font-medium text-lg">
               {currency}
               {price.toLocaleString()}
             </span>

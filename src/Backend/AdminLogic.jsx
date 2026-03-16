@@ -46,43 +46,49 @@ import { uploadFiles } from "../lib/uploadthing";
 };*/
 }
 
-// 📤 Uploads an image file using UploadThing and returns its URLs
-export const handleImageUpload = async (file) => {
+// 📤 Uploads an array of image files using UploadThing and returns their URLs
+export const handleImageUpload = async (files) => {
   try {
-    const res = await uploadFiles("imageUploader", { files: [file] });
+    const res = await uploadFiles("imageUploader", { files });
     console.log("UploadThing result:", res);
 
     if (!res || res.length === 0) {
       return null;
     }
-    return {
-      secureUrl: res[0].url, // final CDN URL
-      publicId: res[0].key, // UploadThing file identifier
-    };
+    
+    return res.map((item) => ({
+      secureUrl: item.url, // final CDN URL
+      publicId: item.key, // UploadThing file identifier
+    }));
   } catch (error) {
     console.error("UploadThing upload failed:", error);
     return null;
   }
 };
 
-// 📥 Adds a new product to Firestore with image upload
-export const addProduct = async (productData, file, setNewModel) => {
+// 📥 Adds a new product to Firestore with multiple image uploads
+// files: File[]  (at least one required)
+export const addProduct = async (productData, files, setNewModel) => {
   try {
-    if (!file) {
-      throw new Error("Image file is required.");
+    if (!files || files.length === 0) {
+      throw new Error("At least one image file is required.");
     }
 
-    const imgData = await handleImageUpload(file);
-    if (!imgData) {
-      throw new Error("Image upload failed. Aborting product addition.");
+    // Upload all images in a single batch
+    const uploadResults = await handleImageUpload(files);
+    if (!uploadResults) {
+      throw new Error("Image uploads failed. Aborting product addition.");
     }
+
+    const imgUrls = uploadResults.map((r) => r.secureUrl);
+    const imgPublicIds = uploadResults.map((r) => r.publicId);
 
     const productRef = collection(db, "products");
 
     const docRef = await addDoc(productRef, {
       ...productData,
-      imgUrl: imgData.secureUrl,
-      imgPublicId: imgData.publicId,
+      imgUrls,
+      imgPublicIds,
       id: "", // Temporary placeholder
     });
 
@@ -91,15 +97,15 @@ export const addProduct = async (productData, file, setNewModel) => {
     if (typeof setNewModel === "function") {
       setNewModel({
         ...productData,
-        imgUrl: imgData.secureUrl,
-        imgPublicId: imgData.publicId,
+        imgUrls,
+        imgPublicIds,
         id: docRef.id,
       });
     }
 
     toast.success("Model added successfully!");
   } catch (error) {
-    toast.error("Add Product Error:", error.message);
+    toast.error("Add Product Error: " + error.message);
   }
 };
 
@@ -143,15 +149,33 @@ export const updateOrderStatus = async (orderId, status) => {
   }
 };
 
-// ✏️ Updates a product in Firestore
-export const updateProduct = async (productData) => {
+// ✏️ Updates a product in Firestore, optionally uploading additional images
+// newFiles: File[]  — optional new images to add on top of retainedUrls
+// retainedUrls: string[]  — existing URLs the user chose to keep
+export const updateProduct = async (productData, newFiles = [], retainedUrls = null) => {
   try {
     if (!productData?.id) {
       throw new Error("Product ID is required for update.");
     }
 
+    let mergedUrls = retainedUrls !== null ? [...retainedUrls] : (productData.imgUrls ?? []);
+    let mergedPublicIds = [...(productData.imgPublicIds ?? [])];
+
+    if (newFiles && newFiles.length > 0) {
+      const uploadResults = await handleImageUpload(newFiles);
+      if (!uploadResults) {
+        throw new Error("Image uploads failed during update.");
+      }
+      mergedUrls = [...mergedUrls, ...uploadResults.map((r) => r.secureUrl)];
+      mergedPublicIds = [...mergedPublicIds, ...uploadResults.map((r) => r.publicId)];
+    }
+
     const productDocRef = doc(db, "products", productData.id);
-    await updateDoc(productDocRef, productData);
+    await updateDoc(productDocRef, {
+      ...productData,
+      imgUrls: mergedUrls,
+      imgPublicIds: mergedPublicIds,
+    });
   } catch (error) {
     console.error("Update Product Error:", error.message);
   }
