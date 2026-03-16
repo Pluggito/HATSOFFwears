@@ -24,7 +24,7 @@ const ShopContextProvider = (props) => {
   });
   const navigate = useNavigate();
 
-  // Fetch Products once when component mounts
+  // Fetch Products once when component mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
