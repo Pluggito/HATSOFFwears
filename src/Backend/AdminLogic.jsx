@@ -50,14 +50,14 @@ import { uploadFiles } from "../lib/uploadthing";
 export const handleImageUpload = async (files) => {
   try {
     const res = await uploadFiles("imageUploader", { files });
-    console.log("UploadThing result:", res);
+   //console.log("UploadThing result:", res);
 
     if (!res || res.length === 0) {
       return null;
     }
     
     return res.map((item) => ({
-      secureUrl: item.url, // final CDN URL
+      secureUrl: item.ufsUrl, // final CDN URL
       publicId: item.key, // UploadThing file identifier
     }));
   } catch (error) {
