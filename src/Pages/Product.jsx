@@ -24,6 +24,7 @@ const Product = () => {
         setImage(images[0] ?? "");
         return null;
       }
+     // console.log(item.imgUrls)
     });
   };
 

@@ -2,7 +2,7 @@ import { createContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 // import { products } from "../assets/asset";
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { getProducts } from "../Backend/AdminLogic";
 import { useCallback } from "react";
 

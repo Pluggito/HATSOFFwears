@@ -11,14 +11,35 @@ const RelatedProducts = ({ category, subCategory }) => {
     if (products.length > 0) {
       let productsCopy = products.slice();
 
-      productsCopy = productsCopy.filter((item) => category === item.category);
-      productsCopy = productsCopy.filter(
-        (item) => subCategory === item.subCategory,
-      );
+      const normalize = (val) => {
+        if (!val) return "";
+        if (Array.isArray(val)) return String(val[0]).trim().toLowerCase();
+        return String(val).trim().toLowerCase();
+      };
+
+      if (category) {
+        const targetCategory = normalize(category);
+        productsCopy = productsCopy.filter(
+          (item) => normalize(item.category) === targetCategory
+        );
+      }
+      
+      const targetSub = normalize(subCategory);
+      if (targetSub) {
+        const refinedCopy = productsCopy.filter(
+          (item) =>
+            normalize(item.subCategory) === targetSub ||
+            normalize(item.type) === targetSub
+        );
+        // Fallback to broader category if subCategory is too strict
+        if (refinedCopy.length > 0) {
+          productsCopy = refinedCopy;
+        }
+      }
 
       setRelated(productsCopy.slice(0, 5));
     }
-  }, [products]);
+  }, [products, category, subCategory]);
 
   return (
     <div className="my-24">
@@ -33,7 +54,7 @@ const RelatedProducts = ({ category, subCategory }) => {
             id={item.id}
             name={item.name}
             price={item.price}
-            image={item.imgUrl}
+            image={item.imgUrls?.[0] || item.imgUrl}
             originalPrice={item.originalPrice}
             discountPercentage={item.discountPercentage}
           />

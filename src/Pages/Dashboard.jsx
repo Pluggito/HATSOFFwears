@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Edit, Plus, Trash, X } from "lucide-react"
+import { Edit, Plus, Trash, X, Loader2 } from "lucide-react"
 
 import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
@@ -38,6 +38,8 @@ export default function ClothingDashboard() {
   })
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isAdding, setIsAdding] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   // Multi-image state: newly selected File objects
   const [newFiles, setNewFiles] = useState([])
   // Edit mode: existing uploaded URLs the user wants to keep
@@ -89,25 +91,30 @@ export default function ClothingDashboard() {
       return
     }
 
-    const modelToAdd = {
-      ...newModel,
-      price: Number.parseFloat(newModel.price),
+    setIsAdding(true)
+    try {
+      const modelToAdd = {
+        ...newModel,
+        price: Number.parseFloat(newModel.price),
+      }
+      setModels([...models, modelToAdd])
+      setIsAddModalOpen(false)
+      await addProduct(modelToAdd, newFiles, setNewModel)
+      fetchModels()
+      setNewFiles([])
+      setNewModel({
+        name: "",
+        price: "",
+        description: "",
+        collection: "",
+        sizes: [],
+        availability: "",
+        category: [],
+        type: "",
+      })
+    } finally {
+      setIsAdding(false)
     }
-    setModels([...models, modelToAdd])
-    setIsAddModalOpen(false)
-    await addProduct(modelToAdd, newFiles, setNewModel)
-    fetchModels()
-    setNewFiles([])
-    setNewModel({
-      name: "",
-      price: "",
-      description: "",
-      collection: "",
-      sizes: [],
-      availability: "",
-      category: [],
-      type: "",
-    })
   }
 
   // you have to validate before adding a model
@@ -138,13 +145,24 @@ export default function ClothingDashboard() {
       return
     }
 
-    await updateProduct(editingModel, newFiles, editExistingUrls)
-    fetchModels()
-    setModels(models.map((model) => (model.id === editingModel.id ? editingModel : model)))
-    setIsEditModalOpen(false)
-    setNewFiles([])
-    setEditExistingUrls([])
-    toast.success("Model updated successfully")
+    setIsSaving(true)
+    try {
+      const modelToUpdate = {
+        ...editingModel,
+        price: Number.parseFloat(editingModel.price) || 0,
+      }
+
+      await updateProduct(modelToUpdate, newFiles, editExistingUrls)
+      await fetchModels()
+      setIsEditModalOpen(false)
+      setNewFiles([])
+      setEditExistingUrls([])
+      toast.success("Model updated successfully")
+    } catch (error) {
+      toast.error("Failed to update model")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleDeleteModel = async (productId) => {
@@ -339,10 +357,13 @@ export default function ClothingDashboard() {
             </main>
 
             <footer className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-              <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
+              <Button variant="outline" onClick={() => setIsAddModalOpen(false)} disabled={isAdding}>
                 Cancel
               </Button>
-              <Button onClick={handleAddModel}>Add Model</Button>
+              <Button onClick={handleAddModel} disabled={isAdding}>
+                {isAdding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Add Model
+              </Button>
             </footer>
           </div>
         </div>
@@ -474,7 +495,7 @@ export default function ClothingDashboard() {
                   onChange={(e) =>
                     setEditingModel({
                       ...editingModel,
-                      price: Number.parseFloat(e.target.value),
+                      price: e.target.value,
                     })
                   }
                 />
@@ -550,7 +571,7 @@ export default function ClothingDashboard() {
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
                     <Toggle
                       key={size}
-                      pressed={editingModel.sizes.includes(size)}
+                      pressed={editingModel.sizes?.includes(size)}
                       onPressedChange={() => handleToggleSize(editingModel, size, setEditingModel)}
                       className="flex-1 min-w-[40px] max-w-[60px]"
                     >
@@ -571,10 +592,13 @@ export default function ClothingDashboard() {
             </main>
 
             <footer className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+              <Button variant="outline" onClick={() => setIsEditModalOpen(false)} disabled={isSaving}>
                 Cancel
               </Button>
-              <Button onClick={handleEditModel}>Save Changes</Button>
+              <Button onClick={handleEditModel} disabled={isSaving}>
+                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Save Changes
+              </Button>
             </footer>
           </div>
         </div>
