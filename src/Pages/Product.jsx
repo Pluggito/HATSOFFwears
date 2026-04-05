@@ -36,10 +36,19 @@ const Product = () => {
       {/*Product Data */}
 
       <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
-        {/*------Product images---------*/}
-        <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row ">
-          {/* Thumbnail strip */}
-          <div className="flex flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full gap-2">
+        {/*------Product images (LEFT COLUMN)---------*/}
+        <div className="flex-1 flex flex-col sm:flex-row gap-3">
+          {/* Main image (keep original size: sm:80% width) */}
+          <div className="w-full sm:w-[75%]">
+            <img
+              src={image}
+              className="w-full h-auto"
+              alt={productData.name}
+            />
+          </div>
+
+          {/* Thumbnail strip (smaller column: ~18.7%) */}
+          <div className="flex flex-row overflow-x-auto sm:flex-col sm:overflow-y-auto sm:w-[18.7%] w-full gap-2 py-2">
             {(productData.imgUrls?.length
               ? productData.imgUrls
               : productData.imgUrl
@@ -49,25 +58,17 @@ const Product = () => {
               <img
                 key={i}
                 src={url}
-                className={`w-[50%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer border-2 transition-all ${
-                  image === url ? "border-black" : "border-transparent"
-                }`}
                 onClick={() => setImage(url)}
                 alt={`Thumbnail ${i + 1}`}
+                className={`flex-shrink-0 cursor-pointer border-2 transition-all object-cover
+                  ${image === url ? "border-black" : "border-transparent"}
+                  w-[20%] sm:w-[70%] sm:h-auto`}
               />
             ))}
           </div>
-          {/* Main image */}
-          <div className="w-full sm:w-[80%]">
-            <img
-              src={image}
-              className="w-full h-auto"
-              alt={productData.name}
-            />
-          </div>
         </div>
 
-        {/*-----Products Detaails------- */}
+        {/*-----Products Details (RIGHT COLUMN)------- */}
         <div className="flex-1">
           <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
           <div className="mt-5 flex flex-col gap-1">
