@@ -17,6 +17,8 @@ const Collections = () => {
   // Derived state
   const [filterProducts, setFilterProducts] = useState([]);
 
+  console.log(products)
+
   // 1) Apply filters & search whenever inputs change
   useEffect(() => {
     // Don’t attempt to filter until products have loaded
@@ -164,7 +166,7 @@ const Collections = () => {
               <ProductsItem
                 key={item.id}
                 id={item.id}
-                image={item.imgUrl}
+                image={item.imgUrls?.[0] || item.imgUrl || ""}
                 name={item.name}
                 price={item.price}
                 originalPrice={item.originalPrice}

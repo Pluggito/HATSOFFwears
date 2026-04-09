@@ -43,7 +43,7 @@ const NewCollections = () => {
           <ProductsItem
             key={index}
             id={item.id}
-            image={item.imgUrl}
+            image={item.imgUrls?.[0] || item.imgUrl || ""}
             name={item.name}
             price={item.price}
             originalPrice={item.originalPrice}

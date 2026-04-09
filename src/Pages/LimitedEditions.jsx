@@ -42,7 +42,7 @@ const LimitedEditions = () => {
             key={index}
             id={item.id}
             name={item.name}
-            image={item.imgUrl}
+            image={item.imgUrls?.[0] || item.imgUrl || ""}
             price={item.price}
           />
         ))}
