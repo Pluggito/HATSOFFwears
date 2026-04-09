@@ -1,11 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../Context/ShopContext";
+import { useNavigate } from "react-router-dom";
 import Title from "./Title";
 import ProductsItem from "./ProductsItem";
 
 const RelatedProducts = ({ category, subCategory }) => {
   const { products } = useContext(ShopContext);
   const [related, setRelated] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (products.length > 0) {
@@ -49,15 +51,20 @@ const RelatedProducts = ({ category, subCategory }) => {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
         {related.map((item, index) => (
-          <ProductsItem
-            key={index}
-            id={item.id}
-            name={item.name}
-            price={item.price}
-            image={item.imgUrls?.[0] || item.imgUrl}
-            originalPrice={item.originalPrice}
-            discountPercentage={item.discountPercentage}
-          />
+          <div
+            key={item.id ?? index}
+            className="cursor-pointer"
+            onClick={() => navigate(`/product/${item.id}`)}
+          >
+            <ProductsItem
+              id={item.id}
+              name={item.name}
+              price={item.price}
+              image={item.imgUrls?.[0] || item.imgUrl}
+              originalPrice={item.originalPrice}
+              discountPercentage={item.discountPercentage}
+            />
+          </div>
         ))}
       </div>
     </div>
