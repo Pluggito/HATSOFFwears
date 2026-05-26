@@ -5,17 +5,17 @@ import NewsLetter from "./NewsLetter";
 const About = () => {
   return (
     <div>
-      <div className="text 2xl text-center pt-8 border-t">
+      <div className="text 2xl text-center pt-8 border-t border-border/40">
         <Title text1={"ABOUT"} text2={"US"} />
       </div>
 
-      <div className="my-10 flex flex-col md:flex-row gap-16">
+      <div className="my-10 flex flex-col md:flex-row gap-16 text-foreground">
         <img
-          className="w-full md:max-w-[450px]"
+          className="w-full md:max-w-[450px] dark:invert"
           src={assets.logo_icon1}
           alt=""
         />
-        <div className="flex flex-col justify-center gap-6 md:w-2/4 text-gray-600">
+        <div className="flex flex-col justify-center gap-6 md:w-2/4 text-muted-foreground">
           <p>
             Welcome to HatsOff, your premier destination for authentic
             streetwear and urban fashion. Founded with a passion for style and
@@ -29,7 +29,7 @@ const About = () => {
             detail and a commitment to quality that our customers have come to
             trust and expect.
           </p>
-          <b className="text-gray-800">Our Mission</b>
+          <b className="text-foreground">Our Mission</b>
           <p>
             At HatsOff, our mission is to redefine streetwear culture by
             creating authentic, high-quality apparel that empowers

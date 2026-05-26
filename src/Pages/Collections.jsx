@@ -81,34 +81,34 @@ const Collections = () => {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
+    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t border-border/40">
       {/* FILTERS */}
       <div className="min-w-60">
         <p
-          className="my-2 text-xl flex items-center cursor-pointer gap-2"
+          className="my-2 text-xl flex items-center cursor-pointer gap-2 font-bold tracking-tight text-foreground"
           onClick={() => setShowFilter((s) => !s)}
         >
           FILTERS
           <FontAwesomeIcon
             icon={faCaretDown}
-            className={`text-[20px] sm:hidden ${
+            className={`text-[20px] sm:hidden transition-transform duration-200 ${
               showFilter ? "rotate-180" : ""
             }`}
           />
         </p>
 
         <div
-          className={`border border-gray-300 pl-5 py-3 mt-6 ${
+          className={`bg-card/50 backdrop-blur-md border border-border/60 pl-5 py-4 mt-6 rounded-2xl ${
             showFilter ? "" : "hidden"
           } sm:block`}
         >
-          <p className="mb-3 text-sm font-medium">CATEGORIES</p>
-          <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+          <p className="mb-3 text-xs font-semibold tracking-wider text-foreground uppercase">CATEGORIES</p>
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground">
             {["T-shirt", "Cap", "Jeans"].map((cat) => (
-              <label key={cat} className="flex gap-2">
+              <label key={cat} className="flex items-center gap-3 cursor-pointer hover:text-foreground transition-colors duration-200">
                 <input
                   type="checkbox"
-                  className="w-3"
+                  className="w-4 h-4 rounded border-border text-foreground focus:ring-ring bg-background cursor-pointer"
                   value={cat}
                   checked={category.includes(cat)}
                   onChange={toggleCategory}
@@ -117,20 +117,14 @@ const Collections = () => {
               </label>
             ))}
           </div>
-        </div>
-
-        {/* <div
-          className={`border border-gray-300 pl-5 py-3 my-6 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
-        >
-          <p className="mb-3 text-sm font-medium">TYPE</p>
-          <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+        {/* <div className="bg-card/50 backdrop-blur-md border border-border/60 pl-5 py-4 my-6 rounded-2xl sm:block hidden">
+          <p className="mb-3 text-xs font-semibold tracking-wider text-foreground uppercase">TYPE</p>
+          <div className="flex flex-col gap-2 text-sm text-muted-foreground">
             {["Jeka", "Nee-Classics", "Nee-Caps", "NC-Tee"].map((sub) => (
-              <label key={sub} className="flex gap-2">
+              <label key={sub} className="flex items-center gap-3 cursor-pointer hover:text-foreground transition-colors duration-200">
                 <input
                   type="checkbox"
-                  className="w-3"
+                  className="w-4 h-4 rounded border-border text-foreground focus:ring-ring bg-background cursor-pointer"
                   value={sub}
                   checked={subCategory.includes(sub)}
                   onChange={toggleSubCategory}
@@ -139,7 +133,7 @@ const Collections = () => {
               </label>
             ))}
           </div>
-        </div>*/}
+        </div> */}
       </div>
 
       {/* PRODUCTS */}
@@ -150,7 +144,7 @@ const Collections = () => {
           <select
             value={sortType}
             onChange={(e) => setSortType(e.target.value)}
-            className="border-2 border-gray-300 text-sm px-2"
+            className="border border-border bg-card text-foreground text-sm px-3 py-2 rounded-lg cursor-pointer focus:outline-none focus:ring-1 focus:ring-border transition-colors"
           >
             <option value="relavent">Sort by: Relevant</option>
             <option value="low-high">Sort by: Low to High</option>
@@ -180,6 +174,7 @@ const Collections = () => {
           </p>
         )}
       </div>
+    </div>
     </div>
   );
 };

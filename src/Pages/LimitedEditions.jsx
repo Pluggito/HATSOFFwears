@@ -31,7 +31,7 @@ const LimitedEditions = () => {
     <div className="my-10">
       <div className="text-center text-3xl py-8">
         <Title text1={"LIMITED"} text2={"EDITIONS"} />
-        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-700">
+        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-muted-foreground">
           Elevate your look with our signature collection of premium headwear.
           Each piece is crafted with attention to detail and style.
         </p>

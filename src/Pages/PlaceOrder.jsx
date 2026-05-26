@@ -80,27 +80,27 @@ const PlaceOrder = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t">
+    <div className="flex flex-col sm:flex-row justify-between gap-10 pt-5 sm:pt-14 min-h-[80vh] border-t border-border/40 text-foreground">
       {/* LEFT SIDE */}
-      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
+      <div className="flex flex-col gap-5 w-full sm:max-w-[480px]">
         <div className="text-xl sm:text-2xl my-3">
           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-500 text-sm font-semibold">{error}</p>}
 
         <div className="flex gap-3">
           <input
             type="text"
             placeholder="First name"
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            className="border border-border bg-card text-foreground rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-1 focus:ring-border transition-colors text-sm placeholder:text-muted-foreground"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
           <input
             type="text"
             placeholder="Last name"
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+            className="border border-border bg-card text-foreground rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-1 focus:ring-border transition-colors text-sm placeholder:text-muted-foreground"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
@@ -109,7 +109,7 @@ const PlaceOrder = () => {
         <input
           type="email"
           placeholder="Email address"
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          className="border border-border bg-card text-foreground rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-1 focus:ring-border transition-colors text-sm placeholder:text-muted-foreground"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -117,7 +117,7 @@ const PlaceOrder = () => {
         <input
           type="text"
           placeholder="Address"
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          className="border border-border bg-card text-foreground rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-1 focus:ring-border transition-colors text-sm placeholder:text-muted-foreground"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
         />
@@ -125,7 +125,7 @@ const PlaceOrder = () => {
         <input
           type="tel"
           placeholder="Phone number"
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+          className="border border-border bg-card text-foreground rounded-lg py-2.5 px-4 w-full focus:outline-none focus:ring-1 focus:ring-border transition-colors text-sm placeholder:text-muted-foreground"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
@@ -133,22 +133,24 @@ const PlaceOrder = () => {
         {/* COUPON */}
         <Dialog>
           <DialogTrigger asChild>
-            <p className="cursor-pointer">Have a coupon code?</p>
+            <p className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mt-2">
+              Have a coupon code?
+            </p>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogTitle>Enter Coupon Code</DialogTitle>
-            <DialogHeader>
+          <DialogContent className="sm:max-w-[425px] bg-card text-foreground border border-border">
+            <DialogTitle className="text-lg font-bold text-foreground">Enter Coupon Code</DialogTitle>
+            <DialogHeader className="mt-2">
               <input
                 placeholder="Coupon code"
-                className="border p-2 rounded"
+                className="border border-border bg-background text-foreground p-2.5 rounded-lg w-full focus:outline-none focus:ring-1 focus:ring-border"
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
               />
             </DialogHeader>
-            <DialogFooter>
+            <DialogFooter className="mt-4">
               <DialogClose asChild>
-                <Button variant="outline" onClick={handleCoupon}>
+                <Button variant="outline" onClick={handleCoupon} className="cursor-pointer">
                   Apply
                 </Button>
               </DialogClose>
@@ -159,22 +161,22 @@ const PlaceOrder = () => {
         {/* PAYSTACK BUTTON */}
         <div className="w-full text-end mt-4">
           {isFormValid ? (
-            <div className="bg-black text-white px-16 py-3 text-sm rounded">
+            <div className="bg-foreground text-background hover:bg-foreground/90 transition-colors py-3.5 text-sm font-bold tracking-wider rounded-lg flex items-center justify-center cursor-pointer">
               <PaystackButton
                 email={email}
-                amount={finalAmount * 100}
+                amount={Math.round(finalAmount * 100)}
                 publicKey="pk_live_193256cd7c094ab828222c22c0cf8f82add8984e"
                 text="PLACE ORDER"
                 onSuccess={handlePaymentSuccess}
                 onClose={() => toast.error("Payment cancelled or closed.")}
-                className="w-full"
+                className="w-full h-full cursor-pointer"
               />
             </div>
           ) : (
             <button
               type="button"
               onClick={() => setError("Please fill in all fields")}
-              className="bg-black text-white px-16 py-3 text-sm opacity-50 cursor-not-allowed"
+              className="bg-foreground text-background py-3.5 text-sm font-bold tracking-wider rounded-lg w-full opacity-50 cursor-not-allowed"
             >
               PLACE ORDER
             </button>
@@ -183,7 +185,7 @@ const PlaceOrder = () => {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="mt-8">
+      <div className="mt-8 sm:mt-0 flex-1 sm:max-w-[450px]">
         <CartTotal />
       </div>
     </div>

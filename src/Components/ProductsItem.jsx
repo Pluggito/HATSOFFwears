@@ -16,35 +16,37 @@ export default function ProductsItem({
 
   return (
     <Link
-      className="group relative overflow-hidden rounded-lg border bg-white shadow-sm transition-all hover:shadow-md flex flex-col h-full"
+      className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-border flex flex-col h-full"
       to={`/product/${id}`}
     >
-      <div className="aspect-square overflow-hidden bg-gray-100 relative">
+      <div className="aspect-square overflow-hidden bg-muted relative">
         <img
-          className="h-full w-full object-cover transition-all group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           src={image}
           alt={name || "Product"}
           loading="lazy"
         />
-        {/* Discount Tag */}
+        {/* Refreshed Minimalist Discount Pill */}
         {discountPercentage && (
-          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+          <span className="absolute top-3 left-3 bg-red-500/95 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full tracking-wider uppercase z-10">
             {discountPercentage}% OFF
           </span>
         )}
       </div>
 
-      <div className="p-3 flex flex-col flex-grow">
-        <h3 className="font-semibold text-base">{name}</h3>
-        <div className="mt-auto pt-1 flex items-center justify-between">
+      <div className="p-4 flex flex-col flex-grow">
+        <h3 className="font-semibold text-base text-foreground tracking-tight group-hover:text-foreground/80 transition-colors duration-200">
+          {name}
+        </h3>
+        <div className="mt-auto pt-2 flex items-center justify-between">
           <div className="flex flex-col">
             {originalPrice && (
-              <span className="text-gray-500 text-sm line-through">
+              <span className="text-muted-foreground text-xs line-through tracking-wide">
                 {currency}
                 {originalPrice.toLocaleString()}
               </span>
             )}
-            <span className="font-medium text-lg">
+            <span className="font-bold text-lg text-foreground tracking-tight mt-0.5">
               {currency}
               {price.toLocaleString()}
             </span>
