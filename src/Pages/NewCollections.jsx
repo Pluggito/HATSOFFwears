@@ -31,7 +31,7 @@ const NewCollections = () => {
     <div className="my-10">
       <div className="text-center py-8 text-3xl">
         <Title text1={"SHOP EASE,"} text2={" SHOP COMFORT"} />
-        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-700">
+        <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-muted-foreground">
           Discover our latest arrivals featuring trendy designs and premium
           quality. Each piece is carefully curated to keep you stylish and
           comfortable.

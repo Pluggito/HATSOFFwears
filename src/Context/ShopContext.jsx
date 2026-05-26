@@ -18,6 +18,26 @@ const ShopContextProvider = (props) => {
   const [error, setError] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
 
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  }, []);
+
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("cartItems");
     return savedCart ? JSON.parse(savedCart) : {};
@@ -164,6 +184,8 @@ const ShopContextProvider = (props) => {
       navigate,
       setCartItems,
       setTotalAmount,
+      theme,
+      toggleTheme,
     }),
     [
       products,
@@ -184,6 +206,8 @@ const ShopContextProvider = (props) => {
       updateQuantity,
       setCartItems,
       setTotalAmount,
+      theme,
+      toggleTheme,
     ],
   );
 

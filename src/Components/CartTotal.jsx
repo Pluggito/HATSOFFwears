@@ -12,29 +12,29 @@ const CartTotal = () => {
     setTotalAmount(cartAmount + delivery_fee);
   }, [cartAmount, delivery_fee]);
   return (
-    <div className="w-full">
-      <div className="text-2xl">
+    <div className="w-full text-foreground">
+      <div className="text-2xl mb-4">
         <Title text1={"CART"} text2={"TOTAL"} />
       </div>
 
-      <div className="flex flex-col gap-2 mt- text-sm">
+      <div className="flex flex-col gap-3 text-sm">
         <div className="flex justify-between">
-          <p>SubTotal</p>
-          <p>
+          <p className="text-muted-foreground">Subtotal</p>
+          <p className="font-semibold">
             {currency} {cartAmount.toLocaleString()}.00
           </p>
         </div>
-        <hr />
+        <hr className="border-border/40" />
         <div className="flex justify-between">
-          <p>Delivery Fee</p>
-          <p>
+          <p className="text-muted-foreground">Delivery Fee</p>
+          <p className="font-semibold">
             {currency} {delivery_fee.toLocaleString()}.00
           </p>
         </div>
-        <hr />
-        <div className="flex justify-between">
-          <b>Total</b>
-          <b>
+        <hr className="border-border/40" />
+        <div className="flex justify-between items-center pt-1">
+          <b className="text-base text-foreground uppercase tracking-wider">Total</b>
+          <b className="text-lg text-foreground font-bold">
             {currency} {totalAmount.toLocaleString()}
           </b>
         </div>
