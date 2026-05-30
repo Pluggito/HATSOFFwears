@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Edit, Plus, Trash, X, Loader2 } from "lucide-react"
+import { Edit, Plus, Trash, X, Loader2, Package, DollarSign, ShoppingCart } from "lucide-react"
 
 import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
@@ -212,74 +212,92 @@ export default function ClothingDashboard() {
   // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
 
   return (
-    <div className="mx-auto py-10">
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">HatsOff Dashboard</h1>
-        <div className="flex items-center gap-3">
-          <Button variant="secondary" className="font-bold cursor-pointer">
-            <Link to="/orders" className="text-black">
+    <div className="mx-auto py-10 relative overflow-hidden">
+      {/* Subtle Background Mesh Glow */}
+      <div className="absolute top-0 right-0 -z-10 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(139,92,246,0.08),transparent_65%)] pointer-events-none rounded-full" />
+      <div className="absolute top-1/3 left-0 -z-10 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(251,191,36,0.08),transparent_65%)] pointer-events-none rounded-full" />
+
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 border-b border-border/40 pb-6">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground outfit">HatsOff Dashboard</h1>
+            <span className="text-[10px] font-bold tracking-widest bg-primary/10 text-primary px-2.5 py-1 rounded-full uppercase border border-primary/20 whitespace-nowrap">
+              Admin Portal
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">Manage your clothing models, product inventory, and shop statistics.</p>
+        </div>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Link to="/orders" className="flex-1 md:flex-none">
+            <Button variant="secondary" className="w-full font-bold cursor-pointer border border-border/60 hover:bg-accent/15 transition-all rounded-xl gap-2 h-11 px-5">
+              <ShoppingCart className="h-4 w-4 text-foreground" />
               Orders
-            </Link>
-          </Button>
-          <Button onClick={() => setIsAddModalOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" /> Add New Model
+            </Button>
+          </Link>
+          <Button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex-1 md:flex-none bg-foreground text-background font-semibold hover:opacity-90 transition-all duration-300 active:scale-[0.98] rounded-xl h-11 px-5 gap-2 shadow-sm cursor-pointer"
+          >
+            <Plus className="h-4 w-4" /> Add New Model
           </Button>
         </div>
       </header>
 
-      {/* Add Model Modal - Using semantic HTML */}
+      {/* Add Model Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-background/80 animate-in fade-in duration-200">
           <div
-            className="bg-white rounded-lg shadow-lg w-full sm:w-full  sm:max-w-lg max-h-[85vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6"
+            className="bg-card border border-border/60 rounded-3xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200"
             role="dialog"
             aria-modal="true"
             aria-labelledby="add-model-title"
           >
-            <header className="mb-4">
-              <div className="flex justify-between items-center">
-                <h2 id="add-model-title" className="text-lg font-semibold">
+            <header className="flex justify-between items-start mb-6">
+              <div>
+                <h2 id="add-model-title" className="text-2xl font-bold tracking-tight text-foreground outfit">
                   Add New Clothing Model
                 </h2>
-                <button
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="p-1 rounded-full hover:bg-gray-100"
-                  aria-label="Close"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <p className="text-xs text-muted-foreground mt-1">Enter the details for the new product to list on the store.</p>
               </div>
-              <p className="text-sm text-gray-500">Enter the details for the new clothing model.</p>
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </header>
 
-            <main className="grid gap-4">
+            <main className="grid gap-5">
               <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Name</Label>
                 <Input
                   id="name"
                   value={newModel.name}
                   onChange={(e) => setNewModel({ ...newModel, name: e.target.value })}
                   autoComplete="off"
+                  className="bg-muted/30 border-border/60 focus:border-foreground focus:ring-0 rounded-xl px-4 py-2.5 transition-all text-foreground h-11"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="price">Price (₦)</Label>
+                <Label htmlFor="price" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Price (₦)</Label>
                 <Input
                   id="price"
                   type="number"
                   value={newModel.price}
                   onChange={(e) => setNewModel({ ...newModel, price: e.target.value })}
+                  className="bg-muted/30 border-border/60 focus:border-foreground focus:ring-0 rounded-xl px-4 py-2.5 transition-all text-foreground h-11"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="grid gap-2">
-                  <Label id="availability-label">Availability</Label>
+                  <Label id="availability-label" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Availability</Label>
                   <Select onValueChange={(value) => setNewModel({ ...newModel, availability: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select availability" />
+                    <SelectTrigger className="bg-muted/30 border-border/60 focus:border-foreground rounded-xl h-11">
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="Available">Available</SelectItem>
                       <SelectItem value="Out of Stock">Out of Stock</SelectItem>
                       <SelectItem value="Discontinued">Discontinued</SelectItem>
@@ -287,16 +305,16 @@ export default function ClothingDashboard() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label id="collection-label">Collection</Label>
+                  <Label id="collection-label" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Collection</Label>
                   <Select
                     onValueChange={(value) => setNewModel({ ...newModel, collection: value })}
                     value={newModel.collection}
                     aria-labelledby="collection-label"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select collection" />
+                    <SelectTrigger className="bg-muted/30 border-border/60 focus:border-foreground rounded-xl h-11">
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="Default">Default</SelectItem>
                       <SelectItem value="Limited">Limited</SelectItem>
                       <SelectItem value="New">New</SelectItem>
@@ -304,63 +322,82 @@ export default function ClothingDashboard() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label id="category-label">Category</Label>
+                  <Label id="category-label" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Category</Label>
                   <Select
                     onValueChange={(value) => setNewModel({ ...newModel, category: value })}
                     value={newModel.category}
                     aria-labelledby="category-label"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                    <SelectTrigger className="bg-muted/30 border-border/60 focus:border-foreground rounded-xl h-11">
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="T-shirt">T-shirt</SelectItem>
                       <SelectItem value="Jeans">Jeans</SelectItem>
                       <SelectItem value="Cap">Cap</SelectItem>
+                      <SelectItem value="Polo">Polo</SelectItem>
+                      <SelectItem value="Hood">Hood</SelectItem>
+                      <SelectItem value="Jersey">Jersey</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Description</Label>
                 <Textarea
                   id="description"
                   value={newModel.description}
                   onChange={(e) => setNewModel({ ...newModel, description: e.target.value })}
+                  className="bg-muted/30 border-border/60 focus:border-foreground focus:ring-0 rounded-xl px-4 py-2.5 transition-all text-foreground min-h-[80px]"
                 />
               </div>
               <div className="grid gap-3">
-                <p>Sizes Available</p>
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Sizes Available</Label>
                 <div className="flex flex-wrap gap-2 w-full">
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
-                    <Toggle
+                    <button
                       key={size}
-                      pressed={newModel.sizes.includes(size)}
-                      onPressedChange={() => handleToggleSize(newModel, size, setNewModel)}
-                      className="flex-1 min-w-[40px] max-w-[60px]"
+                      type="button"
+                      onClick={() => handleToggleSize(newModel, size, setNewModel)}
+                      className={`h-10 w-12 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                        newModel.sizes.includes(size)
+                          ? "bg-foreground text-background border-foreground shadow-sm scale-95"
+                          : "bg-muted/20 hover:bg-muted/50 text-muted-foreground border-border/60"
+                      }`}
                     >
                       {size}
-                    </Toggle>
+                    </button>
                   ))}
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Photos</Label>
-                <MultiImageUploader
-                  newFiles={newFiles}
-                  setNewFiles={setNewFiles}
-                  existingUrls={[]}
-                  setExistingUrls={() => {}}
-                />
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Photos</Label>
+                <div className="border border-dashed border-border/60 rounded-2xl p-4 bg-muted/10">
+                  <MultiImageUploader
+                    newFiles={newFiles}
+                    setNewFiles={setNewFiles}
+                    existingUrls={[]}
+                    setExistingUrls={() => {}}
+                  />
+                </div>
               </div>
             </main>
 
-            <footer className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-              <Button variant="outline" onClick={() => setIsAddModalOpen(false)} disabled={isAdding}>
+            <footer className="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 gap-2 sm:gap-0 border-t border-border/40 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsAddModalOpen(false)} 
+                disabled={isAdding}
+                className="rounded-xl border-border/65 hover:bg-accent/15 cursor-pointer h-11"
+              >
                 Cancel
               </Button>
-              <Button onClick={handleAddModel} disabled={isAdding}>
+              <Button 
+                onClick={handleAddModel} 
+                disabled={isAdding}
+                className="bg-foreground text-background font-semibold hover:opacity-90 rounded-xl h-11 px-5"
+              >
                 {isAdding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Add Model
               </Button>
@@ -369,125 +406,187 @@ export default function ClothingDashboard() {
         </div>
       )}
 
-      <Tabs defaultValue="models">
-        <TabsList className="mb-4">
-          <TabsTrigger value="models">Models</TabsTrigger>
-          <TabsTrigger value="stats">Stats</TabsTrigger>
+      {/* Tabs */}
+      <Tabs defaultValue="models" className="w-full">
+        <TabsList className="mb-8 bg-muted/40 backdrop-blur-md border border-border/40 p-1.5 rounded-2xl inline-flex">
+          <TabsTrigger 
+            value="models"
+            className="px-6 py-2.5 rounded-xl font-semibold text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200 cursor-pointer"
+          >
+            Models
+          </TabsTrigger>
+          <TabsTrigger 
+            value="stats"
+            className="px-6 py-2.5 rounded-xl font-semibold text-muted-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200 cursor-pointer"
+          >
+            Stats
+          </TabsTrigger>
         </TabsList>
+
         <TabsContent value="models">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {isProduct ? (
               <>
-                {models.map((model) => (
-                  <Card key={model.id} className="border-2 border-gray-300">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-2xl font-bold">{model.name}</CardTitle>
-                        <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => startEditing(model)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteModel(model.id)}>
-                            <Trash className="h-4 w-4" />
-                          </Button>
+                {models.map((model) => {
+                  const isAvailable = model.availability === "Available";
+                  const isOutOfStock = model.availability === "Out of Stock";
+                  return (
+                    <div 
+                      key={model.id} 
+                      className="bg-card/40 backdrop-blur-md border border-border/50 hover:border-border/90 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-1 transition-all duration-300 rounded-3xl p-5 relative flex flex-col justify-between overflow-hidden"
+                    >
+                      <div>
+                        {/* Upper row: Name & Actions */}
+                        <div className="flex justify-between items-start gap-2 mb-4">
+                          <div>
+                            <span className="text-[9px] font-bold tracking-wider uppercase text-muted-foreground bg-secondary/80 border border-border/40 px-2 py-0.5 rounded">
+                              {model.collection}
+                            </span>
+                            <h3 className="text-xl font-extrabold text-foreground outfit mt-1.5 leading-snug">{model.name}</h3>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <button 
+                              onClick={() => startEditing(model)}
+                              className="p-2 rounded-xl border border-border/40 hover:border-primary/30 hover:bg-primary/5 hover:text-primary transition-all duration-200 text-muted-foreground cursor-pointer"
+                              title="Edit product"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteModel(model.id)}
+                              className="p-2 rounded-xl border border-border/40 hover:border-destructive/30 hover:bg-destructive/5 hover:text-destructive transition-all duration-200 text-muted-foreground cursor-pointer"
+                              title="Delete product"
+                            >
+                              <Trash className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
+
+                        {/* Mid Row: Image & Details */}
+                        <div className="flex gap-4 items-start mb-4">
+                          <div className="h-28 w-28 rounded-2xl overflow-hidden border border-border/20 shadow-sm bg-muted/20 shrink-0">
+                            <img
+                              src={(model.imgUrls?.[0] ?? model.imgUrl) || "/placeholder.svg"}
+                              alt={model.name}
+                              className="h-full w-full object-cover aspect-square hover:scale-105 transition-transform duration-500"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-between h-28 py-0.5">
+                            <div>
+                              <p className="text-xl font-extrabold text-foreground tracking-tight">₦{model.price.toLocaleString()}</p>
+                              <span className="text-xs font-semibold text-muted-foreground mt-1 block">Category: {model.category}</span>
+                            </div>
+                            
+                            <div>
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Sizes</span>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {model.sizes?.map((size) => (
+                                  <span key={size} className="text-[9px] font-bold px-1.5 py-0.5 bg-muted/40 border border-border/30 rounded text-foreground">
+                                    {size}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        {model.description ? (
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-1 mb-4 leading-relaxed">{model.description}</p>
+                        ) : null}
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex gap-4 sm:gap-8">
-                        <div className="h-28 w-28 rounded overflow-hidden">
-                          <img
-                            src={(model.imgUrls?.[0] ?? model.imgUrl) || "/placeholder.svg"}
-                            alt={model.name}
-                            className="h-full w-full object-cover aspect-square"
-                          />
-                        </div>
-                        <div>
-                          <p className="font-bold">₦{model.price.toFixed(2)}</p>
-                          <p className="text-sm text-muted-foreground">{model.collection}</p>
-                          <p className="text-sm text-black">{model.sizes?.join(", ") || "N/A"}</p>
-                          <p className="text-sm mt-2">{model.description}</p>
-                        </div>
-                        <div>
-                          <p className="text-md text-muted-foreground">
-                            Availability: <span className="font-medium">{model.availability}</span>
-                          </p>
-                        </div>
+
+                      {/* Footer: Availability Badge */}
+                      <div className="border-t border-border/30 pt-3 flex justify-between items-center">
+                        <span className="text-xs text-muted-foreground">Status</span>
+                        <span className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full border ${
+                          isAvailable
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                            : isOutOfStock
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                            : "bg-destructive/10 text-destructive border-destructive/20"
+                        }`}>
+                          {model.availability}
+                        </span>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                  );
+                })}
               </>
             ) : (
-              <div className="flex items-center justify-center">No Products Available</div>
+              <div className="col-span-full border border-dashed border-border/60 rounded-3xl p-16 text-center text-muted-foreground bg-muted/5">
+                <Package className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3" />
+                <h3 className="text-lg font-bold text-foreground mb-1 outfit">No products found</h3>
+                <p className="text-sm text-muted-foreground">Click "Add New Model" above to list your first clothing item.</p>
+              </div>
             )}
           </div>
         </TabsContent>
-        <TabsContent value="stats">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sales Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="border rounded p-4 text-center">
-                    <p className="text-sm text-muted-foreground">Total Models</p>
-                    <p className="text-3xl font-bold">{models.length}</p>
-                  </div>
-                  <div className="border rounded p-4 text-center">
-                    <p className="text-sm text-muted-foreground">Total Revenue</p>
-                    <p className="md:text-3xl text-xl font-bold">
-                      ₦{models.reduce((sum, model) => sum + model.price, 0).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-center text-sm text-muted-foreground">
-                  Simple statistics dashboard. More detailed analytics coming soon.
-                </p>
+
+        <TabsContent value="stats" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Metric 1 */}
+            <div className="bg-linear-to-br from-violet-500/5 to-purple-500/5 border border-purple-500/10 p-6 rounded-3xl relative overflow-hidden">
+              <div className="absolute top-4 right-4 text-purple-500/20">
+                <Package className="h-16 w-16" />
               </div>
-            </CardContent>
-          </Card>
+              <p className="text-xs font-bold uppercase tracking-widest text-purple-400">Total Models Listed</p>
+              <h3 className="text-5xl font-extrabold text-foreground mt-3 outfit tracking-tight">{models.length}</h3>
+              <p className="text-xs text-muted-foreground mt-4">Active and archived clothing products in store.</p>
+            </div>
+
+            {/* Metric 2 */}
+            <div className="bg-gradient-to-br from-emerald-500/5 to-green-500/5 border border-green-500/10 p-6 rounded-3xl relative overflow-hidden">
+              <div className="absolute top-4 right-4 text-emerald-500/20">
+                <DollarSign className="h-16 w-16" />
+              </div>
+              <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Inventory Valuation</p>
+              <h3 className="text-5xl font-extrabold text-foreground mt-3 outfit tracking-tight">
+                ₦{models.reduce((sum, model) => sum + model.price, 0).toLocaleString()}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-4">Calculated based on the single product price of each model.</p>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
 
-      {/* Edit Model Modal - Using semantic HTML */}
+      {/* Edit Model Modal */}
       {isEditModalOpen && editingModel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-background/80 animate-in fade-in duration-200">
           <div
-            className="bg-white rounded-lg shadow-lg w-[95vw] sm:w-full max-w-[95vw] sm:max-w-lg max-h-[85vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6"
+            className="bg-card border border-border/60 rounded-3xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200"
             role="dialog"
             aria-modal="true"
             aria-labelledby="edit-model-title"
           >
-            <header className="mb-4">
-              <div className="flex justify-between items-center">
-                <h2 id="edit-model-title" className="text-lg font-semibold">
+            <header className="flex justify-between items-start mb-6">
+              <div>
+                <h2 id="edit-model-title" className="text-2xl font-bold tracking-tight text-foreground outfit">
                   Edit Clothing Model
                 </h2>
-                <button
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="p-1 rounded-full hover:bg-gray-100"
-                  aria-label="Close"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <p className="text-xs text-muted-foreground mt-1">Modify information or manage photos for this product listing.</p>
               </div>
-              <p className="text-sm text-gray-500">Update the details for this clothing model.</p>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </header>
 
-            <main className="grid gap-4 py-2">
+            <main className="grid gap-5">
               <div className="grid gap-2">
-                <Label htmlFor="edit-name">Name</Label>
+                <Label htmlFor="edit-name" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Name</Label>
                 <Input
                   id="edit-name"
-                  className="w-full"
                   value={editingModel.name}
                   onChange={(e) => setEditingModel({ ...editingModel, name: e.target.value })}
+                  className="bg-muted/30 border-border/60 focus:border-foreground focus:ring-0 rounded-xl px-4 py-2.5 transition-all text-foreground h-11"
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-price">Price (₦)</Label>
+                <Label htmlFor="edit-price" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Price (₦)</Label>
                 <Input
                   id="edit-price"
                   type="number"
@@ -498,19 +597,21 @@ export default function ClothingDashboard() {
                       price: e.target.value,
                     })
                   }
+                  className="bg-muted/30 border-border/60 focus:border-foreground focus:ring-0 rounded-xl px-4 py-2.5 transition-all text-foreground h-11"
                 />
               </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="grid gap-2">
-                  <Label id="edit-availability-label">Availability</Label>
+                  <Label id="edit-availability-label" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Availability</Label>
                   <Select
                     onValueChange={(value) => setEditingModel({ ...editingModel, availability: value })}
                     value={editingModel.availability}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select availability" />
+                    <SelectTrigger className="bg-muted/30 border-border/60 focus:border-foreground rounded-xl h-11">
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="Available">Available</SelectItem>
                       <SelectItem value="Out of Stock">Out of Stock</SelectItem>
                       <SelectItem value="Discontinued">Discontinued</SelectItem>
@@ -518,16 +619,16 @@ export default function ClothingDashboard() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label id="edit-collection-label">Collection</Label>
+                  <Label id="edit-collection-label" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Collection</Label>
                   <Select
                     onValueChange={(value) => setEditingModel({ ...editingModel, collection: value })}
                     value={editingModel.collection}
                     aria-labelledby="edit-collection-label"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select collection" />
+                    <SelectTrigger className="bg-muted/30 border-border/60 focus:border-foreground rounded-xl h-11">
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="Default">Default</SelectItem>
                       <SelectItem value="Limited">Limited</SelectItem>
                       <SelectItem value="New">New</SelectItem>
@@ -535,25 +636,29 @@ export default function ClothingDashboard() {
                   </Select>
                 </div>
                 <div className="grid gap-2">
-                  <Label id="edit-category-label">Category</Label>
+                  <Label id="edit-category-label" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Category</Label>
                   <Select
                     onValueChange={(value) => setEditingModel({ ...editingModel, category: value })}
                     value={editingModel.category}
                     aria-labelledby="edit-category-label"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                    <SelectTrigger className="bg-muted/30 border-border/60 focus:border-foreground rounded-xl h-11">
+                      <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="T-shirt">T-shirt</SelectItem>
                       <SelectItem value="Jeans">Jeans</SelectItem>
                       <SelectItem value="Cap">Cap</SelectItem>
+                      <SelectItem value="Polo">Polo</SelectItem>
+                      <SelectItem value="Hood">Hood</SelectItem>
+                      <SelectItem value="Jersey">Jersey</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
+
               <div className="grid gap-2">
-                <Label htmlFor="edit-description">Description</Label>
+                <Label htmlFor="edit-description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Description</Label>
                 <Textarea
                   id="edit-description"
                   value={editingModel.description}
@@ -563,39 +668,55 @@ export default function ClothingDashboard() {
                       description: e.target.value,
                     })
                   }
+                  className="bg-muted/30 border-border/60 focus:border-foreground focus:ring-0 rounded-xl px-4 py-2.5 transition-all text-foreground min-h-[80px]"
                 />
               </div>
               <div className="grid gap-3">
-                <p>Sizes Available</p>
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Sizes Available</Label>
                 <div className="flex flex-wrap gap-2 w-full">
                   {["S", "M", "L", "XL", "XXL"].map((size) => (
-                    <Toggle
+                    <button
                       key={size}
-                      pressed={editingModel.sizes?.includes(size)}
-                      onPressedChange={() => handleToggleSize(editingModel, size, setEditingModel)}
-                      className="flex-1 min-w-[40px] max-w-[60px]"
+                      type="button"
+                      onClick={() => handleToggleSize(editingModel, size, setEditingModel)}
+                      className={`h-10 w-12 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                        editingModel.sizes?.includes(size)
+                          ? "bg-foreground text-background border-foreground shadow-sm scale-95"
+                          : "bg-muted/20 hover:bg-muted/50 text-muted-foreground border-border/60"
+                      }`}
                     >
                       {size}
-                    </Toggle>
+                    </button>
                   ))}
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Photos</Label>
-                <MultiImageUploader
-                  newFiles={newFiles}
-                  setNewFiles={setNewFiles}
-                  existingUrls={editExistingUrls}
-                  setExistingUrls={setEditExistingUrls}
-                />
+                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Photos</Label>
+                <div className="border border-dashed border-border/60 rounded-2xl p-4 bg-muted/10">
+                  <MultiImageUploader
+                    newFiles={newFiles}
+                    setNewFiles={setNewFiles}
+                    existingUrls={editExistingUrls}
+                    setExistingUrls={setEditExistingUrls}
+                  />
+                </div>
               </div>
             </main>
 
-            <footer className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-              <Button variant="outline" onClick={() => setIsEditModalOpen(false)} disabled={isSaving}>
+            <footer className="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 gap-2 sm:gap-0 border-t border-border/40 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setIsEditModalOpen(false)} 
+                disabled={isSaving}
+                className="rounded-xl border-border/65 hover:bg-accent/15 cursor-pointer h-11"
+              >
                 Cancel
               </Button>
-              <Button onClick={handleEditModel} disabled={isSaving}>
+              <Button 
+                onClick={handleEditModel} 
+                disabled={isSaving}
+                className="bg-foreground text-background font-semibold hover:opacity-90 rounded-xl h-11 px-5"
+              >
                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Save Changes
               </Button>
