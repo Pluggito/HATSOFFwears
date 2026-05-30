@@ -104,7 +104,7 @@ const Collections = () => {
         >
           <p className="mb-3 text-xs font-semibold tracking-wider text-foreground uppercase">CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-            {["T-shirt", "Cap", "Jeans"].map((cat) => (
+            {["T-shirt", "Cap", "Jeans", "Polo", "Hood", "Jersey"].map((cat) => (
               <label key={cat} className="flex items-center gap-3 cursor-pointer hover:text-foreground transition-colors duration-200">
                 <input
                   type="checkbox"
