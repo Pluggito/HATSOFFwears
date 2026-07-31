@@ -5,7 +5,7 @@ export default function Title({ text1, text2 }) {
         {text1}
         <span className="text-foreground font-semibold"> {text2}</span>
       </p>
-      <p className="w-8 sm:w-12 h-[1px] sm:h-[2px] bg-muted-foreground"></p>
+      <p className="w-8 sm:w-12 h-px sm:h-[2px] bg-muted-foreground"></p>
     </div>
   );
 }

@@ -37,7 +37,7 @@ const Navbar = ({ setVisible, loading, setLoading = () => {} }) => {
   return (
     <>
       {loading && <Loader />}
-      <div className="sticky top-0 z-50 flex items-center justify-between font-medium py-4 bg-background/80 backdrop-blur-md border-b border-border/40 transition-colors duration-300">
+      <div className="sticky top-0 z-50 flex items-center justify-between font-medium py-4 backdrop-blur-md border-b border-border/40 transition-colors duration-300">
         <Link to="/">
           <img src={assets.logo_icon1} className="w-20 h-20 dark:invert" alt="Hats Off Logo" />
         </Link>
