@@ -50,27 +50,26 @@ const ShopContextProvider = (props) => {
       try {
         const productsFromDB = await getProducts();
 
-        // 🏷️ APPLY 15% DISCOUNT LOGIC
-        const DISCOUNT_EXPIRY = new Date("2026-02-14T23:59:59"); // Expiry Date
-        const currentDate = new Date();
+        const discountedProducts = productsFromDB.map((product) => {
+          const nameLower = product.name?.toLowerCase() || "";
+          const isExcluded = nameLower.includes("uni gang tee");
 
-        if (currentDate <= DISCOUNT_EXPIRY) {
-          const discountedProducts = productsFromDB.map((product) => {
-            const originalPrice = product.price;
-            const discountAmount = originalPrice * 0.15;
-            const newPrice = originalPrice - discountAmount;
+          if (isExcluded) {
+            return product;
+          }
 
-            return {
-              ...product,
-              originalPrice: originalPrice, // Store original price
-              price: newPrice, // Update to discounted price
-              discountPercentage: 15, // Store discount info
-            };
-          });
-          setProducts(discountedProducts);
-        } else {
-          setProducts(productsFromDB);
-        }
+          const originalPrice = product.price;
+          const discountAmount = originalPrice * 0.2;
+          const newPrice = Math.round(originalPrice - discountAmount);
+
+          return {
+            ...product,
+            originalPrice,
+            price: newPrice,
+            discountPercentage: 20,
+          };
+        });
+        setProducts(discountedProducts);
       } catch (err) {
         setError(err.message || "Failed to fetch");
       } finally {
