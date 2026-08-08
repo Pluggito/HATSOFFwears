@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
+import CreativeBackground from "./Components/CreativeBackground";
 import NewsLetter from "./Pages/NewsLetter";
 import NewCollections from "./Pages/NewCollections";
 import Hero from "./Components/Hero";
@@ -32,7 +33,9 @@ const App = () => {
   const [loading, setLoading] = useState(false);
 
   return (
-    <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] overflow-x-hidden">
+    <>
+      <CreativeBackground />
+      <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] overflow-x-hidden relative z-10">
       <Toaster />
       <Navbar
         setVisible={setVisible}
@@ -71,7 +74,8 @@ const App = () => {
         <Route path="/test-paystack" element={<Checkout/>}/>
       </Routes>
       <Footer />
-    </div>
+      </div>
+    </>
   );
 };
 
