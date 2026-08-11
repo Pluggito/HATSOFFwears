@@ -140,6 +140,49 @@ a.active hr{
 ::-webkit-scrollbar{
   display: none;
 }
+.sale-banner {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #ff7d26, #ffe26b, #ff7d26);
+  color: #111;
+  border-radius: 10px;
+  margin: 1rem 0;
+  padding: 0.5rem 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.sale-banner__ticker {
+  display: inline-flex;
+  gap: 3rem;
+  padding-left: 100%;
+  white-space: nowrap;
+  animation: marquee 15s linear infinite;
+  animation-timing-function: linear;
+}
+
+.sale-banner__ticker span {
+  display: inline-block;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media (max-width: 640px) {
+  .sale-banner__ticker span {
+    font-size: 0.9rem;
+  }
+}
 
 @media(max-width:640px){
 
