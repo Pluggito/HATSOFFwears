@@ -44,6 +44,7 @@ const LimitedEditions = () => {
             name={item.name}
             image={item.imgUrls?.[0] || item.imgUrl || ""}
             price={item.price}
+            availability={item.availability}
           />
         ))}
       </div>

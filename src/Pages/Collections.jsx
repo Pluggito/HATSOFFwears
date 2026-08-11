@@ -165,6 +165,7 @@ const Collections = () => {
                 price={item.price}
                 originalPrice={item.originalPrice}
                 discountPercentage={item.discountPercentage}
+                availability={item.availability}
               />
             ))}
           </div>

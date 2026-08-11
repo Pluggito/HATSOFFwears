@@ -10,6 +10,7 @@ const Product = () => {
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
   const buttonRef = useRef(null);
+  const isOutOfStock = productData?.availability === "Out of Stock";
 
   const fetchProductData = async () => {
     products.map((item) => {
@@ -96,8 +97,17 @@ const Product = () => {
           </p>
 
           <p className="text-sm text-muted-foreground font-semibold flex items-center gap-2 mt-4">
-            Availability: <span className="text-foreground">{productData.availability}</span>
+            Availability:
+            <span className={`font-semibold ${isOutOfStock ? "text-red-500" : "text-foreground"}`}>
+              {productData.availability}
+            </span>
           </p>
+
+          {isOutOfStock && (
+            <p className="text-sm text-red-500 font-semibold mt-2">
+              This product is currently out of stock.
+            </p>
+          )}
 
           <div className="flex flex-col gap-3 my-8">
             <p className="font-semibold text-sm tracking-wide text-foreground uppercase">Select Size</p>
@@ -120,10 +130,11 @@ const Product = () => {
 
           <button
             ref={buttonRef}
-            className="bg-foreground text-background hover:bg-foreground/90 transition-colors px-10 py-3.5 text-sm font-semibold rounded-lg tracking-wider cursor-pointer"
+            disabled={isOutOfStock}
+            className="bg-foreground text-background hover:bg-foreground/90 transition-colors px-10 py-3.5 text-sm font-semibold rounded-lg tracking-wider disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => addToCart(productData.id, size)}
           >
-            ADD TO CART
+            {isOutOfStock ? "OUT OF STOCK" : "ADD TO CART"}
           </button>
           
           <hr className="mt-8 border-border/40 sm:w-4/5" />
