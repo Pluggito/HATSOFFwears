@@ -10,7 +10,7 @@ const Product = () => {
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
   const buttonRef = useRef(null);
-  const isOutOfStock = productData?.availability === "Out of Stock";
+  const isOutOfStock = ["Out of Stock", "Sold out"].includes(productData?.availability);
 
   const fetchProductData = async () => {
     products.map((item) => {

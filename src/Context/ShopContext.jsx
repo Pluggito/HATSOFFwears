@@ -52,7 +52,7 @@ const ShopContextProvider = (props) => {
 
         const discountedProducts = productsFromDB.map((product) => {
           const nameLower = product.name?.toLowerCase() || "";
-          const isExcluded = nameLower.includes("uni gang tee");
+          const isExcluded = nameLower.includes("uni gang");
 
           if (isExcluded) {
             return product;
@@ -87,8 +87,8 @@ const ShopContextProvider = (props) => {
   const addToCart = useCallback(
     async (itemId, size) => {
       const product = products.find((item) => item.id === itemId);
-      if (product?.availability === "Out of Stock") {
-        toast.error("This product is out of stock");
+      if (["Out of Stock", "Sold out"].includes(product?.availability)) {
+        toast.error("This product is unavailable");
         return;
       }
 

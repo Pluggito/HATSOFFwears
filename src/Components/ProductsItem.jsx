@@ -27,9 +27,9 @@ export default function ProductsItem({
           alt={name || "Product"}
           loading="lazy"
         />
-        {availability === "Out of Stock" && (
+        {(availability === "Out of Stock" || availability === "Sold out") && (
           <span className="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full tracking-wider uppercase z-10">
-            Out of Stock
+            {availability === "Sold out" ? "Sold out" : "Out of Stock"}
           </span>
         )}
         {/* Refreshed Minimalist Discount Pill */}
