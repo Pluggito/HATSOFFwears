@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import CreativeBackground from "./Components/CreativeBackground";
 import NewsLetter from "./Pages/NewsLetter";
@@ -31,29 +31,11 @@ import Checkout from "./Pages/TestCheckoutPage";
 const App = () => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const location = useLocation();
-
-  const isAdminPath = location.pathname.startsWith("/dashboard") || location.pathname.startsWith("/Dash2");
-  const today = new Date();
-  const showBanner = today <= new Date("2026-08-16T23:59:59.999Z") && !isAdminPath;
-
   return (
     <>
       <CreativeBackground />
       <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] overflow-x-hidden relative z-10">
       <Toaster />
-      {showBanner && (
-        <div className="sale-banner">
-          <div className="sale-banner__ticker">
-            <span>August Summer Sales !!!</span>
-            <span>20% OFF All Items</span>
-            <span>You don't want to miss this !!!</span>
-            <span>August Summer Sales !!!</span>
-            <span>20% OFF All Items</span>
-            <span>You don't want to miss this !!!</span>
-          </div>
-        </div>
-      )}
       <Navbar
         setVisible={setVisible}
         loading={loading}

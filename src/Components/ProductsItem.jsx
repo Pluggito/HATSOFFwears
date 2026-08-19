@@ -9,8 +9,6 @@ export default function ProductsItem({
   image,
   name,
   price,
-  originalPrice,
-  discountPercentage,
   availability,
 }) {
   const { currency } = useContext(ShopContext);
@@ -32,12 +30,6 @@ export default function ProductsItem({
             {availability === "Sold out" ? "Sold out" : "Out of Stock"}
           </span>
         )}
-        {/* Refreshed Minimalist Discount Pill */}
-        {discountPercentage && (
-          <span className="absolute top-3 left-3 bg-red-500/95 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full tracking-wider uppercase z-10">
-            {discountPercentage}% OFF
-          </span>
-        )}
       </div>
 
       <div className="p-4 flex flex-col flex-grow">
@@ -46,12 +38,6 @@ export default function ProductsItem({
         </h3>
         <div className="mt-auto pt-2 flex items-center justify-between">
           <div className="flex flex-col">
-            {originalPrice && (
-              <span className="text-muted-foreground text-xs line-through tracking-wide">
-                {currency}
-                {originalPrice.toLocaleString()}
-              </span>
-            )}
             <span className="font-bold text-lg text-foreground tracking-tight mt-0.5">
               {currency}
               {price.toLocaleString()}
@@ -68,7 +54,5 @@ ProductsItem.propTypes = {
   image: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  originalPrice: PropTypes.number,
-  discountPercentage: PropTypes.number,
   availability: PropTypes.string,
 };

@@ -50,26 +50,7 @@ const ShopContextProvider = (props) => {
       try {
         const productsFromDB = await getProducts();
 
-        const discountedProducts = productsFromDB.map((product) => {
-          const nameLower = product.name?.toLowerCase() || "";
-          const isExcluded = nameLower.includes("uni gang");
-
-          if (isExcluded) {
-            return product;
-          }
-
-          const originalPrice = product.price;
-          const discountAmount = originalPrice * 0.2;
-          const newPrice = Math.round(originalPrice - discountAmount);
-
-          return {
-            ...product,
-            originalPrice,
-            price: newPrice,
-            discountPercentage: 20,
-          };
-        });
-        setProducts(discountedProducts);
+        setProducts(productsFromDB);
       } catch (err) {
         setError(err.message || "Failed to fetch");
       } finally {
