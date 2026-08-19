@@ -270,6 +270,7 @@ export default function ClothingDashboard() {
                     <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="Available">Available</SelectItem>
                       <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+                      <SelectItem value="Sold out">Sold out</SelectItem>
                       <SelectItem value="Discontinued">Discontinued</SelectItem>
                     </SelectContent>
                   </Select>
@@ -576,6 +577,7 @@ export default function ClothingDashboard() {
                     <SelectContent className="bg-popover border border-border/60 rounded-xl shadow-lg">
                       <SelectItem value="Available">Available</SelectItem>
                       <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+                      <SelectItem value="Sold out">Sold out</SelectItem>
                       <SelectItem value="Discontinued">Discontinued</SelectItem>
                     </SelectContent>
                   </Select>

@@ -10,7 +10,7 @@ const Product = () => {
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
   const buttonRef = useRef(null);
-  const isOutOfStock = productData?.availability === "Out of Stock";
+  const isOutOfStock = ["Out of Stock", "Sold out"].includes(productData?.availability);
 
   const fetchProductData = async () => {
     products.map((item) => {
@@ -75,17 +75,6 @@ const Product = () => {
           <h1 className="font-bold text-3xl tracking-tight text-foreground">{productData.name}</h1>
           
           <div className="mt-4 flex flex-col gap-1">
-            {productData.originalPrice && (
-              <div className="flex items-center gap-2">
-                <p className="text-lg text-muted-foreground line-through">
-                  {currency}
-                  {productData.originalPrice.toLocaleString()}
-                </p>
-                <span className="bg-red-500/90 text-white text-[10px] tracking-wider font-extrabold px-2 py-1 rounded-full uppercase">
-                  {productData.discountPercentage}% OFF
-                </span>
-              </div>
-            )}
             <p className="text-3xl font-extrabold text-red-500">
               {currency}
               {productData.price.toLocaleString()}

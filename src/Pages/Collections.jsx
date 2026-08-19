@@ -163,8 +163,6 @@ const Collections = () => {
                 image={item.imgUrls?.[0] || item.imgUrl || ""}
                 name={item.name}
                 price={item.price}
-                originalPrice={item.originalPrice}
-                discountPercentage={item.discountPercentage}
                 availability={item.availability}
               />
             ))}

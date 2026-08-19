@@ -61,8 +61,6 @@ const RelatedProducts = ({ category, subCategory }) => {
               name={item.name}
               price={item.price}
               image={item.imgUrls?.[0] || item.imgUrl}
-              originalPrice={item.originalPrice}
-              discountPercentage={item.discountPercentage}
               availability={item.availability}
             />
           </div>
