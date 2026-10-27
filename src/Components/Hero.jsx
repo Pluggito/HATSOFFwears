@@ -1,4 +1,3 @@
-//import { assets } from '../assets/asset'
 import { motion } from "framer-motion";
 import ShopNowbutton from "./ShopNowbutton";
 
