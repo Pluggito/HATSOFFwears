@@ -1,58 +1,119 @@
-import { useContext } from "react";
-import { ShopContext } from "../Context/ShopContext";
-import { Link } from "react-router-dom";
-//import { ShoppingBag } from "lucide-react"
-import PropTypes from "prop-types";
+import { db, addDoc, collection } from "./firebase";
+import emailjs from "@emailjs/browser";
+import { updateDoc } from "firebase/firestore";
+import { toast } from "sonner";
+import { getProductEffectivePrice } from "../lib/productPricing";
 
-export default function ProductsItem({
-  id,
-  image,
-  name,
-  price,
-  availability,
-}) {
-  const { currency } = useContext(ShopContext);
+export const processOrderDetails = (cartItems, userDetails, trns_id, products) => {
+  const orderItems = [];
 
-  return (
-    <Link
-      className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-border flex flex-col h-full"
-      to={`/product/${id}`}
-    >
-      <div className="aspect-square overflow-hidden bg-muted relative">
-        <img
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-          src={image}
-          alt={name || "Product"}
-          loading="lazy"
-        />
-        {(availability === "Out of Stock" || availability === "Sold out") && (
-          <span className="absolute top-3 right-3 bg-red-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full tracking-wider uppercase z-10">
-            {availability === "Sold out" ? "Sold out" : "Out of Stock"}
-          </span>
-        )}
-      </div>
+  for (const productId in cartItems) {
+    for (const size in cartItems[productId]) {
+      if (cartItems[productId][size] > 0) {
+        const product = products.find((p) => p.id === productId);
+        if (product) {
+          const effectivePrice = getProductEffectivePrice(product, Number(product.price ?? 0));
 
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-semibold text-base text-foreground tracking-tight group-hover:text-foreground/80 transition-colors duration-200">
-          {name}
-        </h3>
-        <div className="mt-auto pt-2 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="font-bold text-lg text-foreground tracking-tight mt-0.5">
-              {currency}
-              {price.toLocaleString()}
-            </span>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
+          orderItems.push({
+            productId: product.id,
+            name: product.name,
+            size: size,
+            quantity: cartItems[productId][size],
+            price: effectivePrice,
+            originalPrice: Number(product.price ?? 0),
+            discountPercent: Number(product.discountPercent ?? 0),
+            image: product.imgUrl || product.imgUrls?.[0] || "",
+          });
+        }
+      }
+    }
+  }
 
-ProductsItem.propTypes = {
-  id: PropTypes.string.isRequired,
-  image: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  availability: PropTypes.string,
+  const totalAmount = orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  const orderNumber = Math.floor(Math.random() * 1000000);
+  return {
+    customer: {
+      firstName: userDetails.firstName,
+      lastName: userDetails.lastName,
+      email: userDetails.email,
+      phone: userDetails.phone,
+      address: userDetails.address,
+    },
+    items: orderItems,
+    totalAmount,
+    status: "Pending",
+    orderNumber: orderNumber,
+    trns_id: trns_id,
+    timestamp: new Date(),
+  };
+};
+
+const sendOrderEmail = async (orderDetails) => {
+  const templateParams = {
+    customer_name: `${orderDetails.customer.firstName} ${orderDetails.customer.lastName}`,
+    customer_email: orderDetails.customer.email,
+    customer_phone: orderDetails.customer.phone,
+    customer_address: orderDetails.customer.address,
+    orderNumber: orderDetails.orderNumber,
+    trns_id: orderDetails.trns_id,
+    order_summary: orderDetails.items
+      .map(
+        (item) =>
+          `<tr>
+            <td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${item.size}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${item.quantity}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${item.price}</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">${item.price * item.quantity}</td>
+          </tr>`
+      )
+      .join(""),
+    total_amount: orderDetails.totalAmount,
+  };
+
+  try {
+    await emailjs.send(
+      "service_gx8rbik",
+      "template_iojecih",
+      templateParams,
+      "AyUIdWYKZpdfCippf"
+    );
+    toast.success("Order confirmation email sent!");
+  } catch (error) {
+    console.error("Failed to send email:", error);
+  }
+};
+
+export const saveOrderToFirebase = async (orderDetails) => {
+  try {
+    const docRef = await addDoc(collection(db, "orders"), { ...orderDetails, id: "" });
+
+    await updateDoc(docRef, { id: docRef.id });
+    return orderDetails.orderNumber;
+  } catch (error) {
+    console.error("Error saving order:", error);
+    throw error;
+  }
+};
+
+export const placeOrder = async (cartItems, userDetails, trns_id, products, setCartItems) => {
+  try {
+    const orderDetails = processOrderDetails(cartItems, userDetails, trns_id, products);
+    const orderId = await saveOrderToFirebase(orderDetails);
+
+    await sendOrderEmail(orderDetails);
+
+    setCartItems({});
+
+    return orderId;
+  } catch (error) {
+    console.error("Failed to place order:", error);
+    throw error;
+  }
+};
+
+export const handlePlaceOrder = async (cartItems, userDetails, trns_id, products, setCartItems) => {
+  const orderID = await placeOrder(cartItems, userDetails, trns_id, products, setCartItems);
+  return orderID;
 };
