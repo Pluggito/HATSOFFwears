@@ -1,9 +1,9 @@
-import { createContext, useState, useEffect, useMemo } from "react";
+import { createContext, useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { getProducts } from "../Backend/AdminLogic";
-import { useCallback } from "react";
+import { getProductEffectivePrice } from "../lib/productPricing";
 
 export const ShopContext = createContext();
 
@@ -16,7 +16,6 @@ const ShopContextProvider = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
-
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("theme");
     if (saved) return saved;
@@ -25,184 +24,80 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    root.classList.toggle("dark", theme === "dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  }, []);
-
+  const toggleTheme = useCallback(() => setTheme((prev) => (prev === "dark" ? "light" : "dark")), []);
   const [cartItems, setCartItems] = useState(() => {
     const savedCart = localStorage.getItem("cartItems");
     return savedCart ? JSON.parse(savedCart) : {};
   });
   const navigate = useNavigate();
 
-  // Fetch Products once when component mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const productsFromDB = await getProducts();
-
-        setProducts(productsFromDB);
+        setProducts(await getProducts());
       } catch (err) {
         setError(err.message || "Failed to fetch");
       } finally {
         setLoading(false);
       }
     };
-
     fetchProducts();
-  }, []); // run only once
+  }, []);
 
-  useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+  useEffect(() => localStorage.setItem("cartItems", JSON.stringify(cartItems)), [cartItems]);
 
-  const addToCart = useCallback(
-    async (itemId, size) => {
-      const product = products.find((item) => item.id === itemId);
-      if (["Out of Stock", "Sold out"].includes(product?.availability)) {
-        toast.error("This product is unavailable");
-        return;
-      }
+  const getProductPrice = useCallback((product) => getProductEffectivePrice(product), []);
 
-      if (!size) {
-        toast.error("Select Product Size");
-        return;
-      } else if (size) {
-        toast.success("Added to cart");
-      }
-
-      let cartData = structuredClone(cartItems);
-
-      if (cartData[itemId]) {
-        if (cartData[itemId][size]) {
-          cartData[itemId][size] += 1;
-        } else {
-          cartData[itemId][size] = 1;
-        }
-      } else {
-        cartData[itemId] = {};
-        cartData[itemId][size] = 1;
-      }
-
-      setCartItems(cartData);
-    },
-    [cartItems],
-  );
-
-  const getCartCount = useCallback(() => {
-    let totalCount = 0;
-
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        try {
-          if (cartItems[items][item] > 0) {
-            totalCount += cartItems[items][item];
-          }
-        } catch (error) {
-          console.error("Error calculating cart count:", error);
-        }
-      }
+  const addToCart = useCallback((itemId, size) => {
+    const product = products.find((item) => item.id === itemId);
+    if (["Out of Stock", "Sold out"].includes(product?.availability)) {
+      toast.error("This product is unavailable");
+      return;
     }
-
-    return totalCount;
-  }, [cartItems]);
-
-  const updateQuantity = useCallback(
-    async (itemId, size, quantity) => {
-      let cartData = structuredClone(cartItems);
-
-      cartData[itemId][size] = quantity;
-      setCartItems(cartData);
-    },
-    [cartItems],
-  );
-
-  // I helped you update the getCartAmount function, there was a mistake before
-
-  const getCartAmount = useCallback(() => {
-    let totalAmount = 0;
-
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product.id === items);
-
-      if (!itemInfo) continue; // Ensure product exists
-
-      for (const item in cartItems[items]) {
-        try {
-          if (cartItems[items][item] > 0) {
-            totalAmount += itemInfo.price * cartItems[items][item];
-          }
-        } catch (error) {
-          console.error("Error calculating total amount:", error);
-        }
-      }
+    if (!size) {
+      toast.error("Select Product Size");
+      return;
     }
+    setCartItems((current) => ({
+      ...current,
+      [itemId]: { ...(current[itemId] || {}), [size]: (current[itemId]?.[size] || 0) + 1 },
+    }));
+    toast.success("Added to cart");
+  }, [products]);
 
-    return totalAmount;
-  }, [cartItems, products]);
+  const getCartCount = useCallback(() => Object.values(cartItems).reduce(
+    (count, sizes) => count + Object.values(sizes).reduce((sum, quantity) => sum + (Number(quantity) > 0 ? Number(quantity) : 0), 0), 0,
+  ), [cartItems]);
 
-  const value = useMemo(
-    () => ({
-      products,
-      currency,
-      delivery_fee,
-      search,
-      loading,
-      error,
-      setSearch,
-      showSearch,
-      setShowSearch,
-      cartItems,
-      totalAmount,
-      addToCart,
-      getCartCount,
-      getCartAmount,
-      updateQuantity,
-      navigate,
-      setCartItems,
-      setTotalAmount,
-      theme,
-      toggleTheme,
-    }),
-    [
-      products,
-      currency,
-      delivery_fee,
-      search,
-      loading,
-      error,
-      totalAmount,
-      setSearch,
-      showSearch,
-      setShowSearch,
-      cartItems,
-      addToCart,
-      getCartCount,
-      getCartAmount,
-      navigate,
-      updateQuantity,
-      setCartItems,
-      setTotalAmount,
-      theme,
-      toggleTheme,
-    ],
-  );
+  const updateQuantity = useCallback((itemId, size, quantity) => {
+    setCartItems((current) => ({
+      ...current,
+      [itemId]: { ...(current[itemId] || {}), [size]: quantity },
+    }));
+  }, []);
 
-  return (
-    <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
-  );
+  const getCartAmount = useCallback(() => Object.entries(cartItems).reduce((total, [productId, sizes]) => {
+    const product = products.find((item) => item.id === productId);
+    if (!product) return total;
+    const price = getProductEffectivePrice(product);
+    return total + Object.values(sizes).reduce((sum, quantity) => sum + (Number(quantity) > 0 ? price * Number(quantity) : 0), 0);
+  }, 0), [cartItems, products]);
+
+  const value = useMemo(() => ({
+    products, currency, delivery_fee, search, loading, error, setSearch, showSearch,
+    setShowSearch, cartItems, totalAmount, addToCart, getCartCount, getCartAmount,
+    getProductPrice, updateQuantity, navigate, setCartItems, setTotalAmount, theme, toggleTheme,
+  }), [products, currency, delivery_fee, search, loading, error, totalAmount, showSearch,
+    cartItems, addToCart, getCartCount, getCartAmount, getProductPrice, navigate,
+    updateQuantity, theme, toggleTheme]);
+
+  return <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>;
 };
 
-ShopContextProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
+ShopContextProvider.propTypes = { children: PropTypes.node.isRequired };
 
 export default ShopContextProvider;

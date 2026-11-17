@@ -1,55 +1,38 @@
-import { db, addDoc, collection, } from "./firebase"; // Ensure correct Firebase imports
+import { db, addDoc, collection } from "./firebase";
 import emailjs from "@emailjs/browser";
 import { updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
+import { getProductEffectivePrice } from "../lib/productPricing";
 
-// Function to process cartItems into a structured order
-export const processOrderDetails = (
-  cartItems,
-  userDetails,
-  trns_id,
-  products
-) => {
+export const processOrderDetails = (cartItems, userDetails, trns_id, products) => {
   const orderItems = [];
-
-  // Loop through cartItems and match with product details
   for (const productId in cartItems) {
     for (const size in cartItems[productId]) {
-      if (cartItems[productId][size] > 0) {
-        const product = products.find((p) => p.id === productId);
-        if (product) {
-          orderItems.push({
-            productId: product.id,
-            name: product.name,
-            size: size,
-            quantity: cartItems[productId][size],
-            price: product.price,
-            image: product.imgUrl,
-          });
-        }
+      const quantity = Number(cartItems[productId][size]);
+      if (quantity > 0) {
+        const product = products.find((entry) => entry.id === productId);
+        if (!product) continue;
+        orderItems.push({
+          productId: product.id,
+          name: product.name,
+          size,
+          quantity,
+          price: getProductEffectivePrice(product),
+          originalPrice: Number(product.price ?? 0),
+          discountPercent: Number(product.discountPercent ?? 0),
+          image: product.imgUrl || product.imgUrls?.[0] || "",
+        });
       }
     }
   }
-
-  const totalAmount = orderItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  const orderNumber = Math.floor(Math.random() * 1000000);
+  const totalAmount = orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
   return {
-    customer: {
-      firstName: userDetails.firstName,
-      lastName: userDetails.lastName,
-      email: userDetails.email,
-      phone: userDetails.phone,
-      address: userDetails.address,
-    },
+    customer: { firstName: userDetails.firstName, lastName: userDetails.lastName, email: userDetails.email, phone: userDetails.phone, address: userDetails.address },
     items: orderItems,
     totalAmount,
     status: "Pending",
-    orderNumber: orderNumber,
-    trns_id: trns_id,
+    orderNumber: Math.floor(Math.random() * 1000000),
+    trns_id,
     timestamp: new Date(),
   };
 };
@@ -62,72 +45,29 @@ const sendOrderEmail = async (orderDetails) => {
     customer_address: orderDetails.customer.address,
     orderNumber: orderDetails.orderNumber,
     trns_id: orderDetails.trns_id,
-    order_summary: orderDetails.items
-      .map(
-        (item) =>
-          `<tr>
-            <td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${item.size}</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${
-              item.quantity
-            }</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${item.price}</td>
-            <td style="padding: 8px; border: 1px solid #ddd;">${
-              item.price * item.quantity
-            }</td>
-          </tr>`
-      )
-      .join(""),
+    order_summary: orderDetails.items.map((item) => `<tr><td style="padding: 8px; border: 1px solid #ddd;">${item.name}</td><td style="padding: 8px; border: 1px solid #ddd;">${item.size}</td><td style="padding: 8px; border: 1px solid #ddd;">${item.quantity}</td><td style="padding: 8px; border: 1px solid #ddd;">${item.price}</td><td style="padding: 8px; border: 1px solid #ddd;">${item.price * item.quantity}</td></tr>`).join(""),
     total_amount: orderDetails.totalAmount,
   };
-
   try {
-    await emailjs.send(
-      "service_gx8rbik", //EmailJS service ID
-      "template_iojecih", //EmailJS template ID
-      templateParams,
-      "AyUIdWYKZpdfCippf" //EmailJS public key
-    );
+    await emailjs.send("service_gx8rbik", "template_iojecih", templateParams, "AyUIdWYKZpdfCippf");
     toast.success("Order confirmation email sent!");
-  } catch (error) {
-    console.error("Failed to send email:", error);
-  }
+  } catch (error) { console.error("Failed to send email:", error); }
 };
 
-// Function to save order details to Firebase
 export const saveOrderToFirebase = async (orderDetails) => {
-  try {
-    const docRef = await addDoc(collection(db, "orders"), {...orderDetails,id: ""});
-
-    await updateDoc(docRef, { id: docRef.id });
-    return orderDetails.orderNumber; // Return order number for reference
-  } catch (error) {
-    console.error("Error saving order:", error);
-    throw error;
-  }
+  const docRef = await addDoc(collection(db, "orders"), { ...orderDetails, id: "" });
+  await updateDoc(docRef, { id: docRef.id });
+  return orderDetails.orderNumber;
 };
 
-// Function to handle complete order placement logic
-export const placeOrder = async (cartItems, userDetails, trns_id,products,setCartItems) => {
+export const placeOrder = async (cartItems, userDetails, trns_id, products, setCartItems) => {
   try {
-    // Process order details
     const orderDetails = processOrderDetails(cartItems, userDetails, trns_id, products);
-
-    // Save to Firebase
     const orderId = await saveOrderToFirebase(orderDetails);
-
     await sendOrderEmail(orderDetails);
-
-    setCartItems({}); // Clear cart after order placement
-
-    return orderId; // Returning orderId for reference
-  } catch (error) {
-    console.error("Failed to place order:", error);
-    throw error;
-  }
+    setCartItems({});
+    return orderId;
+  } catch (error) { console.error("Failed to place order:", error); throw error; }
 };
 
-export const handlePlaceOrder = async (cartItems, userDetails, trns_id,products,setCartItems) => {
-  const orderID = await placeOrder(cartItems, userDetails, trns_id,products,setCartItems);
- return orderID
-};
+export const handlePlaceOrder = async (cartItems, userDetails, trns_id, products, setCartItems) => placeOrder(cartItems, userDetails, trns_id, products, setCartItems);
