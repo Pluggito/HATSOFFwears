@@ -1,16 +1,15 @@
 import {
   addDoc,
   collection,
-  getDocs,
-  updateDoc,
   deleteDoc,
   doc,
+  getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { toast } from "sonner";
 import { uploadFiles } from "../lib/uploadthing";
 
-// Uploads an array of image files using UploadThing and returns their URLs.
 export const handleImageUpload = async (files) => {
   try {
     const res = await uploadFiles("imageUploader", { files });
@@ -26,7 +25,6 @@ export const handleImageUpload = async (files) => {
   }
 };
 
-// Adds a product to Firestore with uploaded images.
 export const addProduct = async (productData, files, setNewModel) => {
   try {
     if (!files || files.length === 0) {
@@ -92,14 +90,11 @@ export const updateOrderStatus = async (orderId, status) => {
   }
 };
 
-// Updates a product and optionally uploads additional images.
 export const updateProduct = async (productData, newFiles = [], retainedUrls = null) => {
   try {
     if (!productData?.id) throw new Error("Product ID is required for update.");
 
-    let mergedUrls = retainedUrls !== null
-      ? [...retainedUrls]
-      : [...(productData.imgUrls ?? [])];
+    let mergedUrls = retainedUrls !== null ? [...retainedUrls] : [...(productData.imgUrls ?? [])];
     let mergedPublicIds = [...(productData.imgPublicIds ?? [])];
 
     if (newFiles?.length > 0) {
@@ -121,6 +116,17 @@ export const updateProduct = async (productData, newFiles = [], retainedUrls = n
   }
 };
 
+export const deleteProduct = async (productId) => {
+  try {
+    if (!productId) throw new Error("Product ID is required for deletion.");
+    await deleteDoc(doc(db, "products", productId));
+    console.log("Product deleted successfully");
+  } catch (error) {
+    console.error("Delete Product Error:", error.message);
+    throw error;
+  }
+};
+
 export const updateProductDiscount = async (productId, discountPercent, isOnSale) => {
   if (!productId) throw new Error("Product ID is required.");
 
@@ -133,15 +139,4 @@ export const updateProductDiscount = async (productId, discountPercent, isOnSale
     discountPercent: percentage,
     isOnSale: Boolean(isOnSale) && percentage > 0,
   });
-};
-
-export const deleteProduct = async (productId) => {
-  try {
-    if (!productId) throw new Error("Product ID is required for deletion.");
-    await deleteDoc(doc(db, "products", productId));
-    console.log("Product deleted successfully");
-  } catch (error) {
-    console.error("Delete Product Error:", error.message);
-    throw error;
-  }
 };
