@@ -4,7 +4,6 @@ import CreativeBackground from "./Components/CreativeBackground";
 import NewsLetter from "./Pages/NewsLetter";
 import NewCollections from "./Pages/NewCollections";
 import Hero from "./Components/Hero";
-//import LimitedEditions from "./Pages/LimitedEditions";
 import Policy from "./Pages/Policy";
 import Collections from "./Pages/Collections";
 import About from "./Pages/About";
@@ -18,7 +17,6 @@ import Footer from "./Components/Footer";
 import SearchBar from "./Components/SearchBar";
 import OrderSummary from "./Pages/OrderSummary";
 import ShopNow from "./Pages/ShopNow";
-//import Admin from "./Pages/Admin";
 import ClothingDashboard from "./Pages/Dashboard";
 import ImageUploader from "./Components/ImageUploader";
 import { Toaster } from "sonner";
@@ -26,56 +24,36 @@ import OrderItems from "./Pages/OrderItems";
 import MobileNavbar from "./Components/MobileNavbar";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import Checkout from "./Pages/TestCheckoutPage";
-// import 'react-toastify/dist/ReactToastify.css'
+import DiscountManager from "./Pages/DiscountManager";
 
 const App = () => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  return (
-    <>
-      <CreativeBackground />
-      <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] overflow-x-hidden relative z-10">
+  return <>
+    <CreativeBackground />
+    <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] overflow-x-hidden relative z-10">
       <Toaster />
-      <Navbar
-        setVisible={setVisible}
-        loading={loading}
-        setLoading={setLoading}
-      />
+      <Navbar setVisible={setVisible} loading={loading} setLoading={setLoading} />
       <SearchBar />
       <MobileNavbar visible={visible} setVisible={setVisible} />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Hero />
-              <NewCollections />
-              <ShopNow />
-              {/*<LimitedEditions />*/}
-              <Policy />
-              <NewsLetter />
-            </>
-          }
-        />
+        <Route path="/" element={<><Hero /><NewCollections /><ShopNow /><Policy /><NewsLetter /></>} />
         <Route path="/collections" element={<Collections />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:productId" element={<Product />} />
-        <Route path="/dashboard" element={<ProtectedRoute> <ClothingDashboard /></ProtectedRoute>} />
-        {/* <Route path="/testing" element={<Testing/>}/> */}
+        <Route path="/dashboard" element={<ProtectedRoute><ClothingDashboard /></ProtectedRoute>} />
+        <Route path="/dashboard/discounts" element={<ProtectedRoute><DiscountManager /></ProtectedRoute>} />
         <Route path="/Dash2" element={<ImageUploader />} />
-
         <Route path="/cart" element={<Cart />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/order-summary" element={<OrderSummary />} />
         <Route path="/order-items/:orderId" element={<OrderItems />} />
-        <Route path="/test-paystack" element={<Checkout/>}/>
+        <Route path="/test-paystack" element={<Checkout />} />
       </Routes>
       <Footer />
-      </div>
-    </>
-  );
+    </div>
+  </>;
 };
-
 export default App;
