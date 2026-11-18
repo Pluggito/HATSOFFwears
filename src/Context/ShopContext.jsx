@@ -2,8 +2,9 @@ import { createContext, useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { getProducts } from "../Backend/AdminLogic";
+import { getProducts, subscribeSaleSettings } from "../Backend/AdminLogic";
 import { useCallback } from "react";
+import { getProductPrice as calculateProductPrice } from "../lib/pricing";
 
 export const ShopContext = createContext();
 
@@ -13,6 +14,7 @@ const ShopContextProvider = (props) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [products, setProducts] = useState([]);
+  const [saleSettings, setSaleSettings] = useState({ active: false, percent: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -61,6 +63,18 @@ const ShopContextProvider = (props) => {
   }, []); // run only once
 
   useEffect(() => {
+    const unsubscribe = subscribeSaleSettings(
+      setSaleSettings,
+      (saleError) => {
+        console.error("Sale settings subscription failed:", saleError);
+        toast.error("Unable to load current sale pricing.");
+      },
+    );
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
@@ -94,7 +108,7 @@ const ShopContextProvider = (props) => {
 
       setCartItems(cartData);
     },
-    [cartItems],
+    [cartItems, products],
   );
 
   const getCartCount = useCallback(() => {
@@ -138,7 +152,9 @@ const ShopContextProvider = (props) => {
       for (const item in cartItems[items]) {
         try {
           if (cartItems[items][item] > 0) {
-            totalAmount += itemInfo.price * cartItems[items][item];
+            totalAmount +=
+              calculateProductPrice(itemInfo.price, saleSettings) *
+              cartItems[items][item];
           }
         } catch (error) {
           console.error("Error calculating total amount:", error);
@@ -147,11 +163,18 @@ const ShopContextProvider = (props) => {
     }
 
     return totalAmount;
-  }, [cartItems, products]);
+  }, [cartItems, products, saleSettings]);
+
+  const getPrice = useCallback(
+    (product) => calculateProductPrice(product?.price, saleSettings),
+    [saleSettings],
+  );
 
   const value = useMemo(
     () => ({
       products,
+      saleSettings,
+      getPrice,
       currency,
       delivery_fee,
       search,
@@ -174,6 +197,8 @@ const ShopContextProvider = (props) => {
     }),
     [
       products,
+      saleSettings,
+      getPrice,
       currency,
       delivery_fee,
       search,

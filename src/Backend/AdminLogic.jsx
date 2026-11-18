@@ -5,6 +5,8 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  onSnapshot,
+  setDoc,
 } from "firebase/firestore";
 //import axios from "axios";
 import { db } from "./firebase";
@@ -119,6 +121,31 @@ export const getProducts = async () => {
     console.error("Get Products Error:", error.message);
     return [];
   }
+};
+
+export const subscribeSaleSettings = (onChange, onError) =>
+  onSnapshot(
+    doc(db, "storeSettings", "sale"),
+    (snapshot) => {
+      const settings = snapshot.exists() ? snapshot.data() : {};
+      onChange({
+        active: settings.active === true,
+        percent: Number(settings.percent) || 0,
+      });
+    },
+    onError,
+  );
+
+export const saveSaleSettings = async (saleSettings) => {
+  const percent = Number(saleSettings?.percent);
+  if (!Number.isInteger(percent) || percent < 1 || percent > 99) {
+    throw new Error("Discount must be a whole number between 1 and 99.");
+  }
+
+  await setDoc(doc(db, "storeSettings", "sale"), {
+    active: saleSettings.active === true,
+    percent,
+  });
 };
 
 // 📃 Fetches all orders from Firestore

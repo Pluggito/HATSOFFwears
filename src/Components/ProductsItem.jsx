@@ -9,6 +9,7 @@ export default function ProductsItem({
   image,
   name,
   price,
+  originalPrice,
   availability,
 }) {
   const { currency } = useContext(ShopContext);
@@ -38,6 +39,11 @@ export default function ProductsItem({
         </h3>
         <div className="mt-auto pt-2 flex items-center justify-between">
           <div className="flex flex-col">
+            {originalPrice !== undefined && originalPrice > price && (
+              <span className="text-xs text-muted-foreground line-through">
+                {currency}{originalPrice.toLocaleString()}
+              </span>
+            )}
             <span className="font-bold text-lg text-foreground tracking-tight mt-0.5">
               {currency}
               {price.toLocaleString()}
@@ -54,5 +60,6 @@ ProductsItem.propTypes = {
   image: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
+  originalPrice: PropTypes.number,
   availability: PropTypes.string,
 };

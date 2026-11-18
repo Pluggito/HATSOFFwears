@@ -6,12 +6,11 @@ import Title from "../Components/Title";
 import ProductsItem from "../Components/ProductsItem";
 
 const Collections = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search, showSearch, getPrice, saleSettings } = useContext(ShopContext);
 
   // UI state
   const [showFilter, setShowFilter] = useState(false);
   const [category, setCategory] = useState([]);
-  const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relavent");
 
   // Derived state
@@ -40,33 +39,21 @@ const Collections = () => {
       result = result.filter((p) => category.includes(p.category));
     }
 
-    // Sub-category filter
-    if (subCategory.length > 0) {
-      result = result.filter((p) => subCategory.includes(p.subCategory));
-    }
-
     // Sorting
     if (sortType === "low-high") {
-      result.sort((a, b) => a.price - b.price);
+      result.sort((a, b) => getPrice(a) - getPrice(b));
     } else if (sortType === "high-low") {
-      result.sort((a, b) => b.price - a.price);
+      result.sort((a, b) => getPrice(b) - getPrice(a));
     }
     // (if “relevant”, leave in original order)
 
     setFilterProducts(result);
-  }, [products, search, showSearch, category, subCategory, sortType]);
+  }, [products, search, showSearch, category, sortType, getPrice]);
 
   // 2) Handlers for toggling
   const toggleCategory = (e) => {
     const val = e.target.value;
     setCategory((prev) =>
-      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val],
-    );
-  };
-
-  const toggleSubCategory = (e) => {
-    const val = e.target.value;
-    setSubCategory((prev) =>
       prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val],
     );
   };
@@ -162,7 +149,8 @@ const Collections = () => {
                 id={item.id}
                 image={item.imgUrls?.[0] || item.imgUrl || ""}
                 name={item.name}
-                price={item.price}
+                price={getPrice(item)}
+                originalPrice={saleSettings.active ? item.price : undefined}
                 availability={item.availability}
               />
             ))}
