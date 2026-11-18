@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import RelatedProducts from "../Components/RelatedProducts";
 
 const Product = () => {
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const { products, currency, addToCart, getPrice, saleSettings } = useContext(ShopContext);
   const { productId } = useParams();
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
@@ -77,8 +77,13 @@ const Product = () => {
           <div className="mt-4 flex flex-col gap-1">
             <p className="text-3xl font-extrabold text-red-500">
               {currency}
-              {productData.price.toLocaleString()}
+              {getPrice(productData).toLocaleString()}
             </p>
+            {saleSettings.active && (
+              <p className="text-sm text-muted-foreground line-through">
+                {currency}{productData.price.toLocaleString()}
+              </p>
+            )}
           </div>
 
           <p className="mt-5 text-muted-foreground md:w-4/5 leading-relaxed">

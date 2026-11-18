@@ -15,6 +15,7 @@ const Cart = () => {
     navigate,
     loading,
     error,
+    getPrice,
   } = useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
 
@@ -79,7 +80,7 @@ const Cart = () => {
                   <div className="flex items-center gap-4 mt-2 text-sm">
                     <p className="font-semibold text-foreground">
                       {currency}
-                      {Number(productData.price).toLocaleString()}
+                      {getPrice(productData).toLocaleString()}
                     </p>
                     <p className="px-2.5 py-0.5 border border-border/60 bg-muted text-foreground text-xs font-semibold rounded">
                       Size: {item.size}

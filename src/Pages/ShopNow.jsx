@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import ProductsItem from "../Components/ProductsItem";
 
 const ShopNow = () => {
-  const { products, loading, error } = useContext(ShopContext);
+  const { products, loading, error, getPrice, saleSettings } = useContext(ShopContext);
   const [newProducts, setNewProducts] = useState([]);
 
   useEffect(() => {
@@ -39,7 +39,8 @@ const ShopNow = () => {
             id={item.id}
             image={item.imgUrls?.[0] || item.imgUrl || ""}
             name={item.name}
-            price={item.price}
+            price={getPrice(item)}
+            originalPrice={saleSettings.active ? item.price : undefined}
             availability={item.availability}
           />
         ))}

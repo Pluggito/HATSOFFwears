@@ -2,13 +2,15 @@ import { db, addDoc, collection, } from "./firebase"; // Ensure correct Firebase
 import emailjs from "@emailjs/browser";
 import { updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
+import { getProductPrice } from "../lib/pricing";
 
 // Function to process cartItems into a structured order
 export const processOrderDetails = (
   cartItems,
   userDetails,
   trns_id,
-  products
+  products,
+  saleSettings,
 ) => {
   const orderItems = [];
 
@@ -23,8 +25,8 @@ export const processOrderDetails = (
             name: product.name,
             size: size,
             quantity: cartItems[productId][size],
-            price: product.price,
-            image: product.imgUrl,
+            price: getProductPrice(product.price, saleSettings),
+            image: product.imgUrls?.[0] || product.imgUrl,
           });
         }
       }
@@ -108,10 +110,10 @@ export const saveOrderToFirebase = async (orderDetails) => {
 };
 
 // Function to handle complete order placement logic
-export const placeOrder = async (cartItems, userDetails, trns_id,products,setCartItems) => {
+export const placeOrder = async (cartItems, userDetails, trns_id,products,setCartItems,saleSettings) => {
   try {
     // Process order details
-    const orderDetails = processOrderDetails(cartItems, userDetails, trns_id, products);
+    const orderDetails = processOrderDetails(cartItems, userDetails, trns_id, products, saleSettings);
 
     // Save to Firebase
     const orderId = await saveOrderToFirebase(orderDetails);
@@ -127,7 +129,7 @@ export const placeOrder = async (cartItems, userDetails, trns_id,products,setCar
   }
 };
 
-export const handlePlaceOrder = async (cartItems, userDetails, trns_id,products,setCartItems) => {
-  const orderID = await placeOrder(cartItems, userDetails, trns_id,products,setCartItems);
+export const handlePlaceOrder = async (cartItems, userDetails, trns_id,products,setCartItems,saleSettings) => {
+  const orderID = await placeOrder(cartItems, userDetails, trns_id,products,setCartItems,saleSettings);
  return orderID
 };

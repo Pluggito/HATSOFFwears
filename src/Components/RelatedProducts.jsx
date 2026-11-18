@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../Context/ShopContext";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import Title from "./Title";
 import ProductsItem from "./ProductsItem";
 
 const RelatedProducts = ({ category, subCategory }) => {
-  const { products } = useContext(ShopContext);
+  const { products, getPrice, saleSettings } = useContext(ShopContext);
   const [related, setRelated] = useState([]);
   const navigate = useNavigate();
 
@@ -59,7 +60,8 @@ const RelatedProducts = ({ category, subCategory }) => {
             <ProductsItem
               id={item.id}
               name={item.name}
-              price={item.price}
+              price={getPrice(item)}
+              originalPrice={saleSettings.active ? item.price : undefined}
               image={item.imgUrls?.[0] || item.imgUrl}
               availability={item.availability}
             />
@@ -71,3 +73,8 @@ const RelatedProducts = ({ category, subCategory }) => {
 };
 
 export default RelatedProducts;
+
+RelatedProducts.propTypes = {
+  category: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+  subCategory: PropTypes.string,
+};

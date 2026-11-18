@@ -6,7 +6,7 @@ import ProductsItem from "../Components/ProductsItem";
 import { useNavigate } from "react-router-dom";
 
 const NewCollections = () => {
-  const { products } = useContext(ShopContext);
+  const { products, getPrice, saleSettings } = useContext(ShopContext);
   const [newCollections, setNewCollections] = useState([]);
   const navigate = useNavigate();
 
@@ -45,7 +45,8 @@ const NewCollections = () => {
             id={item.id}
             image={item.imgUrls?.[0] || item.imgUrl || ""}
             name={item.name}
-            price={item.price}
+            price={getPrice(item)}
+            originalPrice={saleSettings.active ? item.price : undefined}
             availability={item.availability}
           />
         ))}

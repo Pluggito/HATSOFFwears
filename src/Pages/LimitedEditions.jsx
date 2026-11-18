@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../Context/ShopContext";
 
 const LimitedEditions = () => {
-  const { products } = useContext(ShopContext);
+  const { products, getPrice, saleSettings } = useContext(ShopContext);
   const [limitedEditions, setLimittedEditions] = useState([]);
 
   useEffect(() => {
@@ -43,7 +43,8 @@ const LimitedEditions = () => {
             id={item.id}
             name={item.name}
             image={item.imgUrls?.[0] || item.imgUrl || ""}
-            price={item.price}
+            price={getPrice(item)}
+            originalPrice={saleSettings.active ? item.price : undefined}
             availability={item.availability}
           />
         ))}

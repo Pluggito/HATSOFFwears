@@ -1,21 +1,21 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Edit, Plus, Trash, X, Loader2, Package, DollarSign, ShoppingCart } from "lucide-react"
+import { Edit, Plus, Trash, X, Loader2, Package, DollarSign, ShoppingCart, Tag } from "lucide-react"
 
 import { Button } from "@/Components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Input } from "@/Components/ui/input"
 import { Label } from "@/Components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import { Textarea } from "@/Components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
-import { Toggle } from "@/Components/ui/toggle"
 import {
   addProduct,
   deleteProduct,
   getOrders,
   getProducts,
+  saveSaleSettings,
+  subscribeSaleSettings,
   updateProduct,
 } from "../Backend/AdminLogic"
 
@@ -55,6 +55,9 @@ export default function ClothingDashboard() {
   const [orders, setOrders] = useState([]) // State to hold orders
    //eslint-disable-next-line no-unused-vars
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [saleSettings, setSaleSettings] = useState({ active: false, percent: 0 })
+  const [salePercent, setSalePercent] = useState("")
+  const [isSavingSale, setIsSavingSale] = useState(false)
 
   // Close modal when escape key is pressed
   useEffect(() => {
@@ -158,7 +161,7 @@ export default function ClothingDashboard() {
       setNewFiles([])
       setEditExistingUrls([])
       toast.success("Model updated successfully")
-    } catch (error) {
+    } catch {
       toast.error("Failed to update model")
     } finally {
       setIsSaving(false)
@@ -206,7 +209,40 @@ export default function ClothingDashboard() {
   useEffect(() => {
     fetchModels()
     fetchOrders() // Fetch orders when the component mounts
+    const unsubscribeSale = subscribeSaleSettings(
+      (settings) => {
+        setSaleSettings(settings)
+        setSalePercent(settings.percent ? String(settings.percent) : "")
+      },
+      (error) => {
+        console.error("Sale settings subscription failed:", error)
+        toast.error("Unable to load sale settings")
+      },
+    )
+    return unsubscribeSale
   }, [])
+
+  const handleSaleAction = async (active) => {
+    const percent = Number(salePercent)
+    if (active && (!Number.isInteger(percent) || percent < 1 || percent > 99)) {
+      toast.error("Enter a whole-number discount between 1% and 99%.")
+      return
+    }
+
+    setIsSavingSale(true)
+    try {
+      await saveSaleSettings({
+        active,
+        percent: active ? percent : saleSettings.percent,
+      })
+      toast.success(active ? "Sale is now live in your store." : "Sale ended.")
+    } catch (error) {
+      console.error("Unable to update sale settings:", error)
+      toast.error(error.message || "Unable to update sale settings.")
+    } finally {
+      setIsSavingSale(false)
+    }
+  }
 
   // Images uploading
   // This is a placeholder for the image upload logic. You can replace it with your actual upload logic.
@@ -242,6 +278,72 @@ export default function ClothingDashboard() {
           </Button>
         </div>
       </header>
+
+      <section className="mb-8 rounded-3xl border border-border/50 bg-card/50 p-5 sm:p-6">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <span className="rounded-xl bg-primary/10 p-3 text-primary">
+              <Tag className="h-5 w-5" />
+            </span>
+            <div>
+              <h2 className="text-lg font-bold text-foreground">Storewide sale</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {saleSettings.active
+                  ? `${saleSettings.percent}% off is live across the store.`
+                  : "Set a discount and start a sale whenever you want."}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="grid gap-1.5">
+              <Label htmlFor="sale-percent" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Discount (%)
+              </Label>
+              <Input
+                id="sale-percent"
+                type="number"
+                min="1"
+                max="99"
+                step="1"
+                value={salePercent}
+                onChange={(event) => setSalePercent(event.target.value)}
+                disabled={isSavingSale}
+                className="w-full sm:w-32 bg-background"
+                aria-label="Sale discount percentage"
+              />
+            </div>
+            {saleSettings.active ? (
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => handleSaleAction(true)}
+                  disabled={isSavingSale}
+                  className="cursor-pointer"
+                >
+                  {isSavingSale ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Update sale
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleSaleAction(false)}
+                  disabled={isSavingSale}
+                  className="cursor-pointer"
+                >
+                  End sale
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => handleSaleAction(true)}
+                disabled={isSavingSale}
+                className="cursor-pointer"
+              >
+                {isSavingSale ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Start sale
+              </Button>
+            )}
+          </div>
+        </div>
+      </section>
 
       {/* Add Model Modal */}
       {isAddModalOpen && (
@@ -517,7 +619,7 @@ export default function ClothingDashboard() {
               <div className="col-span-full border border-dashed border-border/60 rounded-3xl p-16 text-center text-muted-foreground bg-muted/5">
                 <Package className="mx-auto h-12 w-12 text-muted-foreground/40 mb-3" />
                 <h3 className="text-lg font-bold text-foreground mb-1 outfit">No products found</h3>
-                <p className="text-sm text-muted-foreground">Click "Add New Model" above to list your first clothing item.</p>
+                <p className="text-sm text-muted-foreground">Click &quot;Add New Model&quot; above to list your first clothing item.</p>
               </div>
             )}
           </div>

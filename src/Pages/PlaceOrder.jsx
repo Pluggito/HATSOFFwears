@@ -33,6 +33,7 @@ const PlaceOrder = () => {
     getCartAmount,
     delivery_fee,
     products,
+    saleSettings,
     setCartItems,
     setTotalAmount,
   } = useContext(ShopContext);
@@ -70,7 +71,8 @@ const PlaceOrder = () => {
       userDetails,
       response.reference,
       products,
-      setCartItems
+      setCartItems,
+      saleSettings,
     );
     toast.dismiss();
     toast.success("Payment Successful!");
